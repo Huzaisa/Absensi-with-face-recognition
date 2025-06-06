@@ -36,9 +36,10 @@ exports.getUserShiftByDate = async (userId, date) => {
       userId,
       date: new Date(date),
     },
-    include: { shift: true },
+    include: { shift: true }, // Ini penting agar data shift (startTime, endTime) ikut diambil
   });
 };
+
 
 exports.getAllShifts = async () => {
   console.log('Fetching all shifts');  // Debugging log

@@ -11,12 +11,23 @@ exports.createShift = async (req, res, next) => {
 
 exports.assignShiftToUser = async (req, res, next) => {
   try {
-    const mapping = await shiftService.assignShiftToUser(req.body);
-    res.json(mapping);
+    if (req.user.role !== 'ADMIN') {
+      return res.status(403).json({ message: 'Hanya admin yang bisa assign shift ke user.' });
+    }
+
+    const { userId, date, shiftId } = req.body;
+    if (!userId || !date || !shiftId) {
+      return res.status(400).json({ message: 'userId, date, dan shiftId wajib diisi.' });
+    }
+
+    const mapping = await shiftService.assignShiftToUser({ userId, date, shiftId });
+    res.status(201).json(mapping);
   } catch (err) {
     next(err);
   }
 };
+
+
 
 exports.getShiftForUser = async (req, res, next) => {
   try {

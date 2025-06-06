@@ -9433,6 +9433,7 @@ export namespace Prisma {
     id: string | null
     userId: string | null
     imagePath: string | null
+    faceEncoding: Uint8Array | null
     createdAt: Date | null
   }
 
@@ -9440,6 +9441,7 @@ export namespace Prisma {
     id: string | null
     userId: string | null
     imagePath: string | null
+    faceEncoding: Uint8Array | null
     createdAt: Date | null
   }
 
@@ -9447,6 +9449,7 @@ export namespace Prisma {
     id: number
     userId: number
     imagePath: number
+    faceEncoding: number
     createdAt: number
     _all: number
   }
@@ -9456,6 +9459,7 @@ export namespace Prisma {
     id?: true
     userId?: true
     imagePath?: true
+    faceEncoding?: true
     createdAt?: true
   }
 
@@ -9463,6 +9467,7 @@ export namespace Prisma {
     id?: true
     userId?: true
     imagePath?: true
+    faceEncoding?: true
     createdAt?: true
   }
 
@@ -9470,6 +9475,7 @@ export namespace Prisma {
     id?: true
     userId?: true
     imagePath?: true
+    faceEncoding?: true
     createdAt?: true
     _all?: true
   }
@@ -9550,6 +9556,7 @@ export namespace Prisma {
     id: string
     userId: string
     imagePath: string
+    faceEncoding: Uint8Array | null
     createdAt: Date
     _count: FaceRegistrationCountAggregateOutputType | null
     _min: FaceRegistrationMinAggregateOutputType | null
@@ -9574,6 +9581,7 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     imagePath?: boolean
+    faceEncoding?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["faceRegistration"]>
@@ -9582,6 +9590,7 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     imagePath?: boolean
+    faceEncoding?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["faceRegistration"]>
@@ -9590,6 +9599,7 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     imagePath?: boolean
+    faceEncoding?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["faceRegistration"]>
@@ -9598,10 +9608,11 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     imagePath?: boolean
+    faceEncoding?: boolean
     createdAt?: boolean
   }
 
-  export type FaceRegistrationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "imagePath" | "createdAt", ExtArgs["result"]["faceRegistration"]>
+  export type FaceRegistrationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "imagePath" | "faceEncoding" | "createdAt", ExtArgs["result"]["faceRegistration"]>
   export type FaceRegistrationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -9621,6 +9632,7 @@ export namespace Prisma {
       id: string
       userId: string
       imagePath: string
+      faceEncoding: Uint8Array | null
       createdAt: Date
     }, ExtArgs["result"]["faceRegistration"]>
     composites: {}
@@ -10049,6 +10061,7 @@ export namespace Prisma {
     readonly id: FieldRef<"FaceRegistration", 'String'>
     readonly userId: FieldRef<"FaceRegistration", 'String'>
     readonly imagePath: FieldRef<"FaceRegistration", 'String'>
+    readonly faceEncoding: FieldRef<"FaceRegistration", 'Bytes'>
     readonly createdAt: FieldRef<"FaceRegistration", 'DateTime'>
   }
     
@@ -10573,6 +10586,7 @@ export namespace Prisma {
     id: 'id',
     userId: 'userId',
     imagePath: 'imagePath',
+    faceEncoding: 'faceEncoding',
     createdAt: 'createdAt'
   };
 
@@ -10668,6 +10682,20 @@ export namespace Prisma {
    * Reference to a field of type 'LeaveStatus[]'
    */
   export type ListEnumLeaveStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LeaveStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Bytes'
+   */
+  export type BytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes'>
+    
+
+
+  /**
+   * Reference to a field of type 'Bytes[]'
+   */
+  export type ListBytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes[]'>
     
 
 
@@ -11176,6 +11204,7 @@ export namespace Prisma {
     id?: StringFilter<"FaceRegistration"> | string
     userId?: StringFilter<"FaceRegistration"> | string
     imagePath?: StringFilter<"FaceRegistration"> | string
+    faceEncoding?: BytesNullableFilter<"FaceRegistration"> | Uint8Array | null
     createdAt?: DateTimeFilter<"FaceRegistration"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
@@ -11184,6 +11213,7 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     imagePath?: SortOrder
+    faceEncoding?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     user?: UserOrderByWithRelationInput
   }
@@ -11195,6 +11225,7 @@ export namespace Prisma {
     OR?: FaceRegistrationWhereInput[]
     NOT?: FaceRegistrationWhereInput | FaceRegistrationWhereInput[]
     imagePath?: StringFilter<"FaceRegistration"> | string
+    faceEncoding?: BytesNullableFilter<"FaceRegistration"> | Uint8Array | null
     createdAt?: DateTimeFilter<"FaceRegistration"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id" | "userId">
@@ -11203,6 +11234,7 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     imagePath?: SortOrder
+    faceEncoding?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     _count?: FaceRegistrationCountOrderByAggregateInput
     _max?: FaceRegistrationMaxOrderByAggregateInput
@@ -11216,6 +11248,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"FaceRegistration"> | string
     userId?: StringWithAggregatesFilter<"FaceRegistration"> | string
     imagePath?: StringWithAggregatesFilter<"FaceRegistration"> | string
+    faceEncoding?: BytesNullableWithAggregatesFilter<"FaceRegistration"> | Uint8Array | null
     createdAt?: DateTimeWithAggregatesFilter<"FaceRegistration"> | Date | string
   }
 
@@ -11737,6 +11770,7 @@ export namespace Prisma {
   export type FaceRegistrationCreateInput = {
     id?: string
     imagePath: string
+    faceEncoding?: Uint8Array | null
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutFaceRegistrationInput
   }
@@ -11745,12 +11779,14 @@ export namespace Prisma {
     id?: string
     userId: string
     imagePath: string
+    faceEncoding?: Uint8Array | null
     createdAt?: Date | string
   }
 
   export type FaceRegistrationUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     imagePath?: StringFieldUpdateOperationsInput | string
+    faceEncoding?: NullableBytesFieldUpdateOperationsInput | Uint8Array | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutFaceRegistrationNestedInput
   }
@@ -11759,6 +11795,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     imagePath?: StringFieldUpdateOperationsInput | string
+    faceEncoding?: NullableBytesFieldUpdateOperationsInput | Uint8Array | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -11766,12 +11803,14 @@ export namespace Prisma {
     id?: string
     userId: string
     imagePath: string
+    faceEncoding?: Uint8Array | null
     createdAt?: Date | string
   }
 
   export type FaceRegistrationUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     imagePath?: StringFieldUpdateOperationsInput | string
+    faceEncoding?: NullableBytesFieldUpdateOperationsInput | Uint8Array | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -11779,6 +11818,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     imagePath?: StringFieldUpdateOperationsInput | string
+    faceEncoding?: NullableBytesFieldUpdateOperationsInput | Uint8Array | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -12245,10 +12285,18 @@ export namespace Prisma {
     uploadedAt?: SortOrder
   }
 
+  export type BytesNullableFilter<$PrismaModel = never> = {
+    equals?: Uint8Array | BytesFieldRefInput<$PrismaModel> | null
+    in?: Uint8Array[] | ListBytesFieldRefInput<$PrismaModel> | null
+    notIn?: Uint8Array[] | ListBytesFieldRefInput<$PrismaModel> | null
+    not?: NestedBytesNullableFilter<$PrismaModel> | Uint8Array | null
+  }
+
   export type FaceRegistrationCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
     imagePath?: SortOrder
+    faceEncoding?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -12256,6 +12304,7 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     imagePath?: SortOrder
+    faceEncoding?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -12263,7 +12312,18 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     imagePath?: SortOrder
+    faceEncoding?: SortOrder
     createdAt?: SortOrder
+  }
+
+  export type BytesNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Uint8Array | BytesFieldRefInput<$PrismaModel> | null
+    in?: Uint8Array[] | ListBytesFieldRefInput<$PrismaModel> | null
+    notIn?: Uint8Array[] | ListBytesFieldRefInput<$PrismaModel> | null
+    not?: NestedBytesNullableWithAggregatesFilter<$PrismaModel> | Uint8Array | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedBytesNullableFilter<$PrismaModel>
+    _max?: NestedBytesNullableFilter<$PrismaModel>
   }
 
   export type AttendanceCreateNestedManyWithoutUserInput = {
@@ -12714,6 +12774,10 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type NullableBytesFieldUpdateOperationsInput = {
+    set?: Uint8Array | null
+  }
+
   export type UserUpdateOneRequiredWithoutFaceRegistrationNestedInput = {
     create?: XOR<UserCreateWithoutFaceRegistrationInput, UserUncheckedCreateWithoutFaceRegistrationInput>
     connectOrCreate?: UserCreateOrConnectWithoutFaceRegistrationInput
@@ -12903,6 +12967,23 @@ export namespace Prisma {
     _max?: NestedEnumLeaveStatusFilter<$PrismaModel>
   }
 
+  export type NestedBytesNullableFilter<$PrismaModel = never> = {
+    equals?: Uint8Array | BytesFieldRefInput<$PrismaModel> | null
+    in?: Uint8Array[] | ListBytesFieldRefInput<$PrismaModel> | null
+    notIn?: Uint8Array[] | ListBytesFieldRefInput<$PrismaModel> | null
+    not?: NestedBytesNullableFilter<$PrismaModel> | Uint8Array | null
+  }
+
+  export type NestedBytesNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Uint8Array | BytesFieldRefInput<$PrismaModel> | null
+    in?: Uint8Array[] | ListBytesFieldRefInput<$PrismaModel> | null
+    notIn?: Uint8Array[] | ListBytesFieldRefInput<$PrismaModel> | null
+    not?: NestedBytesNullableWithAggregatesFilter<$PrismaModel> | Uint8Array | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedBytesNullableFilter<$PrismaModel>
+    _max?: NestedBytesNullableFilter<$PrismaModel>
+  }
+
   export type AttendanceCreateWithoutUserInput = {
     id?: string
     status?: string | null
@@ -13052,12 +13133,14 @@ export namespace Prisma {
   export type FaceRegistrationCreateWithoutUserInput = {
     id?: string
     imagePath: string
+    faceEncoding?: Uint8Array | null
     createdAt?: Date | string
   }
 
   export type FaceRegistrationUncheckedCreateWithoutUserInput = {
     id?: string
     imagePath: string
+    faceEncoding?: Uint8Array | null
     createdAt?: Date | string
   }
 
@@ -13227,12 +13310,14 @@ export namespace Prisma {
   export type FaceRegistrationUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     imagePath?: StringFieldUpdateOperationsInput | string
+    faceEncoding?: NullableBytesFieldUpdateOperationsInput | Uint8Array | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type FaceRegistrationUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     imagePath?: StringFieldUpdateOperationsInput | string
+    faceEncoding?: NullableBytesFieldUpdateOperationsInput | Uint8Array | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

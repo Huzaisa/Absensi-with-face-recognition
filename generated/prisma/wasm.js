@@ -191,6 +191,7 @@ exports.Prisma.FaceRegistrationScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   imagePath: 'imagePath',
+  faceEncoding: 'faceEncoding',
   createdAt: 'createdAt'
 };
 

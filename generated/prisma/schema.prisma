@@ -98,10 +98,11 @@ model Document {
 }
 
 model FaceRegistration {
-  id        String   @id @default(uuid())
-  userId    String   @unique
-  imagePath String
-  createdAt DateTime @default(now())
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  imagePath    String
+  faceEncoding Bytes?
+  createdAt    DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])
 }
