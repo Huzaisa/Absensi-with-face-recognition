@@ -16,6 +16,7 @@ router.get('/user/:userId/date/:date', auth, (req, res, next) => {
   return shiftController.getShiftForUser(req, res, next);
 });
 
+
 // Ambil semua shift
 router.get('/', auth, shiftController.getAllShifts);
 

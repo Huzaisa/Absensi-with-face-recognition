@@ -24,3 +24,10 @@ exports.getUserDocuments = async (userId) => {
     orderBy: { uploadedAt: 'desc' },
   });
 };
+
+exports.getDocument = (id) =>
+  prisma.document.findUnique({ where: { id } });
+
+/* hapus dokumen */
+exports.deleteDocument = (id) =>
+  prisma.document.delete({ where: { id } });

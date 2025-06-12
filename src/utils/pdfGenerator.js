@@ -1,23 +1,31 @@
 const PDFDocument = require('pdfkit');
-const { format } = require('date-fns');
 
-exports.generatePDF = async (data, month, year) => {
-  return new Promise((resolve) => {
-    const doc = new PDFDocument();
-    const buffers = [];
+exports.generatePDF = (data, month, year) => new Promise((resolve) => {
+  const doc     = new PDFDocument({ margin: 40 });
+  const buffers = [];
 
-    doc.fontSize(16).text(`Laporan Kehadiran Bulan ${month}-${year}`, { align: 'center' });
-    doc.moveDown();
+  doc.fontSize(16).text(`Laporan Kehadiran – ${month}/${year}`, { align: 'center' });
+  doc.moveDown();
 
-    doc.fontSize(12);
-    doc.text('Nama\t\tHadir\tIzin\tCuti\tLembur (jam)');
+  /* header */
+  doc.fontSize(12).text('Nama',  40, doc.y, { width: 150, continued: true });
+  doc.text('Hadir',             190, doc.y, { width: 60,  continued: true, align: 'center' });
+  doc.text('Izin',              250, doc.y, { width: 60,  continued: true, align: 'center' });
+  doc.text('Cuti',              310, doc.y, { width: 60,  continued: true, align: 'center' });
+  doc.text('Lembur (jam)',      370, doc.y, { width: 100, align: 'center' });
+  doc.moveDown(0.5);
 
-    data.forEach((row) => {
-      doc.text(`${row.name}\t\t${row.hadir || 0}\t${row.izin || 0}\t${row.cuti || 0}\t${row.lembur || 0}`);
-    });
-
-    doc.end();
-    doc.on('data', buffers.push.bind(buffers));
-    doc.on('end', () => resolve(Buffer.concat(buffers)));
+  /* rows */
+  data.forEach((row) => {
+    doc.text(row.name,   40,  doc.y, { width: 150, continued: true });
+    doc.text(row.hadir || 0,  190,  doc.y, { width: 60,  continued: true, align: 'center' });
+    doc.text(row.izin  || 0,  250,  doc.y, { width: 60,  continued: true, align: 'center' });
+    doc.text(row.cuti  || 0,  310,  doc.y, { width: 60,  continued: true, align: 'center' });
+    doc.text(row.lembur|| 0,  370,  doc.y, { width: 100, align: 'center' });
+    doc.moveDown(0.5);
   });
-};
+
+  doc.end();
+  doc.on('data', buffers.push.bind(buffers));
+  doc.on('end', () => resolve(Buffer.concat(buffers)));
+});

@@ -8,10 +8,12 @@ import cv2
 import face_recognition
 import numpy as np
 from datetime import datetime
+import pytz
+TIME_ZONE = pytz.timezone("Asia/Jakarta")
 
 app = FastAPI()
 
-# CORS setup
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -20,15 +22,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Path dan DB
+
 FACE_DIR = "../public/uploads/employee_faces"
 DATABASE_URL = "postgresql://postgres:pinter12@localhost:5432/absensi"
 engine = create_engine(DATABASE_URL)
 
-# In-memory encodings
+
 KNOWN_ENCODINGS = {}
 
-# === Load wajah dari DB saat startup ===
+
 def load_known_faces():
     if not os.path.exists(FACE_DIR):
         os.makedirs(FACE_DIR)
@@ -40,7 +42,7 @@ def load_known_faces():
             encoding_bytes = row["faceEncoding"]
             if encoding_bytes:
                 try:
-                    # decode bytes ke np.array dengan dtype float64 (default encoding face_recognition)
+                    
                     encoding_array = np.frombuffer(encoding_bytes, dtype=np.float64)
                     KNOWN_ENCODINGS[user_id] = encoding_array
                 except Exception as e:
@@ -50,7 +52,7 @@ def load_known_faces():
 
 load_known_faces()
 
-# === Encode wajah dari file ===
+
 def encode_face(image_bytes):
     try:
         nparr = np.frombuffer(image_bytes, np.uint8)
@@ -62,50 +64,53 @@ def encode_face(image_bytes):
         print(f"Error saat encode wajah: {e}")
         return None
 
-# === Simpan absensi jika cocok ===
-def save_attendance(user_id):
-    today = datetime.now().date()
-    now = datetime.now()
-    attendance_id = str(uuid.uuid4())  # generate UUID untuk id
+
+
+def save_attendance(user_id: str):
+    now_local = datetime.now(TIME_ZONE)           
+    midnight_utc = datetime.strptime(
+        f"{now_local.strftime('%Y-%m-%d')}T00:00:00Z", "%Y-%m-%dT%H:%M:%SZ"
+    )                                             
+
+    attendance_id = str(uuid.uuid4())
 
     with engine.begin() as conn:
-        result = conn.execute(text("""
-            SELECT s."startTime" FROM "ShiftMapping" sm
+        row = conn.execute(text("""
+            SELECT s."startTime"
+            FROM "ShiftMapping" sm
             JOIN "Shift" s ON sm."shiftId" = s."id"
             WHERE sm."userId" = :userId AND sm."date" = :date
-        """), {"userId": user_id, "date": today}).mappings().fetchone()
+        """), {"userId": user_id, "date": midnight_utc}).mappings().fetchone()
 
-        is_late = False
-        status = "ONTIME"
-        if result:
-            shift_start = result["startTime"]
-            if now.time() > shift_start.time():
-                is_late = True
-                status = "LATE"
+        if not row:
+            raise HTTPException(400, "User belum punya shift hari ini.")
 
-        conn.execute(
-            text("""
-                INSERT INTO "Attendance" (
-                    "id", "userId", "date", "clockIn", "status", "isLate", "createdAt", "updatedAt"
-                )
-                VALUES (
-                    :id, :userId, :date, :clockIn, :status, :isLate, :createdAt, :updatedAt
-                )
-                ON CONFLICT ("userId", "date") DO NOTHING;
-            """),
-            {
-                "id": attendance_id,
-                "userId": user_id,
-                "date": today,
-                "clockIn": now,
-                "status": status,
-                "isLate": is_late,
-                "createdAt": now,
-                "updatedAt": now
-            }
-        )
+        
+        shift_start_local = row["startTime"].astimezone(TIME_ZONE)
 
-# === Register wajah ===
+        is_late = now_local.time() > shift_start_local.time()
+        status  = "LATE" if is_late else "ONTIME"
+
+        conn.execute(text("""
+            INSERT INTO "Attendance"
+              ("id","userId","date","clockIn","status","isLate","createdAt","updatedAt")
+            VALUES
+              (:id,:userId,:date,:clockIn,:status,:isLate,:createdAt,:updatedAt)
+            ON CONFLICT ("userId","date") DO NOTHING;
+        """), {
+            "id": attendance_id,
+            "userId": user_id,
+            "date": midnight_utc,
+            "clockIn": now_local,
+            "status": status,
+            "isLate": is_late,
+            "createdAt": now_local,
+            "updatedAt": now_local
+        })
+
+
+
+
 @app.post("/register/")
 async def register_face(file: UploadFile = File(...), userId: str = Form(...)):
     image_bytes = await file.read()
@@ -113,13 +118,13 @@ async def register_face(file: UploadFile = File(...), userId: str = Form(...)):
     if encoding is None:
         return JSONResponse(content={"detail": "Tidak ada wajah terdeteksi."}, status_code=400)
 
-    # Simpan file
+    
     filename = f"{userId}_{int(datetime.now().timestamp())}.jpg"
     save_path = os.path.join(FACE_DIR, filename)
     with open(save_path, "wb") as f:
         f.write(image_bytes)
     new_id = str(uuid.uuid4())
-    # Simpan metadata dan encoding ke DB
+    
     with engine.begin() as conn:
         conn.execute(
             text("""
@@ -138,21 +143,21 @@ async def register_face(file: UploadFile = File(...), userId: str = Form(...)):
             }
         )
 
-    # Update in-memory encoding
+    
     KNOWN_ENCODINGS[userId] = encoding
 
     return {"detail": f"Wajah untuk {userId} berhasil diregistrasi."}
 
-# === Verifikasi wajah dari kamera atau file ===
+
 @app.post("/verify/")
 async def verify_face(file: UploadFile = File(None)):
     try:
         rgb_frame = None
 
-        # Gunakan kamera jika tersedia
+        
         cam = cv2.VideoCapture(0)
         if cam.isOpened():
-            for _ in range(5):  # warm-up
+            for _ in range(5):  
                 _ = cam.read()
             ret, frame = cam.read()
             cam.release()
@@ -162,7 +167,7 @@ async def verify_face(file: UploadFile = File(None)):
 
             rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-        # Jika kamera tidak tersedia, pakai file upload
+        
         elif file is not None:
             image_bytes = await file.read()
             nparr = np.frombuffer(image_bytes, np.uint8)
@@ -173,7 +178,7 @@ async def verify_face(file: UploadFile = File(None)):
         else:
             raise HTTPException(400, "Kamera tidak tersedia dan file tidak dikirim.")
 
-        # Simpan gambar terakhir untuk debugging
+        
         cv2.imwrite("last_frame.jpg", cv2.cvtColor(rgb_frame, cv2.COLOR_RGB2BGR))
 
         face_locations = face_recognition.face_locations(rgb_frame, model='hog')
@@ -184,10 +189,10 @@ async def verify_face(file: UploadFile = File(None)):
         if not face_encodings:
             raise HTTPException(404, "Gagal mengenali encoding wajah.")
 
-        # Pencocokan dengan wajah terdaftar, dengan debug jarak
+        
         for encoding in face_encodings:
             best_match_user = None
-            best_match_dist = 1.0  # jarak max 1.0
+            best_match_dist = 1.0  
             for user_id, known_encoding in KNOWN_ENCODINGS.items():
                 dist = face_recognition.face_distance([known_encoding], encoding)[0]
                 print(f"Distance ke user {user_id}: {dist}")
@@ -205,7 +210,7 @@ async def verify_face(file: UploadFile = File(None)):
         print(f"Error di endpoint /verify/: {e}")
         raise HTTPException(500, detail="Terjadi kesalahan pada sistem verifikasi.")
 
-# === List user yang sudah daftar wajah ===
+
 @app.get("/faces/")
 def get_faces():
     return {"registered": list(KNOWN_ENCODINGS.keys())}

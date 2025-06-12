@@ -39,3 +39,14 @@ exports.getAllOvertime = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.rejectOvertime = async (req, res, next) => {
+  try {
+    const approverId = req.user.id;
+    const { overtimeId } = req.body;
+    const result = await overtimeService.rejectOvertime({ overtimeId, approverId });
+    res.json({ message: 'Lembur ditolak', result });
+  } catch (err) {
+    next(err);
+  }
+};

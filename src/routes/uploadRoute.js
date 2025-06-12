@@ -1,19 +1,23 @@
-const express = require('express');
-const router = express.Router();
-const controller = require('../controllers/uploadController');
-const auth = require('../middlewares/authMiddleware');
-const role = require('../middlewares/roleMiddleware');
-const upload = require('../middlewares/uploadMiddleware'); // Middleware untuk handle upload file
+const express  = require('express');
+const router   = express.Router();
+const ctl      = require('../controllers/uploadController');
+const auth     = require('../middlewares/authMiddleware');
+const role     = require('../middlewares/roleMiddleware');
+const upload   = require('../middlewares/uploadMiddleware'); // multer
 
 router.use(auth);
 
-// Route untuk upload dokumen izin
-router.post('/', upload.single('document'), controller.uploadDocument); // "document" fieldname digunakan di form
+/* ── POST – tambahkan dokumen (file optional) ── */
+router.post('/', upload.single('document'), ctl.uploadDocument);
 
-// Lihat dokumen milik user sendiri
-router.get('/me', controller.getUserDocuments);
+/* ── GET – dokumen milik user login ── */
+router.get('/me', ctl.getUserDocuments);
 
-// Lihat semua dokumen (hanya admin)
-router.get('/all', role(['ADMIN']), controller.getAllDocuments);
+/* ── ADMIN ONLY ──────────────────────────────── */
+router.get('/all', role('ADMIN'), ctl.getAllDocuments);
+router.delete('/:id', role('ADMIN'), ctl.deleteDocument);
+
+/* ── detail dokumen (user mana pun, optional boleh di‐sekat) ── */
+router.get('/:id', ctl.getDocument);
 
 module.exports = router;

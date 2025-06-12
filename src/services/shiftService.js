@@ -1,47 +1,81 @@
 const prisma = require('../config/db');
+const {
+  utcToZonedTime,
+  hhmmWIBtoUtcDate,
+  TIME_ZONE,
+} = require('../utils/time');
+
+
+const toLocalShift = (s) =>
+  s && {
+    ...s,
+    startTime: utcToZonedTime(s.startTime, TIME_ZONE),
+    endTime  : utcToZonedTime(s.endTime,   TIME_ZONE),
+  };
+
+
+const parseToUtc = (val) => {
+ 
+  if (!val.includes('T')) return hhmmWIBtoUtcDate(val);
+
+ 
+  const core = val.split(/[Z+]/)[0];          
+  return new Date(`${core}+07:00`);
+};
+
+
+const parseDateParamToMidnightUtc = (inp) => {
+  if (!inp.includes('T')) return new Date(`${inp}T00:00:00Z`);
+  const d = new Date(inp);                    
+  if (isNaN(d)) throw new Error('Tanggal tidak valid');
+  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+};
+
 
 exports.createShift = async ({ name, startTime, endTime }) => {
-  console.log('Creating shift with:', name, startTime, endTime);  // Debugging log
-  return prisma.shift.create({
+  const shift = await prisma.shift.create({
     data: {
       name,
-      startTime: new Date(startTime),
-      endTime: new Date(endTime),
+      startTime: parseToUtc(startTime),
+      endTime  : parseToUtc(endTime),
     },
   });
+  return toLocalShift(shift);
 };
+
 
 exports.assignShiftToUser = async ({ userId, shiftId, date }) => {
-  console.log('Assigning shift to user:', userId, shiftId, date);  // Debugging log
+  const [user, shift] = await Promise.all([
+    prisma.user.findUnique({ where: { id: userId } }),
+    prisma.shift.findUnique({ where: { id: shiftId } }),
+  ]);
+  if (!user)  throw new Error(`User ${userId} tidak ditemukan`);
+  if (!shift) throw new Error(`Shift ${shiftId} tidak ditemukan`);
+
+  const midnightUtc = parseDateParamToMidnightUtc(date);
   return prisma.shiftMapping.upsert({
-    where: {
-      userId_date: {
-        userId,
-        date: new Date(date),
-      },
-    },
+    where : { userId_date: { userId, date: midnightUtc } },
     update: { shiftId },
-    create: {
-      userId,
-      shiftId,
-      date: new Date(date),
-    },
+    create: { userId, shiftId, date: midnightUtc },
   });
 };
 
+
 exports.getUserShiftByDate = async (userId, date) => {
-  console.log('Fetching shift mapping for userId:', userId, 'date:', date);  // Debugging log
-  return prisma.shiftMapping.findFirst({
-    where: {
-      userId,
-      date: new Date(date),
-    },
-    include: { shift: true }, // Ini penting agar data shift (startTime, endTime) ikut diambil
+  const midnightUtc = parseDateParamToMidnightUtc(date);
+  const m = await prisma.shiftMapping.findFirst({
+    where: { userId, date: midnightUtc },
+    include: { shift: true },
   });
+  if (m) m.shift = toLocalShift(m.shift);
+  return m;
 };
+
+
+exports.getAllShiftMappings = async () => prisma.shiftMapping.findMany();
 
 
 exports.getAllShifts = async () => {
-  console.log('Fetching all shifts');  // Debugging log
-  return prisma.shift.findMany();
+  const shifts = await prisma.shift.findMany();
+  return shifts.map(toLocalShift);
 };

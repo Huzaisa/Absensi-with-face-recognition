@@ -19,10 +19,10 @@ model User {
   updatedAt        DateTime          @updatedAt
   attendances      Attendance[]
   Document         Document[]
+  FaceRegistration FaceRegistration?
   leaves           Leave[]
   overtimes        Overtime[]
   shiftMappings    ShiftMapping[]
-  FaceRegistration FaceRegistration?
 }
 
 model Attendance {
@@ -101,10 +101,9 @@ model FaceRegistration {
   id           String   @id @default(uuid())
   userId       String   @unique
   imagePath    String
-  faceEncoding Bytes?
   createdAt    DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id])
+  faceEncoding Bytes?
+  user         User     @relation(fields: [userId], references: [id])
 }
 
 enum LeaveStatus {
