@@ -1,34 +1,35 @@
+const axios = require('axios');
+const fs = require('fs');
+const FormData = require('form-data');
 const attendanceService = require('../services/attendanceService');
-const axios             = require('axios');
 
-/* —–––––––– CLOCK-IN —–––––––– */
 exports.clockIn = async (req, res, next) => {
   try {
     const userId = req.user.id;
+    const filePath = req.file.path;
 
-    /* 1. Verifikasi wajah (FastAPI) */
-    const { data } = await axios.post('http://localhost:8000/verify/');
+    const form = new FormData();
+    form.append('file', fs.createReadStream(filePath));
+
+    const { data } = await axios.post('http://localhost:8000/verify/', form, {
+      headers: form.getHeaders(),
+    });
+
     if (data.userId !== userId) {
       return res.status(403).json({ message: 'Wajah tidak cocok dengan user login.' });
     }
 
-    /* 2. Proses attendance */
     const attendance = await attendanceService.clockIn(userId);
     res.json({ message: 'Clock-in success', attendance });
   } catch (err) {
-    /* Error dari FastAPI → teruskan */
     if (err.response?.data?.detail) {
       return res.status(err.response.status).json({ message: err.response.data.detail });
-    }
-    /* Error dari service (mis. sedang cuti) */
-    if (err.message) {
-      return res.status(403).json({ message: err.message });
     }
     next(err);
   }
 };
 
-/* —–––––––– CLOCK-OUT —–––––––– */
+
 exports.clockOut = async (req, res, next) => {
   try {
     const attendance = await attendanceService.clockOut(req.user.id);
