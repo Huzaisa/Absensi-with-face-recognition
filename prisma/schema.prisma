@@ -23,6 +23,11 @@ model User {
   leaves           Leave[]
   overtimes        Overtime[]
   shiftMappings    ShiftMapping[]
+
+  defaultShiftId String?
+  defaultShift   Shift?  @relation("UserDefaultShift", fields: [defaultShiftId], references: [id])
+  Shift          Shift?  @relation(fields: [shiftId], references: [id])
+  shiftId        String?
 }
 
 model Attendance {
@@ -42,11 +47,13 @@ model Attendance {
 }
 
 model Shift {
-  id        String         @id @default(uuid())
-  name      String
-  startTime DateTime
-  endTime   DateTime
-  mappings  ShiftMapping[]
+  id              String         @id @default(uuid())
+  name            String
+  startTime       DateTime
+  endTime         DateTime
+  mappings        ShiftMapping[]
+  User            User[]
+  defaultForUsers User[]         @relation("UserDefaultShift")
 }
 
 model ShiftMapping {

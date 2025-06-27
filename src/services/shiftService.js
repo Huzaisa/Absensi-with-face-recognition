@@ -44,7 +44,7 @@ exports.createShift = async ({ name, startTime, endTime }) => {
 };
 
 
-exports.assignShiftToUser = async ({ userId, shiftId, date }) => {
+exports.assignShiftToUser = async ({ userId, shiftId, date, isPermanent = false }) => {
   const [user, shift] = await Promise.all([
     prisma.user.findUnique({ where: { id: userId } }),
     prisma.shift.findUnique({ where: { id: shiftId } }),
@@ -52,24 +52,59 @@ exports.assignShiftToUser = async ({ userId, shiftId, date }) => {
   if (!user)  throw new Error(`User ${userId} tidak ditemukan`);
   if (!shift) throw new Error(`Shift ${shiftId} tidak ditemukan`);
 
-  const midnightUtc = parseDateParamToMidnightUtc(date);
-  return prisma.shiftMapping.upsert({
-    where : { userId_date: { userId, date: midnightUtc } },
-    update: { shiftId },
-    create: { userId, shiftId, date: midnightUtc },
-  });
+  if (isPermanent) {
+    return prisma.user.update({
+      where: { id: userId },
+      data: { defaultShiftId: shiftId },
+    });
+  } else {
+    const midnightUtc = parseDateParamToMidnightUtc(date);
+    return prisma.shiftMapping.upsert({
+      where : { userId_date: { userId, date: midnightUtc } },
+      update: { shiftId },
+      create: { userId, shiftId, date: midnightUtc },
+    });
+  }
 };
+
 
 
 exports.getUserShiftByDate = async (userId, date) => {
   const midnightUtc = parseDateParamToMidnightUtc(date);
-  const m = await prisma.shiftMapping.findFirst({
+
+  let mapping = await prisma.shiftMapping.findFirst({
     where: { userId, date: midnightUtc },
     include: { shift: true },
   });
-  if (m) m.shift = toLocalShift(m.shift);
-  return m;
+
+  if (mapping) {
+    mapping.shift = toLocalShift(mapping.shift);
+    return mapping;
+  }
+
+  // fallback ke default shift
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: {
+      defaultShift: true,
+    },
+  });
+
+  if (user?.defaultShift) {
+    return {
+      id: null,
+      userId,
+      date: midnightUtc,
+      createdAt: null,
+      shiftId: user.defaultShiftId,
+      shift: toLocalShift(user.defaultShift),
+      fromDefault: true,
+    };
+  }
+
+  return null;
 };
+
 
 
 exports.getAllShiftMappings = async () => {

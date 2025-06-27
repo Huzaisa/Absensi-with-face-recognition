@@ -17,20 +17,23 @@ exports.createShift = async (req, res, next) => {
   } catch (e) { next(e); }
 };
 
-
 exports.assignShiftToUser = async (req, res, next) => {
   try {
     if (req.user.role !== 'ADMIN')
       return res.status(403).json({ message: 'Hanya admin yang bisa assign shift ke user.' });
 
-    const { userId, date, shiftId } = req.body;
-    if (!userId || !date || !shiftId)
-      return res.status(400).json({ message: 'userId, date, dan shiftId wajib diisi.' });
+    const { userId, shiftId, date, isPermanent } = req.body;
+    if (!userId || !shiftId || (!date && !isPermanent)) {
+      return res.status(400).json({ message: 'userId, shiftId, dan date/isPermanent wajib diisi.' });
+    }
 
-    const m = await shiftService.assignShiftToUser({ userId, date, shiftId });
-    res.status(201).json(m);
-  } catch (e) { next(e); }
+    const result = await shiftService.assignShiftToUser({ userId, shiftId, date, isPermanent });
+    res.status(201).json(result);
+  } catch (e) {
+    next(e);
+  }
 };
+
 
 
 exports.getShiftForUser = async (req, res, next) => {

@@ -1604,10 +1604,14 @@ export namespace Prisma {
 
   export type ShiftCountOutputType = {
     mappings: number
+    User: number
+    defaultForUsers: number
   }
 
   export type ShiftCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     mappings?: boolean | ShiftCountOutputTypeCountMappingsArgs
+    User?: boolean | ShiftCountOutputTypeCountUserArgs
+    defaultForUsers?: boolean | ShiftCountOutputTypeCountDefaultForUsersArgs
   }
 
   // Custom InputTypes
@@ -1626,6 +1630,20 @@ export namespace Prisma {
    */
   export type ShiftCountOutputTypeCountMappingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ShiftMappingWhereInput
+  }
+
+  /**
+   * ShiftCountOutputType without action
+   */
+  export type ShiftCountOutputTypeCountUserArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserWhereInput
+  }
+
+  /**
+   * ShiftCountOutputType without action
+   */
+  export type ShiftCountOutputTypeCountDefaultForUsersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserWhereInput
   }
 
 
@@ -1652,6 +1670,8 @@ export namespace Prisma {
     password: string | null
     photo: string | null
     updatedAt: Date | null
+    defaultShiftId: string | null
+    shiftId: string | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -1663,6 +1683,8 @@ export namespace Prisma {
     password: string | null
     photo: string | null
     updatedAt: Date | null
+    defaultShiftId: string | null
+    shiftId: string | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -1674,6 +1696,8 @@ export namespace Prisma {
     password: number
     photo: number
     updatedAt: number
+    defaultShiftId: number
+    shiftId: number
     _all: number
   }
 
@@ -1687,6 +1711,8 @@ export namespace Prisma {
     password?: true
     photo?: true
     updatedAt?: true
+    defaultShiftId?: true
+    shiftId?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -1698,6 +1724,8 @@ export namespace Prisma {
     password?: true
     photo?: true
     updatedAt?: true
+    defaultShiftId?: true
+    shiftId?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -1709,6 +1737,8 @@ export namespace Prisma {
     password?: true
     photo?: true
     updatedAt?: true
+    defaultShiftId?: true
+    shiftId?: true
     _all?: true
   }
 
@@ -1793,6 +1823,8 @@ export namespace Prisma {
     password: string
     photo: string | null
     updatedAt: Date
+    defaultShiftId: string | null
+    shiftId: string | null
     _count: UserCountAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
@@ -1821,12 +1853,16 @@ export namespace Prisma {
     password?: boolean
     photo?: boolean
     updatedAt?: boolean
+    defaultShiftId?: boolean
+    shiftId?: boolean
     attendances?: boolean | User$attendancesArgs<ExtArgs>
     Document?: boolean | User$DocumentArgs<ExtArgs>
+    FaceRegistration?: boolean | User$FaceRegistrationArgs<ExtArgs>
     leaves?: boolean | User$leavesArgs<ExtArgs>
     overtimes?: boolean | User$overtimesArgs<ExtArgs>
     shiftMappings?: boolean | User$shiftMappingsArgs<ExtArgs>
-    FaceRegistration?: boolean | User$FaceRegistrationArgs<ExtArgs>
+    defaultShift?: boolean | User$defaultShiftArgs<ExtArgs>
+    Shift?: boolean | User$ShiftArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -1839,6 +1875,10 @@ export namespace Prisma {
     password?: boolean
     photo?: boolean
     updatedAt?: boolean
+    defaultShiftId?: boolean
+    shiftId?: boolean
+    defaultShift?: boolean | User$defaultShiftArgs<ExtArgs>
+    Shift?: boolean | User$ShiftArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -1850,6 +1890,10 @@ export namespace Prisma {
     password?: boolean
     photo?: boolean
     updatedAt?: boolean
+    defaultShiftId?: boolean
+    shiftId?: boolean
+    defaultShift?: boolean | User$defaultShiftArgs<ExtArgs>
+    Shift?: boolean | User$ShiftArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectScalar = {
@@ -1861,30 +1905,42 @@ export namespace Prisma {
     password?: boolean
     photo?: boolean
     updatedAt?: boolean
+    defaultShiftId?: boolean
+    shiftId?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "role" | "createdAt" | "password" | "photo" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "role" | "createdAt" | "password" | "photo" | "updatedAt" | "defaultShiftId" | "shiftId", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     attendances?: boolean | User$attendancesArgs<ExtArgs>
     Document?: boolean | User$DocumentArgs<ExtArgs>
+    FaceRegistration?: boolean | User$FaceRegistrationArgs<ExtArgs>
     leaves?: boolean | User$leavesArgs<ExtArgs>
     overtimes?: boolean | User$overtimesArgs<ExtArgs>
     shiftMappings?: boolean | User$shiftMappingsArgs<ExtArgs>
-    FaceRegistration?: boolean | User$FaceRegistrationArgs<ExtArgs>
+    defaultShift?: boolean | User$defaultShiftArgs<ExtArgs>
+    Shift?: boolean | User$ShiftArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
-  export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
-  export type UserIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    defaultShift?: boolean | User$defaultShiftArgs<ExtArgs>
+    Shift?: boolean | User$ShiftArgs<ExtArgs>
+  }
+  export type UserIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    defaultShift?: boolean | User$defaultShiftArgs<ExtArgs>
+    Shift?: boolean | User$ShiftArgs<ExtArgs>
+  }
 
   export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "User"
     objects: {
       attendances: Prisma.$AttendancePayload<ExtArgs>[]
       Document: Prisma.$DocumentPayload<ExtArgs>[]
+      FaceRegistration: Prisma.$FaceRegistrationPayload<ExtArgs> | null
       leaves: Prisma.$LeavePayload<ExtArgs>[]
       overtimes: Prisma.$OvertimePayload<ExtArgs>[]
       shiftMappings: Prisma.$ShiftMappingPayload<ExtArgs>[]
-      FaceRegistration: Prisma.$FaceRegistrationPayload<ExtArgs> | null
+      defaultShift: Prisma.$ShiftPayload<ExtArgs> | null
+      Shift: Prisma.$ShiftPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -1895,6 +1951,8 @@ export namespace Prisma {
       password: string
       photo: string | null
       updatedAt: Date
+      defaultShiftId: string | null
+      shiftId: string | null
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -2291,10 +2349,12 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     attendances<T extends User$attendancesArgs<ExtArgs> = {}>(args?: Subset<T, User$attendancesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     Document<T extends User$DocumentArgs<ExtArgs> = {}>(args?: Subset<T, User$DocumentArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    FaceRegistration<T extends User$FaceRegistrationArgs<ExtArgs> = {}>(args?: Subset<T, User$FaceRegistrationArgs<ExtArgs>>): Prisma__FaceRegistrationClient<$Result.GetResult<Prisma.$FaceRegistrationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     leaves<T extends User$leavesArgs<ExtArgs> = {}>(args?: Subset<T, User$leavesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeavePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     overtimes<T extends User$overtimesArgs<ExtArgs> = {}>(args?: Subset<T, User$overtimesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OvertimePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     shiftMappings<T extends User$shiftMappingsArgs<ExtArgs> = {}>(args?: Subset<T, User$shiftMappingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShiftMappingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    FaceRegistration<T extends User$FaceRegistrationArgs<ExtArgs> = {}>(args?: Subset<T, User$FaceRegistrationArgs<ExtArgs>>): Prisma__FaceRegistrationClient<$Result.GetResult<Prisma.$FaceRegistrationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    defaultShift<T extends User$defaultShiftArgs<ExtArgs> = {}>(args?: Subset<T, User$defaultShiftArgs<ExtArgs>>): Prisma__ShiftClient<$Result.GetResult<Prisma.$ShiftPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    Shift<T extends User$ShiftArgs<ExtArgs> = {}>(args?: Subset<T, User$ShiftArgs<ExtArgs>>): Prisma__ShiftClient<$Result.GetResult<Prisma.$ShiftPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2332,6 +2392,8 @@ export namespace Prisma {
     readonly password: FieldRef<"User", 'String'>
     readonly photo: FieldRef<"User", 'String'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
+    readonly defaultShiftId: FieldRef<"User", 'String'>
+    readonly shiftId: FieldRef<"User", 'String'>
   }
     
 
@@ -2581,6 +2643,10 @@ export namespace Prisma {
      */
     data: UserCreateManyInput | UserCreateManyInput[]
     skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -2651,6 +2717,10 @@ export namespace Prisma {
      * Limit how many Users to update.
      */
     limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -2768,6 +2838,25 @@ export namespace Prisma {
   }
 
   /**
+   * User.FaceRegistration
+   */
+  export type User$FaceRegistrationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FaceRegistration
+     */
+    select?: FaceRegistrationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FaceRegistration
+     */
+    omit?: FaceRegistrationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FaceRegistrationInclude<ExtArgs> | null
+    where?: FaceRegistrationWhereInput
+  }
+
+  /**
    * User.leaves
    */
   export type User$leavesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2840,22 +2929,41 @@ export namespace Prisma {
   }
 
   /**
-   * User.FaceRegistration
+   * User.defaultShift
    */
-  export type User$FaceRegistrationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type User$defaultShiftArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the FaceRegistration
+     * Select specific fields to fetch from the Shift
      */
-    select?: FaceRegistrationSelect<ExtArgs> | null
+    select?: ShiftSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the FaceRegistration
+     * Omit specific fields from the Shift
      */
-    omit?: FaceRegistrationOmit<ExtArgs> | null
+    omit?: ShiftOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: FaceRegistrationInclude<ExtArgs> | null
-    where?: FaceRegistrationWhereInput
+    include?: ShiftInclude<ExtArgs> | null
+    where?: ShiftWhereInput
+  }
+
+  /**
+   * User.Shift
+   */
+  export type User$ShiftArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shift
+     */
+    select?: ShiftSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shift
+     */
+    omit?: ShiftOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShiftInclude<ExtArgs> | null
+    where?: ShiftWhereInput
   }
 
   /**
@@ -4152,6 +4260,8 @@ export namespace Prisma {
     startTime?: boolean
     endTime?: boolean
     mappings?: boolean | Shift$mappingsArgs<ExtArgs>
+    User?: boolean | Shift$UserArgs<ExtArgs>
+    defaultForUsers?: boolean | Shift$defaultForUsersArgs<ExtArgs>
     _count?: boolean | ShiftCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["shift"]>
 
@@ -4179,6 +4289,8 @@ export namespace Prisma {
   export type ShiftOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "startTime" | "endTime", ExtArgs["result"]["shift"]>
   export type ShiftInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     mappings?: boolean | Shift$mappingsArgs<ExtArgs>
+    User?: boolean | Shift$UserArgs<ExtArgs>
+    defaultForUsers?: boolean | Shift$defaultForUsersArgs<ExtArgs>
     _count?: boolean | ShiftCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ShiftIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -4188,6 +4300,8 @@ export namespace Prisma {
     name: "Shift"
     objects: {
       mappings: Prisma.$ShiftMappingPayload<ExtArgs>[]
+      User: Prisma.$UserPayload<ExtArgs>[]
+      defaultForUsers: Prisma.$UserPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -4589,6 +4703,8 @@ export namespace Prisma {
   export interface Prisma__ShiftClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     mappings<T extends Shift$mappingsArgs<ExtArgs> = {}>(args?: Subset<T, Shift$mappingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShiftMappingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    User<T extends Shift$UserArgs<ExtArgs> = {}>(args?: Subset<T, Shift$UserArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    defaultForUsers<T extends Shift$defaultForUsersArgs<ExtArgs> = {}>(args?: Subset<T, Shift$defaultForUsersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5031,6 +5147,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ShiftMappingScalarFieldEnum | ShiftMappingScalarFieldEnum[]
+  }
+
+  /**
+   * Shift.User
+   */
+  export type Shift$UserArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+    orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
+    cursor?: UserWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
+  }
+
+  /**
+   * Shift.defaultForUsers
+   */
+  export type Shift$defaultForUsersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+    orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
+    cursor?: UserWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
   }
 
   /**
@@ -9433,24 +9597,24 @@ export namespace Prisma {
     id: string | null
     userId: string | null
     imagePath: string | null
-    faceEncoding: Uint8Array | null
     createdAt: Date | null
+    faceEncoding: Uint8Array | null
   }
 
   export type FaceRegistrationMaxAggregateOutputType = {
     id: string | null
     userId: string | null
     imagePath: string | null
-    faceEncoding: Uint8Array | null
     createdAt: Date | null
+    faceEncoding: Uint8Array | null
   }
 
   export type FaceRegistrationCountAggregateOutputType = {
     id: number
     userId: number
     imagePath: number
-    faceEncoding: number
     createdAt: number
+    faceEncoding: number
     _all: number
   }
 
@@ -9459,24 +9623,24 @@ export namespace Prisma {
     id?: true
     userId?: true
     imagePath?: true
-    faceEncoding?: true
     createdAt?: true
+    faceEncoding?: true
   }
 
   export type FaceRegistrationMaxAggregateInputType = {
     id?: true
     userId?: true
     imagePath?: true
-    faceEncoding?: true
     createdAt?: true
+    faceEncoding?: true
   }
 
   export type FaceRegistrationCountAggregateInputType = {
     id?: true
     userId?: true
     imagePath?: true
-    faceEncoding?: true
     createdAt?: true
+    faceEncoding?: true
     _all?: true
   }
 
@@ -9556,8 +9720,8 @@ export namespace Prisma {
     id: string
     userId: string
     imagePath: string
-    faceEncoding: Uint8Array | null
     createdAt: Date
+    faceEncoding: Uint8Array | null
     _count: FaceRegistrationCountAggregateOutputType | null
     _min: FaceRegistrationMinAggregateOutputType | null
     _max: FaceRegistrationMaxAggregateOutputType | null
@@ -9581,8 +9745,8 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     imagePath?: boolean
-    faceEncoding?: boolean
     createdAt?: boolean
+    faceEncoding?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["faceRegistration"]>
 
@@ -9590,8 +9754,8 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     imagePath?: boolean
-    faceEncoding?: boolean
     createdAt?: boolean
+    faceEncoding?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["faceRegistration"]>
 
@@ -9599,8 +9763,8 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     imagePath?: boolean
-    faceEncoding?: boolean
     createdAt?: boolean
+    faceEncoding?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["faceRegistration"]>
 
@@ -9608,11 +9772,11 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     imagePath?: boolean
-    faceEncoding?: boolean
     createdAt?: boolean
+    faceEncoding?: boolean
   }
 
-  export type FaceRegistrationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "imagePath" | "faceEncoding" | "createdAt", ExtArgs["result"]["faceRegistration"]>
+  export type FaceRegistrationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "imagePath" | "createdAt" | "faceEncoding", ExtArgs["result"]["faceRegistration"]>
   export type FaceRegistrationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -9632,8 +9796,8 @@ export namespace Prisma {
       id: string
       userId: string
       imagePath: string
-      faceEncoding: Uint8Array | null
       createdAt: Date
+      faceEncoding: Uint8Array | null
     }, ExtArgs["result"]["faceRegistration"]>
     composites: {}
   }
@@ -10061,8 +10225,8 @@ export namespace Prisma {
     readonly id: FieldRef<"FaceRegistration", 'String'>
     readonly userId: FieldRef<"FaceRegistration", 'String'>
     readonly imagePath: FieldRef<"FaceRegistration", 'String'>
-    readonly faceEncoding: FieldRef<"FaceRegistration", 'Bytes'>
     readonly createdAt: FieldRef<"FaceRegistration", 'DateTime'>
+    readonly faceEncoding: FieldRef<"FaceRegistration", 'Bytes'>
   }
     
 
@@ -10499,7 +10663,9 @@ export namespace Prisma {
     createdAt: 'createdAt',
     password: 'password',
     photo: 'photo',
-    updatedAt: 'updatedAt'
+    updatedAt: 'updatedAt',
+    defaultShiftId: 'defaultShiftId',
+    shiftId: 'shiftId'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -10586,8 +10752,8 @@ export namespace Prisma {
     id: 'id',
     userId: 'userId',
     imagePath: 'imagePath',
-    faceEncoding: 'faceEncoding',
-    createdAt: 'createdAt'
+    createdAt: 'createdAt',
+    faceEncoding: 'faceEncoding'
   };
 
   export type FaceRegistrationScalarFieldEnum = (typeof FaceRegistrationScalarFieldEnum)[keyof typeof FaceRegistrationScalarFieldEnum]
@@ -10728,12 +10894,16 @@ export namespace Prisma {
     password?: StringFilter<"User"> | string
     photo?: StringNullableFilter<"User"> | string | null
     updatedAt?: DateTimeFilter<"User"> | Date | string
+    defaultShiftId?: StringNullableFilter<"User"> | string | null
+    shiftId?: StringNullableFilter<"User"> | string | null
     attendances?: AttendanceListRelationFilter
     Document?: DocumentListRelationFilter
+    FaceRegistration?: XOR<FaceRegistrationNullableScalarRelationFilter, FaceRegistrationWhereInput> | null
     leaves?: LeaveListRelationFilter
     overtimes?: OvertimeListRelationFilter
     shiftMappings?: ShiftMappingListRelationFilter
-    FaceRegistration?: XOR<FaceRegistrationNullableScalarRelationFilter, FaceRegistrationWhereInput> | null
+    defaultShift?: XOR<ShiftNullableScalarRelationFilter, ShiftWhereInput> | null
+    Shift?: XOR<ShiftNullableScalarRelationFilter, ShiftWhereInput> | null
   }
 
   export type UserOrderByWithRelationInput = {
@@ -10745,12 +10915,16 @@ export namespace Prisma {
     password?: SortOrder
     photo?: SortOrderInput | SortOrder
     updatedAt?: SortOrder
+    defaultShiftId?: SortOrderInput | SortOrder
+    shiftId?: SortOrderInput | SortOrder
     attendances?: AttendanceOrderByRelationAggregateInput
     Document?: DocumentOrderByRelationAggregateInput
+    FaceRegistration?: FaceRegistrationOrderByWithRelationInput
     leaves?: LeaveOrderByRelationAggregateInput
     overtimes?: OvertimeOrderByRelationAggregateInput
     shiftMappings?: ShiftMappingOrderByRelationAggregateInput
-    FaceRegistration?: FaceRegistrationOrderByWithRelationInput
+    defaultShift?: ShiftOrderByWithRelationInput
+    Shift?: ShiftOrderByWithRelationInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -10765,12 +10939,16 @@ export namespace Prisma {
     password?: StringFilter<"User"> | string
     photo?: StringNullableFilter<"User"> | string | null
     updatedAt?: DateTimeFilter<"User"> | Date | string
+    defaultShiftId?: StringNullableFilter<"User"> | string | null
+    shiftId?: StringNullableFilter<"User"> | string | null
     attendances?: AttendanceListRelationFilter
     Document?: DocumentListRelationFilter
+    FaceRegistration?: XOR<FaceRegistrationNullableScalarRelationFilter, FaceRegistrationWhereInput> | null
     leaves?: LeaveListRelationFilter
     overtimes?: OvertimeListRelationFilter
     shiftMappings?: ShiftMappingListRelationFilter
-    FaceRegistration?: XOR<FaceRegistrationNullableScalarRelationFilter, FaceRegistrationWhereInput> | null
+    defaultShift?: XOR<ShiftNullableScalarRelationFilter, ShiftWhereInput> | null
+    Shift?: XOR<ShiftNullableScalarRelationFilter, ShiftWhereInput> | null
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -10782,6 +10960,8 @@ export namespace Prisma {
     password?: SortOrder
     photo?: SortOrderInput | SortOrder
     updatedAt?: SortOrder
+    defaultShiftId?: SortOrderInput | SortOrder
+    shiftId?: SortOrderInput | SortOrder
     _count?: UserCountOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
     _min?: UserMinOrderByAggregateInput
@@ -10799,6 +10979,8 @@ export namespace Prisma {
     password?: StringWithAggregatesFilter<"User"> | string
     photo?: StringNullableWithAggregatesFilter<"User"> | string | null
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
+    defaultShiftId?: StringNullableWithAggregatesFilter<"User"> | string | null
+    shiftId?: StringNullableWithAggregatesFilter<"User"> | string | null
   }
 
   export type AttendanceWhereInput = {
@@ -10889,6 +11071,8 @@ export namespace Prisma {
     startTime?: DateTimeFilter<"Shift"> | Date | string
     endTime?: DateTimeFilter<"Shift"> | Date | string
     mappings?: ShiftMappingListRelationFilter
+    User?: UserListRelationFilter
+    defaultForUsers?: UserListRelationFilter
   }
 
   export type ShiftOrderByWithRelationInput = {
@@ -10897,6 +11081,8 @@ export namespace Prisma {
     startTime?: SortOrder
     endTime?: SortOrder
     mappings?: ShiftMappingOrderByRelationAggregateInput
+    User?: UserOrderByRelationAggregateInput
+    defaultForUsers?: UserOrderByRelationAggregateInput
   }
 
   export type ShiftWhereUniqueInput = Prisma.AtLeast<{
@@ -10908,6 +11094,8 @@ export namespace Prisma {
     startTime?: DateTimeFilter<"Shift"> | Date | string
     endTime?: DateTimeFilter<"Shift"> | Date | string
     mappings?: ShiftMappingListRelationFilter
+    User?: UserListRelationFilter
+    defaultForUsers?: UserListRelationFilter
   }, "id">
 
   export type ShiftOrderByWithAggregationInput = {
@@ -11204,8 +11392,8 @@ export namespace Prisma {
     id?: StringFilter<"FaceRegistration"> | string
     userId?: StringFilter<"FaceRegistration"> | string
     imagePath?: StringFilter<"FaceRegistration"> | string
-    faceEncoding?: BytesNullableFilter<"FaceRegistration"> | Uint8Array | null
     createdAt?: DateTimeFilter<"FaceRegistration"> | Date | string
+    faceEncoding?: BytesNullableFilter<"FaceRegistration"> | Uint8Array | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
@@ -11213,8 +11401,8 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     imagePath?: SortOrder
-    faceEncoding?: SortOrderInput | SortOrder
     createdAt?: SortOrder
+    faceEncoding?: SortOrderInput | SortOrder
     user?: UserOrderByWithRelationInput
   }
 
@@ -11225,8 +11413,8 @@ export namespace Prisma {
     OR?: FaceRegistrationWhereInput[]
     NOT?: FaceRegistrationWhereInput | FaceRegistrationWhereInput[]
     imagePath?: StringFilter<"FaceRegistration"> | string
-    faceEncoding?: BytesNullableFilter<"FaceRegistration"> | Uint8Array | null
     createdAt?: DateTimeFilter<"FaceRegistration"> | Date | string
+    faceEncoding?: BytesNullableFilter<"FaceRegistration"> | Uint8Array | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id" | "userId">
 
@@ -11234,8 +11422,8 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     imagePath?: SortOrder
-    faceEncoding?: SortOrderInput | SortOrder
     createdAt?: SortOrder
+    faceEncoding?: SortOrderInput | SortOrder
     _count?: FaceRegistrationCountOrderByAggregateInput
     _max?: FaceRegistrationMaxOrderByAggregateInput
     _min?: FaceRegistrationMinOrderByAggregateInput
@@ -11248,8 +11436,8 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"FaceRegistration"> | string
     userId?: StringWithAggregatesFilter<"FaceRegistration"> | string
     imagePath?: StringWithAggregatesFilter<"FaceRegistration"> | string
-    faceEncoding?: BytesNullableWithAggregatesFilter<"FaceRegistration"> | Uint8Array | null
     createdAt?: DateTimeWithAggregatesFilter<"FaceRegistration"> | Date | string
+    faceEncoding?: BytesNullableWithAggregatesFilter<"FaceRegistration"> | Uint8Array | null
   }
 
   export type UserCreateInput = {
@@ -11263,10 +11451,12 @@ export namespace Prisma {
     updatedAt?: Date | string
     attendances?: AttendanceCreateNestedManyWithoutUserInput
     Document?: DocumentCreateNestedManyWithoutUserInput
+    FaceRegistration?: FaceRegistrationCreateNestedOneWithoutUserInput
     leaves?: LeaveCreateNestedManyWithoutUserInput
     overtimes?: OvertimeCreateNestedManyWithoutUserInput
     shiftMappings?: ShiftMappingCreateNestedManyWithoutUserInput
-    FaceRegistration?: FaceRegistrationCreateNestedOneWithoutUserInput
+    defaultShift?: ShiftCreateNestedOneWithoutDefaultForUsersInput
+    Shift?: ShiftCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -11278,12 +11468,14 @@ export namespace Prisma {
     password: string
     photo?: string | null
     updatedAt?: Date | string
+    defaultShiftId?: string | null
+    shiftId?: string | null
     attendances?: AttendanceUncheckedCreateNestedManyWithoutUserInput
     Document?: DocumentUncheckedCreateNestedManyWithoutUserInput
+    FaceRegistration?: FaceRegistrationUncheckedCreateNestedOneWithoutUserInput
     leaves?: LeaveUncheckedCreateNestedManyWithoutUserInput
     overtimes?: OvertimeUncheckedCreateNestedManyWithoutUserInput
     shiftMappings?: ShiftMappingUncheckedCreateNestedManyWithoutUserInput
-    FaceRegistration?: FaceRegistrationUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -11297,10 +11489,12 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     attendances?: AttendanceUpdateManyWithoutUserNestedInput
     Document?: DocumentUpdateManyWithoutUserNestedInput
+    FaceRegistration?: FaceRegistrationUpdateOneWithoutUserNestedInput
     leaves?: LeaveUpdateManyWithoutUserNestedInput
     overtimes?: OvertimeUpdateManyWithoutUserNestedInput
     shiftMappings?: ShiftMappingUpdateManyWithoutUserNestedInput
-    FaceRegistration?: FaceRegistrationUpdateOneWithoutUserNestedInput
+    defaultShift?: ShiftUpdateOneWithoutDefaultForUsersNestedInput
+    Shift?: ShiftUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -11312,12 +11506,14 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     photo?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    defaultShiftId?: NullableStringFieldUpdateOperationsInput | string | null
+    shiftId?: NullableStringFieldUpdateOperationsInput | string | null
     attendances?: AttendanceUncheckedUpdateManyWithoutUserNestedInput
     Document?: DocumentUncheckedUpdateManyWithoutUserNestedInput
+    FaceRegistration?: FaceRegistrationUncheckedUpdateOneWithoutUserNestedInput
     leaves?: LeaveUncheckedUpdateManyWithoutUserNestedInput
     overtimes?: OvertimeUncheckedUpdateManyWithoutUserNestedInput
     shiftMappings?: ShiftMappingUncheckedUpdateManyWithoutUserNestedInput
-    FaceRegistration?: FaceRegistrationUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -11329,6 +11525,8 @@ export namespace Prisma {
     password: string
     photo?: string | null
     updatedAt?: Date | string
+    defaultShiftId?: string | null
+    shiftId?: string | null
   }
 
   export type UserUpdateManyMutationInput = {
@@ -11351,6 +11549,8 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     photo?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    defaultShiftId?: NullableStringFieldUpdateOperationsInput | string | null
+    shiftId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type AttendanceCreateInput = {
@@ -11441,6 +11641,8 @@ export namespace Prisma {
     startTime: Date | string
     endTime: Date | string
     mappings?: ShiftMappingCreateNestedManyWithoutShiftInput
+    User?: UserCreateNestedManyWithoutShiftInput
+    defaultForUsers?: UserCreateNestedManyWithoutDefaultShiftInput
   }
 
   export type ShiftUncheckedCreateInput = {
@@ -11449,6 +11651,8 @@ export namespace Prisma {
     startTime: Date | string
     endTime: Date | string
     mappings?: ShiftMappingUncheckedCreateNestedManyWithoutShiftInput
+    User?: UserUncheckedCreateNestedManyWithoutShiftInput
+    defaultForUsers?: UserUncheckedCreateNestedManyWithoutDefaultShiftInput
   }
 
   export type ShiftUpdateInput = {
@@ -11457,6 +11661,8 @@ export namespace Prisma {
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
     mappings?: ShiftMappingUpdateManyWithoutShiftNestedInput
+    User?: UserUpdateManyWithoutShiftNestedInput
+    defaultForUsers?: UserUpdateManyWithoutDefaultShiftNestedInput
   }
 
   export type ShiftUncheckedUpdateInput = {
@@ -11465,6 +11671,8 @@ export namespace Prisma {
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
     mappings?: ShiftMappingUncheckedUpdateManyWithoutShiftNestedInput
+    User?: UserUncheckedUpdateManyWithoutShiftNestedInput
+    defaultForUsers?: UserUncheckedUpdateManyWithoutDefaultShiftNestedInput
   }
 
   export type ShiftCreateManyInput = {
@@ -11770,8 +11978,8 @@ export namespace Prisma {
   export type FaceRegistrationCreateInput = {
     id?: string
     imagePath: string
-    faceEncoding?: Uint8Array | null
     createdAt?: Date | string
+    faceEncoding?: Uint8Array | null
     user: UserCreateNestedOneWithoutFaceRegistrationInput
   }
 
@@ -11779,15 +11987,15 @@ export namespace Prisma {
     id?: string
     userId: string
     imagePath: string
-    faceEncoding?: Uint8Array | null
     createdAt?: Date | string
+    faceEncoding?: Uint8Array | null
   }
 
   export type FaceRegistrationUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     imagePath?: StringFieldUpdateOperationsInput | string
-    faceEncoding?: NullableBytesFieldUpdateOperationsInput | Uint8Array | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    faceEncoding?: NullableBytesFieldUpdateOperationsInput | Uint8Array | null
     user?: UserUpdateOneRequiredWithoutFaceRegistrationNestedInput
   }
 
@@ -11795,31 +12003,31 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     imagePath?: StringFieldUpdateOperationsInput | string
-    faceEncoding?: NullableBytesFieldUpdateOperationsInput | Uint8Array | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    faceEncoding?: NullableBytesFieldUpdateOperationsInput | Uint8Array | null
   }
 
   export type FaceRegistrationCreateManyInput = {
     id?: string
     userId: string
     imagePath: string
-    faceEncoding?: Uint8Array | null
     createdAt?: Date | string
+    faceEncoding?: Uint8Array | null
   }
 
   export type FaceRegistrationUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     imagePath?: StringFieldUpdateOperationsInput | string
-    faceEncoding?: NullableBytesFieldUpdateOperationsInput | Uint8Array | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    faceEncoding?: NullableBytesFieldUpdateOperationsInput | Uint8Array | null
   }
 
   export type FaceRegistrationUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     imagePath?: StringFieldUpdateOperationsInput | string
-    faceEncoding?: NullableBytesFieldUpdateOperationsInput | Uint8Array | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    faceEncoding?: NullableBytesFieldUpdateOperationsInput | Uint8Array | null
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -11882,6 +12090,11 @@ export namespace Prisma {
     none?: DocumentWhereInput
   }
 
+  export type FaceRegistrationNullableScalarRelationFilter = {
+    is?: FaceRegistrationWhereInput | null
+    isNot?: FaceRegistrationWhereInput | null
+  }
+
   export type LeaveListRelationFilter = {
     every?: LeaveWhereInput
     some?: LeaveWhereInput
@@ -11900,9 +12113,9 @@ export namespace Prisma {
     none?: ShiftMappingWhereInput
   }
 
-  export type FaceRegistrationNullableScalarRelationFilter = {
-    is?: FaceRegistrationWhereInput | null
-    isNot?: FaceRegistrationWhereInput | null
+  export type ShiftNullableScalarRelationFilter = {
+    is?: ShiftWhereInput | null
+    isNot?: ShiftWhereInput | null
   }
 
   export type SortOrderInput = {
@@ -11939,6 +12152,8 @@ export namespace Prisma {
     password?: SortOrder
     photo?: SortOrder
     updatedAt?: SortOrder
+    defaultShiftId?: SortOrder
+    shiftId?: SortOrder
   }
 
   export type UserMaxOrderByAggregateInput = {
@@ -11950,6 +12165,8 @@ export namespace Prisma {
     password?: SortOrder
     photo?: SortOrder
     updatedAt?: SortOrder
+    defaultShiftId?: SortOrder
+    shiftId?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -11961,6 +12178,8 @@ export namespace Prisma {
     password?: SortOrder
     photo?: SortOrder
     updatedAt?: SortOrder
+    defaultShiftId?: SortOrder
+    shiftId?: SortOrder
   }
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
@@ -12110,6 +12329,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type UserListRelationFilter = {
+    every?: UserWhereInput
+    some?: UserWhereInput
+    none?: UserWhereInput
+  }
+
+  export type UserOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type ShiftCountOrderByAggregateInput = {
@@ -12296,24 +12525,24 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     imagePath?: SortOrder
-    faceEncoding?: SortOrder
     createdAt?: SortOrder
+    faceEncoding?: SortOrder
   }
 
   export type FaceRegistrationMaxOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
     imagePath?: SortOrder
-    faceEncoding?: SortOrder
     createdAt?: SortOrder
+    faceEncoding?: SortOrder
   }
 
   export type FaceRegistrationMinOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
     imagePath?: SortOrder
-    faceEncoding?: SortOrder
     createdAt?: SortOrder
+    faceEncoding?: SortOrder
   }
 
   export type BytesNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -12340,6 +12569,12 @@ export namespace Prisma {
     connect?: DocumentWhereUniqueInput | DocumentWhereUniqueInput[]
   }
 
+  export type FaceRegistrationCreateNestedOneWithoutUserInput = {
+    create?: XOR<FaceRegistrationCreateWithoutUserInput, FaceRegistrationUncheckedCreateWithoutUserInput>
+    connectOrCreate?: FaceRegistrationCreateOrConnectWithoutUserInput
+    connect?: FaceRegistrationWhereUniqueInput
+  }
+
   export type LeaveCreateNestedManyWithoutUserInput = {
     create?: XOR<LeaveCreateWithoutUserInput, LeaveUncheckedCreateWithoutUserInput> | LeaveCreateWithoutUserInput[] | LeaveUncheckedCreateWithoutUserInput[]
     connectOrCreate?: LeaveCreateOrConnectWithoutUserInput | LeaveCreateOrConnectWithoutUserInput[]
@@ -12361,10 +12596,16 @@ export namespace Prisma {
     connect?: ShiftMappingWhereUniqueInput | ShiftMappingWhereUniqueInput[]
   }
 
-  export type FaceRegistrationCreateNestedOneWithoutUserInput = {
-    create?: XOR<FaceRegistrationCreateWithoutUserInput, FaceRegistrationUncheckedCreateWithoutUserInput>
-    connectOrCreate?: FaceRegistrationCreateOrConnectWithoutUserInput
-    connect?: FaceRegistrationWhereUniqueInput
+  export type ShiftCreateNestedOneWithoutDefaultForUsersInput = {
+    create?: XOR<ShiftCreateWithoutDefaultForUsersInput, ShiftUncheckedCreateWithoutDefaultForUsersInput>
+    connectOrCreate?: ShiftCreateOrConnectWithoutDefaultForUsersInput
+    connect?: ShiftWhereUniqueInput
+  }
+
+  export type ShiftCreateNestedOneWithoutUserInput = {
+    create?: XOR<ShiftCreateWithoutUserInput, ShiftUncheckedCreateWithoutUserInput>
+    connectOrCreate?: ShiftCreateOrConnectWithoutUserInput
+    connect?: ShiftWhereUniqueInput
   }
 
   export type AttendanceUncheckedCreateNestedManyWithoutUserInput = {
@@ -12379,6 +12620,12 @@ export namespace Prisma {
     connectOrCreate?: DocumentCreateOrConnectWithoutUserInput | DocumentCreateOrConnectWithoutUserInput[]
     createMany?: DocumentCreateManyUserInputEnvelope
     connect?: DocumentWhereUniqueInput | DocumentWhereUniqueInput[]
+  }
+
+  export type FaceRegistrationUncheckedCreateNestedOneWithoutUserInput = {
+    create?: XOR<FaceRegistrationCreateWithoutUserInput, FaceRegistrationUncheckedCreateWithoutUserInput>
+    connectOrCreate?: FaceRegistrationCreateOrConnectWithoutUserInput
+    connect?: FaceRegistrationWhereUniqueInput
   }
 
   export type LeaveUncheckedCreateNestedManyWithoutUserInput = {
@@ -12400,12 +12647,6 @@ export namespace Prisma {
     connectOrCreate?: ShiftMappingCreateOrConnectWithoutUserInput | ShiftMappingCreateOrConnectWithoutUserInput[]
     createMany?: ShiftMappingCreateManyUserInputEnvelope
     connect?: ShiftMappingWhereUniqueInput | ShiftMappingWhereUniqueInput[]
-  }
-
-  export type FaceRegistrationUncheckedCreateNestedOneWithoutUserInput = {
-    create?: XOR<FaceRegistrationCreateWithoutUserInput, FaceRegistrationUncheckedCreateWithoutUserInput>
-    connectOrCreate?: FaceRegistrationCreateOrConnectWithoutUserInput
-    connect?: FaceRegistrationWhereUniqueInput
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -12452,6 +12693,16 @@ export namespace Prisma {
     deleteMany?: DocumentScalarWhereInput | DocumentScalarWhereInput[]
   }
 
+  export type FaceRegistrationUpdateOneWithoutUserNestedInput = {
+    create?: XOR<FaceRegistrationCreateWithoutUserInput, FaceRegistrationUncheckedCreateWithoutUserInput>
+    connectOrCreate?: FaceRegistrationCreateOrConnectWithoutUserInput
+    upsert?: FaceRegistrationUpsertWithoutUserInput
+    disconnect?: FaceRegistrationWhereInput | boolean
+    delete?: FaceRegistrationWhereInput | boolean
+    connect?: FaceRegistrationWhereUniqueInput
+    update?: XOR<XOR<FaceRegistrationUpdateToOneWithWhereWithoutUserInput, FaceRegistrationUpdateWithoutUserInput>, FaceRegistrationUncheckedUpdateWithoutUserInput>
+  }
+
   export type LeaveUpdateManyWithoutUserNestedInput = {
     create?: XOR<LeaveCreateWithoutUserInput, LeaveUncheckedCreateWithoutUserInput> | LeaveCreateWithoutUserInput[] | LeaveUncheckedCreateWithoutUserInput[]
     connectOrCreate?: LeaveCreateOrConnectWithoutUserInput | LeaveCreateOrConnectWithoutUserInput[]
@@ -12494,14 +12745,24 @@ export namespace Prisma {
     deleteMany?: ShiftMappingScalarWhereInput | ShiftMappingScalarWhereInput[]
   }
 
-  export type FaceRegistrationUpdateOneWithoutUserNestedInput = {
-    create?: XOR<FaceRegistrationCreateWithoutUserInput, FaceRegistrationUncheckedCreateWithoutUserInput>
-    connectOrCreate?: FaceRegistrationCreateOrConnectWithoutUserInput
-    upsert?: FaceRegistrationUpsertWithoutUserInput
-    disconnect?: FaceRegistrationWhereInput | boolean
-    delete?: FaceRegistrationWhereInput | boolean
-    connect?: FaceRegistrationWhereUniqueInput
-    update?: XOR<XOR<FaceRegistrationUpdateToOneWithWhereWithoutUserInput, FaceRegistrationUpdateWithoutUserInput>, FaceRegistrationUncheckedUpdateWithoutUserInput>
+  export type ShiftUpdateOneWithoutDefaultForUsersNestedInput = {
+    create?: XOR<ShiftCreateWithoutDefaultForUsersInput, ShiftUncheckedCreateWithoutDefaultForUsersInput>
+    connectOrCreate?: ShiftCreateOrConnectWithoutDefaultForUsersInput
+    upsert?: ShiftUpsertWithoutDefaultForUsersInput
+    disconnect?: ShiftWhereInput | boolean
+    delete?: ShiftWhereInput | boolean
+    connect?: ShiftWhereUniqueInput
+    update?: XOR<XOR<ShiftUpdateToOneWithWhereWithoutDefaultForUsersInput, ShiftUpdateWithoutDefaultForUsersInput>, ShiftUncheckedUpdateWithoutDefaultForUsersInput>
+  }
+
+  export type ShiftUpdateOneWithoutUserNestedInput = {
+    create?: XOR<ShiftCreateWithoutUserInput, ShiftUncheckedCreateWithoutUserInput>
+    connectOrCreate?: ShiftCreateOrConnectWithoutUserInput
+    upsert?: ShiftUpsertWithoutUserInput
+    disconnect?: ShiftWhereInput | boolean
+    delete?: ShiftWhereInput | boolean
+    connect?: ShiftWhereUniqueInput
+    update?: XOR<XOR<ShiftUpdateToOneWithWhereWithoutUserInput, ShiftUpdateWithoutUserInput>, ShiftUncheckedUpdateWithoutUserInput>
   }
 
   export type AttendanceUncheckedUpdateManyWithoutUserNestedInput = {
@@ -12530,6 +12791,16 @@ export namespace Prisma {
     update?: DocumentUpdateWithWhereUniqueWithoutUserInput | DocumentUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: DocumentUpdateManyWithWhereWithoutUserInput | DocumentUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: DocumentScalarWhereInput | DocumentScalarWhereInput[]
+  }
+
+  export type FaceRegistrationUncheckedUpdateOneWithoutUserNestedInput = {
+    create?: XOR<FaceRegistrationCreateWithoutUserInput, FaceRegistrationUncheckedCreateWithoutUserInput>
+    connectOrCreate?: FaceRegistrationCreateOrConnectWithoutUserInput
+    upsert?: FaceRegistrationUpsertWithoutUserInput
+    disconnect?: FaceRegistrationWhereInput | boolean
+    delete?: FaceRegistrationWhereInput | boolean
+    connect?: FaceRegistrationWhereUniqueInput
+    update?: XOR<XOR<FaceRegistrationUpdateToOneWithWhereWithoutUserInput, FaceRegistrationUpdateWithoutUserInput>, FaceRegistrationUncheckedUpdateWithoutUserInput>
   }
 
   export type LeaveUncheckedUpdateManyWithoutUserNestedInput = {
@@ -12572,16 +12843,6 @@ export namespace Prisma {
     update?: ShiftMappingUpdateWithWhereUniqueWithoutUserInput | ShiftMappingUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: ShiftMappingUpdateManyWithWhereWithoutUserInput | ShiftMappingUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: ShiftMappingScalarWhereInput | ShiftMappingScalarWhereInput[]
-  }
-
-  export type FaceRegistrationUncheckedUpdateOneWithoutUserNestedInput = {
-    create?: XOR<FaceRegistrationCreateWithoutUserInput, FaceRegistrationUncheckedCreateWithoutUserInput>
-    connectOrCreate?: FaceRegistrationCreateOrConnectWithoutUserInput
-    upsert?: FaceRegistrationUpsertWithoutUserInput
-    disconnect?: FaceRegistrationWhereInput | boolean
-    delete?: FaceRegistrationWhereInput | boolean
-    connect?: FaceRegistrationWhereUniqueInput
-    update?: XOR<XOR<FaceRegistrationUpdateToOneWithWhereWithoutUserInput, FaceRegistrationUpdateWithoutUserInput>, FaceRegistrationUncheckedUpdateWithoutUserInput>
   }
 
   export type ShiftMappingCreateNestedOneWithoutAttendanceInput = {
@@ -12627,11 +12888,39 @@ export namespace Prisma {
     connect?: ShiftMappingWhereUniqueInput | ShiftMappingWhereUniqueInput[]
   }
 
+  export type UserCreateNestedManyWithoutShiftInput = {
+    create?: XOR<UserCreateWithoutShiftInput, UserUncheckedCreateWithoutShiftInput> | UserCreateWithoutShiftInput[] | UserUncheckedCreateWithoutShiftInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutShiftInput | UserCreateOrConnectWithoutShiftInput[]
+    createMany?: UserCreateManyShiftInputEnvelope
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+  }
+
+  export type UserCreateNestedManyWithoutDefaultShiftInput = {
+    create?: XOR<UserCreateWithoutDefaultShiftInput, UserUncheckedCreateWithoutDefaultShiftInput> | UserCreateWithoutDefaultShiftInput[] | UserUncheckedCreateWithoutDefaultShiftInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutDefaultShiftInput | UserCreateOrConnectWithoutDefaultShiftInput[]
+    createMany?: UserCreateManyDefaultShiftInputEnvelope
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+  }
+
   export type ShiftMappingUncheckedCreateNestedManyWithoutShiftInput = {
     create?: XOR<ShiftMappingCreateWithoutShiftInput, ShiftMappingUncheckedCreateWithoutShiftInput> | ShiftMappingCreateWithoutShiftInput[] | ShiftMappingUncheckedCreateWithoutShiftInput[]
     connectOrCreate?: ShiftMappingCreateOrConnectWithoutShiftInput | ShiftMappingCreateOrConnectWithoutShiftInput[]
     createMany?: ShiftMappingCreateManyShiftInputEnvelope
     connect?: ShiftMappingWhereUniqueInput | ShiftMappingWhereUniqueInput[]
+  }
+
+  export type UserUncheckedCreateNestedManyWithoutShiftInput = {
+    create?: XOR<UserCreateWithoutShiftInput, UserUncheckedCreateWithoutShiftInput> | UserCreateWithoutShiftInput[] | UserUncheckedCreateWithoutShiftInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutShiftInput | UserCreateOrConnectWithoutShiftInput[]
+    createMany?: UserCreateManyShiftInputEnvelope
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+  }
+
+  export type UserUncheckedCreateNestedManyWithoutDefaultShiftInput = {
+    create?: XOR<UserCreateWithoutDefaultShiftInput, UserUncheckedCreateWithoutDefaultShiftInput> | UserCreateWithoutDefaultShiftInput[] | UserUncheckedCreateWithoutDefaultShiftInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutDefaultShiftInput | UserCreateOrConnectWithoutDefaultShiftInput[]
+    createMany?: UserCreateManyDefaultShiftInputEnvelope
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
   }
 
   export type ShiftMappingUpdateManyWithoutShiftNestedInput = {
@@ -12648,6 +12937,34 @@ export namespace Prisma {
     deleteMany?: ShiftMappingScalarWhereInput | ShiftMappingScalarWhereInput[]
   }
 
+  export type UserUpdateManyWithoutShiftNestedInput = {
+    create?: XOR<UserCreateWithoutShiftInput, UserUncheckedCreateWithoutShiftInput> | UserCreateWithoutShiftInput[] | UserUncheckedCreateWithoutShiftInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutShiftInput | UserCreateOrConnectWithoutShiftInput[]
+    upsert?: UserUpsertWithWhereUniqueWithoutShiftInput | UserUpsertWithWhereUniqueWithoutShiftInput[]
+    createMany?: UserCreateManyShiftInputEnvelope
+    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    update?: UserUpdateWithWhereUniqueWithoutShiftInput | UserUpdateWithWhereUniqueWithoutShiftInput[]
+    updateMany?: UserUpdateManyWithWhereWithoutShiftInput | UserUpdateManyWithWhereWithoutShiftInput[]
+    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
+  }
+
+  export type UserUpdateManyWithoutDefaultShiftNestedInput = {
+    create?: XOR<UserCreateWithoutDefaultShiftInput, UserUncheckedCreateWithoutDefaultShiftInput> | UserCreateWithoutDefaultShiftInput[] | UserUncheckedCreateWithoutDefaultShiftInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutDefaultShiftInput | UserCreateOrConnectWithoutDefaultShiftInput[]
+    upsert?: UserUpsertWithWhereUniqueWithoutDefaultShiftInput | UserUpsertWithWhereUniqueWithoutDefaultShiftInput[]
+    createMany?: UserCreateManyDefaultShiftInputEnvelope
+    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    update?: UserUpdateWithWhereUniqueWithoutDefaultShiftInput | UserUpdateWithWhereUniqueWithoutDefaultShiftInput[]
+    updateMany?: UserUpdateManyWithWhereWithoutDefaultShiftInput | UserUpdateManyWithWhereWithoutDefaultShiftInput[]
+    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
+  }
+
   export type ShiftMappingUncheckedUpdateManyWithoutShiftNestedInput = {
     create?: XOR<ShiftMappingCreateWithoutShiftInput, ShiftMappingUncheckedCreateWithoutShiftInput> | ShiftMappingCreateWithoutShiftInput[] | ShiftMappingUncheckedCreateWithoutShiftInput[]
     connectOrCreate?: ShiftMappingCreateOrConnectWithoutShiftInput | ShiftMappingCreateOrConnectWithoutShiftInput[]
@@ -12660,6 +12977,34 @@ export namespace Prisma {
     update?: ShiftMappingUpdateWithWhereUniqueWithoutShiftInput | ShiftMappingUpdateWithWhereUniqueWithoutShiftInput[]
     updateMany?: ShiftMappingUpdateManyWithWhereWithoutShiftInput | ShiftMappingUpdateManyWithWhereWithoutShiftInput[]
     deleteMany?: ShiftMappingScalarWhereInput | ShiftMappingScalarWhereInput[]
+  }
+
+  export type UserUncheckedUpdateManyWithoutShiftNestedInput = {
+    create?: XOR<UserCreateWithoutShiftInput, UserUncheckedCreateWithoutShiftInput> | UserCreateWithoutShiftInput[] | UserUncheckedCreateWithoutShiftInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutShiftInput | UserCreateOrConnectWithoutShiftInput[]
+    upsert?: UserUpsertWithWhereUniqueWithoutShiftInput | UserUpsertWithWhereUniqueWithoutShiftInput[]
+    createMany?: UserCreateManyShiftInputEnvelope
+    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    update?: UserUpdateWithWhereUniqueWithoutShiftInput | UserUpdateWithWhereUniqueWithoutShiftInput[]
+    updateMany?: UserUpdateManyWithWhereWithoutShiftInput | UserUpdateManyWithWhereWithoutShiftInput[]
+    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
+  }
+
+  export type UserUncheckedUpdateManyWithoutDefaultShiftNestedInput = {
+    create?: XOR<UserCreateWithoutDefaultShiftInput, UserUncheckedCreateWithoutDefaultShiftInput> | UserCreateWithoutDefaultShiftInput[] | UserUncheckedCreateWithoutDefaultShiftInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutDefaultShiftInput | UserCreateOrConnectWithoutDefaultShiftInput[]
+    upsert?: UserUpsertWithWhereUniqueWithoutDefaultShiftInput | UserUpsertWithWhereUniqueWithoutDefaultShiftInput[]
+    createMany?: UserCreateManyDefaultShiftInputEnvelope
+    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    update?: UserUpdateWithWhereUniqueWithoutDefaultShiftInput | UserUpdateWithWhereUniqueWithoutDefaultShiftInput[]
+    updateMany?: UserUpdateManyWithWhereWithoutDefaultShiftInput | UserUpdateManyWithWhereWithoutDefaultShiftInput[]
+    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
   }
 
   export type AttendanceCreateNestedOneWithoutShiftInput = {
@@ -13042,6 +13387,25 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type FaceRegistrationCreateWithoutUserInput = {
+    id?: string
+    imagePath: string
+    createdAt?: Date | string
+    faceEncoding?: Uint8Array | null
+  }
+
+  export type FaceRegistrationUncheckedCreateWithoutUserInput = {
+    id?: string
+    imagePath: string
+    createdAt?: Date | string
+    faceEncoding?: Uint8Array | null
+  }
+
+  export type FaceRegistrationCreateOrConnectWithoutUserInput = {
+    where: FaceRegistrationWhereUniqueInput
+    create: XOR<FaceRegistrationCreateWithoutUserInput, FaceRegistrationUncheckedCreateWithoutUserInput>
+  }
+
   export type LeaveCreateWithoutUserInput = {
     id?: string
     startDate: Date | string
@@ -13130,23 +13494,50 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type FaceRegistrationCreateWithoutUserInput = {
+  export type ShiftCreateWithoutDefaultForUsersInput = {
     id?: string
-    imagePath: string
-    faceEncoding?: Uint8Array | null
-    createdAt?: Date | string
+    name: string
+    startTime: Date | string
+    endTime: Date | string
+    mappings?: ShiftMappingCreateNestedManyWithoutShiftInput
+    User?: UserCreateNestedManyWithoutShiftInput
   }
 
-  export type FaceRegistrationUncheckedCreateWithoutUserInput = {
+  export type ShiftUncheckedCreateWithoutDefaultForUsersInput = {
     id?: string
-    imagePath: string
-    faceEncoding?: Uint8Array | null
-    createdAt?: Date | string
+    name: string
+    startTime: Date | string
+    endTime: Date | string
+    mappings?: ShiftMappingUncheckedCreateNestedManyWithoutShiftInput
+    User?: UserUncheckedCreateNestedManyWithoutShiftInput
   }
 
-  export type FaceRegistrationCreateOrConnectWithoutUserInput = {
-    where: FaceRegistrationWhereUniqueInput
-    create: XOR<FaceRegistrationCreateWithoutUserInput, FaceRegistrationUncheckedCreateWithoutUserInput>
+  export type ShiftCreateOrConnectWithoutDefaultForUsersInput = {
+    where: ShiftWhereUniqueInput
+    create: XOR<ShiftCreateWithoutDefaultForUsersInput, ShiftUncheckedCreateWithoutDefaultForUsersInput>
+  }
+
+  export type ShiftCreateWithoutUserInput = {
+    id?: string
+    name: string
+    startTime: Date | string
+    endTime: Date | string
+    mappings?: ShiftMappingCreateNestedManyWithoutShiftInput
+    defaultForUsers?: UserCreateNestedManyWithoutDefaultShiftInput
+  }
+
+  export type ShiftUncheckedCreateWithoutUserInput = {
+    id?: string
+    name: string
+    startTime: Date | string
+    endTime: Date | string
+    mappings?: ShiftMappingUncheckedCreateNestedManyWithoutShiftInput
+    defaultForUsers?: UserUncheckedCreateNestedManyWithoutDefaultShiftInput
+  }
+
+  export type ShiftCreateOrConnectWithoutUserInput = {
+    where: ShiftWhereUniqueInput
+    create: XOR<ShiftCreateWithoutUserInput, ShiftUncheckedCreateWithoutUserInput>
   }
 
   export type AttendanceUpsertWithWhereUniqueWithoutUserInput = {
@@ -13206,6 +13597,31 @@ export namespace Prisma {
     filePath?: StringFilter<"Document"> | string
     type?: StringFilter<"Document"> | string
     uploadedAt?: DateTimeFilter<"Document"> | Date | string
+  }
+
+  export type FaceRegistrationUpsertWithoutUserInput = {
+    update: XOR<FaceRegistrationUpdateWithoutUserInput, FaceRegistrationUncheckedUpdateWithoutUserInput>
+    create: XOR<FaceRegistrationCreateWithoutUserInput, FaceRegistrationUncheckedCreateWithoutUserInput>
+    where?: FaceRegistrationWhereInput
+  }
+
+  export type FaceRegistrationUpdateToOneWithWhereWithoutUserInput = {
+    where?: FaceRegistrationWhereInput
+    data: XOR<FaceRegistrationUpdateWithoutUserInput, FaceRegistrationUncheckedUpdateWithoutUserInput>
+  }
+
+  export type FaceRegistrationUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    imagePath?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    faceEncoding?: NullableBytesFieldUpdateOperationsInput | Uint8Array | null
+  }
+
+  export type FaceRegistrationUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    imagePath?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    faceEncoding?: NullableBytesFieldUpdateOperationsInput | Uint8Array | null
   }
 
   export type LeaveUpsertWithWhereUniqueWithoutUserInput = {
@@ -13296,29 +13712,62 @@ export namespace Prisma {
     shiftId?: StringFilter<"ShiftMapping"> | string
   }
 
-  export type FaceRegistrationUpsertWithoutUserInput = {
-    update: XOR<FaceRegistrationUpdateWithoutUserInput, FaceRegistrationUncheckedUpdateWithoutUserInput>
-    create: XOR<FaceRegistrationCreateWithoutUserInput, FaceRegistrationUncheckedCreateWithoutUserInput>
-    where?: FaceRegistrationWhereInput
+  export type ShiftUpsertWithoutDefaultForUsersInput = {
+    update: XOR<ShiftUpdateWithoutDefaultForUsersInput, ShiftUncheckedUpdateWithoutDefaultForUsersInput>
+    create: XOR<ShiftCreateWithoutDefaultForUsersInput, ShiftUncheckedCreateWithoutDefaultForUsersInput>
+    where?: ShiftWhereInput
   }
 
-  export type FaceRegistrationUpdateToOneWithWhereWithoutUserInput = {
-    where?: FaceRegistrationWhereInput
-    data: XOR<FaceRegistrationUpdateWithoutUserInput, FaceRegistrationUncheckedUpdateWithoutUserInput>
+  export type ShiftUpdateToOneWithWhereWithoutDefaultForUsersInput = {
+    where?: ShiftWhereInput
+    data: XOR<ShiftUpdateWithoutDefaultForUsersInput, ShiftUncheckedUpdateWithoutDefaultForUsersInput>
   }
 
-  export type FaceRegistrationUpdateWithoutUserInput = {
+  export type ShiftUpdateWithoutDefaultForUsersInput = {
     id?: StringFieldUpdateOperationsInput | string
-    imagePath?: StringFieldUpdateOperationsInput | string
-    faceEncoding?: NullableBytesFieldUpdateOperationsInput | Uint8Array | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    mappings?: ShiftMappingUpdateManyWithoutShiftNestedInput
+    User?: UserUpdateManyWithoutShiftNestedInput
   }
 
-  export type FaceRegistrationUncheckedUpdateWithoutUserInput = {
+  export type ShiftUncheckedUpdateWithoutDefaultForUsersInput = {
     id?: StringFieldUpdateOperationsInput | string
-    imagePath?: StringFieldUpdateOperationsInput | string
-    faceEncoding?: NullableBytesFieldUpdateOperationsInput | Uint8Array | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    mappings?: ShiftMappingUncheckedUpdateManyWithoutShiftNestedInput
+    User?: UserUncheckedUpdateManyWithoutShiftNestedInput
+  }
+
+  export type ShiftUpsertWithoutUserInput = {
+    update: XOR<ShiftUpdateWithoutUserInput, ShiftUncheckedUpdateWithoutUserInput>
+    create: XOR<ShiftCreateWithoutUserInput, ShiftUncheckedCreateWithoutUserInput>
+    where?: ShiftWhereInput
+  }
+
+  export type ShiftUpdateToOneWithWhereWithoutUserInput = {
+    where?: ShiftWhereInput
+    data: XOR<ShiftUpdateWithoutUserInput, ShiftUncheckedUpdateWithoutUserInput>
+  }
+
+  export type ShiftUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    mappings?: ShiftMappingUpdateManyWithoutShiftNestedInput
+    defaultForUsers?: UserUpdateManyWithoutDefaultShiftNestedInput
+  }
+
+  export type ShiftUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    mappings?: ShiftMappingUncheckedUpdateManyWithoutShiftNestedInput
+    defaultForUsers?: UserUncheckedUpdateManyWithoutDefaultShiftNestedInput
   }
 
   export type ShiftMappingCreateWithoutAttendanceInput = {
@@ -13352,10 +13801,12 @@ export namespace Prisma {
     photo?: string | null
     updatedAt?: Date | string
     Document?: DocumentCreateNestedManyWithoutUserInput
+    FaceRegistration?: FaceRegistrationCreateNestedOneWithoutUserInput
     leaves?: LeaveCreateNestedManyWithoutUserInput
     overtimes?: OvertimeCreateNestedManyWithoutUserInput
     shiftMappings?: ShiftMappingCreateNestedManyWithoutUserInput
-    FaceRegistration?: FaceRegistrationCreateNestedOneWithoutUserInput
+    defaultShift?: ShiftCreateNestedOneWithoutDefaultForUsersInput
+    Shift?: ShiftCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAttendancesInput = {
@@ -13367,11 +13818,13 @@ export namespace Prisma {
     password: string
     photo?: string | null
     updatedAt?: Date | string
+    defaultShiftId?: string | null
+    shiftId?: string | null
     Document?: DocumentUncheckedCreateNestedManyWithoutUserInput
+    FaceRegistration?: FaceRegistrationUncheckedCreateNestedOneWithoutUserInput
     leaves?: LeaveUncheckedCreateNestedManyWithoutUserInput
     overtimes?: OvertimeUncheckedCreateNestedManyWithoutUserInput
     shiftMappings?: ShiftMappingUncheckedCreateNestedManyWithoutUserInput
-    FaceRegistration?: FaceRegistrationUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAttendancesInput = {
@@ -13427,10 +13880,12 @@ export namespace Prisma {
     photo?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     Document?: DocumentUpdateManyWithoutUserNestedInput
+    FaceRegistration?: FaceRegistrationUpdateOneWithoutUserNestedInput
     leaves?: LeaveUpdateManyWithoutUserNestedInput
     overtimes?: OvertimeUpdateManyWithoutUserNestedInput
     shiftMappings?: ShiftMappingUpdateManyWithoutUserNestedInput
-    FaceRegistration?: FaceRegistrationUpdateOneWithoutUserNestedInput
+    defaultShift?: ShiftUpdateOneWithoutDefaultForUsersNestedInput
+    Shift?: ShiftUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAttendancesInput = {
@@ -13442,11 +13897,13 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     photo?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    defaultShiftId?: NullableStringFieldUpdateOperationsInput | string | null
+    shiftId?: NullableStringFieldUpdateOperationsInput | string | null
     Document?: DocumentUncheckedUpdateManyWithoutUserNestedInput
+    FaceRegistration?: FaceRegistrationUncheckedUpdateOneWithoutUserNestedInput
     leaves?: LeaveUncheckedUpdateManyWithoutUserNestedInput
     overtimes?: OvertimeUncheckedUpdateManyWithoutUserNestedInput
     shiftMappings?: ShiftMappingUncheckedUpdateManyWithoutUserNestedInput
-    FaceRegistration?: FaceRegistrationUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type ShiftMappingCreateWithoutShiftInput = {
@@ -13475,6 +13932,98 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type UserCreateWithoutShiftInput = {
+    id?: string
+    name: string
+    email: string
+    role?: $Enums.Role
+    createdAt?: Date | string
+    password: string
+    photo?: string | null
+    updatedAt?: Date | string
+    attendances?: AttendanceCreateNestedManyWithoutUserInput
+    Document?: DocumentCreateNestedManyWithoutUserInput
+    FaceRegistration?: FaceRegistrationCreateNestedOneWithoutUserInput
+    leaves?: LeaveCreateNestedManyWithoutUserInput
+    overtimes?: OvertimeCreateNestedManyWithoutUserInput
+    shiftMappings?: ShiftMappingCreateNestedManyWithoutUserInput
+    defaultShift?: ShiftCreateNestedOneWithoutDefaultForUsersInput
+  }
+
+  export type UserUncheckedCreateWithoutShiftInput = {
+    id?: string
+    name: string
+    email: string
+    role?: $Enums.Role
+    createdAt?: Date | string
+    password: string
+    photo?: string | null
+    updatedAt?: Date | string
+    defaultShiftId?: string | null
+    attendances?: AttendanceUncheckedCreateNestedManyWithoutUserInput
+    Document?: DocumentUncheckedCreateNestedManyWithoutUserInput
+    FaceRegistration?: FaceRegistrationUncheckedCreateNestedOneWithoutUserInput
+    leaves?: LeaveUncheckedCreateNestedManyWithoutUserInput
+    overtimes?: OvertimeUncheckedCreateNestedManyWithoutUserInput
+    shiftMappings?: ShiftMappingUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutShiftInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutShiftInput, UserUncheckedCreateWithoutShiftInput>
+  }
+
+  export type UserCreateManyShiftInputEnvelope = {
+    data: UserCreateManyShiftInput | UserCreateManyShiftInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserCreateWithoutDefaultShiftInput = {
+    id?: string
+    name: string
+    email: string
+    role?: $Enums.Role
+    createdAt?: Date | string
+    password: string
+    photo?: string | null
+    updatedAt?: Date | string
+    attendances?: AttendanceCreateNestedManyWithoutUserInput
+    Document?: DocumentCreateNestedManyWithoutUserInput
+    FaceRegistration?: FaceRegistrationCreateNestedOneWithoutUserInput
+    leaves?: LeaveCreateNestedManyWithoutUserInput
+    overtimes?: OvertimeCreateNestedManyWithoutUserInput
+    shiftMappings?: ShiftMappingCreateNestedManyWithoutUserInput
+    Shift?: ShiftCreateNestedOneWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutDefaultShiftInput = {
+    id?: string
+    name: string
+    email: string
+    role?: $Enums.Role
+    createdAt?: Date | string
+    password: string
+    photo?: string | null
+    updatedAt?: Date | string
+    shiftId?: string | null
+    attendances?: AttendanceUncheckedCreateNestedManyWithoutUserInput
+    Document?: DocumentUncheckedCreateNestedManyWithoutUserInput
+    FaceRegistration?: FaceRegistrationUncheckedCreateNestedOneWithoutUserInput
+    leaves?: LeaveUncheckedCreateNestedManyWithoutUserInput
+    overtimes?: OvertimeUncheckedCreateNestedManyWithoutUserInput
+    shiftMappings?: ShiftMappingUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutDefaultShiftInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutDefaultShiftInput, UserUncheckedCreateWithoutDefaultShiftInput>
+  }
+
+  export type UserCreateManyDefaultShiftInputEnvelope = {
+    data: UserCreateManyDefaultShiftInput | UserCreateManyDefaultShiftInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ShiftMappingUpsertWithWhereUniqueWithoutShiftInput = {
     where: ShiftMappingWhereUniqueInput
     update: XOR<ShiftMappingUpdateWithoutShiftInput, ShiftMappingUncheckedUpdateWithoutShiftInput>
@@ -13489,6 +14038,54 @@ export namespace Prisma {
   export type ShiftMappingUpdateManyWithWhereWithoutShiftInput = {
     where: ShiftMappingScalarWhereInput
     data: XOR<ShiftMappingUpdateManyMutationInput, ShiftMappingUncheckedUpdateManyWithoutShiftInput>
+  }
+
+  export type UserUpsertWithWhereUniqueWithoutShiftInput = {
+    where: UserWhereUniqueInput
+    update: XOR<UserUpdateWithoutShiftInput, UserUncheckedUpdateWithoutShiftInput>
+    create: XOR<UserCreateWithoutShiftInput, UserUncheckedCreateWithoutShiftInput>
+  }
+
+  export type UserUpdateWithWhereUniqueWithoutShiftInput = {
+    where: UserWhereUniqueInput
+    data: XOR<UserUpdateWithoutShiftInput, UserUncheckedUpdateWithoutShiftInput>
+  }
+
+  export type UserUpdateManyWithWhereWithoutShiftInput = {
+    where: UserScalarWhereInput
+    data: XOR<UserUpdateManyMutationInput, UserUncheckedUpdateManyWithoutShiftInput>
+  }
+
+  export type UserScalarWhereInput = {
+    AND?: UserScalarWhereInput | UserScalarWhereInput[]
+    OR?: UserScalarWhereInput[]
+    NOT?: UserScalarWhereInput | UserScalarWhereInput[]
+    id?: StringFilter<"User"> | string
+    name?: StringFilter<"User"> | string
+    email?: StringFilter<"User"> | string
+    role?: EnumRoleFilter<"User"> | $Enums.Role
+    createdAt?: DateTimeFilter<"User"> | Date | string
+    password?: StringFilter<"User"> | string
+    photo?: StringNullableFilter<"User"> | string | null
+    updatedAt?: DateTimeFilter<"User"> | Date | string
+    defaultShiftId?: StringNullableFilter<"User"> | string | null
+    shiftId?: StringNullableFilter<"User"> | string | null
+  }
+
+  export type UserUpsertWithWhereUniqueWithoutDefaultShiftInput = {
+    where: UserWhereUniqueInput
+    update: XOR<UserUpdateWithoutDefaultShiftInput, UserUncheckedUpdateWithoutDefaultShiftInput>
+    create: XOR<UserCreateWithoutDefaultShiftInput, UserUncheckedCreateWithoutDefaultShiftInput>
+  }
+
+  export type UserUpdateWithWhereUniqueWithoutDefaultShiftInput = {
+    where: UserWhereUniqueInput
+    data: XOR<UserUpdateWithoutDefaultShiftInput, UserUncheckedUpdateWithoutDefaultShiftInput>
+  }
+
+  export type UserUpdateManyWithWhereWithoutDefaultShiftInput = {
+    where: UserScalarWhereInput
+    data: XOR<UserUpdateManyMutationInput, UserUncheckedUpdateManyWithoutDefaultShiftInput>
   }
 
   export type AttendanceCreateWithoutShiftInput = {
@@ -13522,6 +14119,8 @@ export namespace Prisma {
     name: string
     startTime: Date | string
     endTime: Date | string
+    User?: UserCreateNestedManyWithoutShiftInput
+    defaultForUsers?: UserCreateNestedManyWithoutDefaultShiftInput
   }
 
   export type ShiftUncheckedCreateWithoutMappingsInput = {
@@ -13529,6 +14128,8 @@ export namespace Prisma {
     name: string
     startTime: Date | string
     endTime: Date | string
+    User?: UserUncheckedCreateNestedManyWithoutShiftInput
+    defaultForUsers?: UserUncheckedCreateNestedManyWithoutDefaultShiftInput
   }
 
   export type ShiftCreateOrConnectWithoutMappingsInput = {
@@ -13547,9 +14148,11 @@ export namespace Prisma {
     updatedAt?: Date | string
     attendances?: AttendanceCreateNestedManyWithoutUserInput
     Document?: DocumentCreateNestedManyWithoutUserInput
+    FaceRegistration?: FaceRegistrationCreateNestedOneWithoutUserInput
     leaves?: LeaveCreateNestedManyWithoutUserInput
     overtimes?: OvertimeCreateNestedManyWithoutUserInput
-    FaceRegistration?: FaceRegistrationCreateNestedOneWithoutUserInput
+    defaultShift?: ShiftCreateNestedOneWithoutDefaultForUsersInput
+    Shift?: ShiftCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutShiftMappingsInput = {
@@ -13561,11 +14164,13 @@ export namespace Prisma {
     password: string
     photo?: string | null
     updatedAt?: Date | string
+    defaultShiftId?: string | null
+    shiftId?: string | null
     attendances?: AttendanceUncheckedCreateNestedManyWithoutUserInput
     Document?: DocumentUncheckedCreateNestedManyWithoutUserInput
+    FaceRegistration?: FaceRegistrationUncheckedCreateNestedOneWithoutUserInput
     leaves?: LeaveUncheckedCreateNestedManyWithoutUserInput
     overtimes?: OvertimeUncheckedCreateNestedManyWithoutUserInput
-    FaceRegistration?: FaceRegistrationUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutShiftMappingsInput = {
@@ -13621,6 +14226,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    User?: UserUpdateManyWithoutShiftNestedInput
+    defaultForUsers?: UserUpdateManyWithoutDefaultShiftNestedInput
   }
 
   export type ShiftUncheckedUpdateWithoutMappingsInput = {
@@ -13628,6 +14235,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    User?: UserUncheckedUpdateManyWithoutShiftNestedInput
+    defaultForUsers?: UserUncheckedUpdateManyWithoutDefaultShiftNestedInput
   }
 
   export type UserUpsertWithoutShiftMappingsInput = {
@@ -13652,9 +14261,11 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     attendances?: AttendanceUpdateManyWithoutUserNestedInput
     Document?: DocumentUpdateManyWithoutUserNestedInput
+    FaceRegistration?: FaceRegistrationUpdateOneWithoutUserNestedInput
     leaves?: LeaveUpdateManyWithoutUserNestedInput
     overtimes?: OvertimeUpdateManyWithoutUserNestedInput
-    FaceRegistration?: FaceRegistrationUpdateOneWithoutUserNestedInput
+    defaultShift?: ShiftUpdateOneWithoutDefaultForUsersNestedInput
+    Shift?: ShiftUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutShiftMappingsInput = {
@@ -13666,11 +14277,13 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     photo?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    defaultShiftId?: NullableStringFieldUpdateOperationsInput | string | null
+    shiftId?: NullableStringFieldUpdateOperationsInput | string | null
     attendances?: AttendanceUncheckedUpdateManyWithoutUserNestedInput
     Document?: DocumentUncheckedUpdateManyWithoutUserNestedInput
+    FaceRegistration?: FaceRegistrationUncheckedUpdateOneWithoutUserNestedInput
     leaves?: LeaveUncheckedUpdateManyWithoutUserNestedInput
     overtimes?: OvertimeUncheckedUpdateManyWithoutUserNestedInput
-    FaceRegistration?: FaceRegistrationUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type UserCreateWithoutOvertimesInput = {
@@ -13684,9 +14297,11 @@ export namespace Prisma {
     updatedAt?: Date | string
     attendances?: AttendanceCreateNestedManyWithoutUserInput
     Document?: DocumentCreateNestedManyWithoutUserInput
+    FaceRegistration?: FaceRegistrationCreateNestedOneWithoutUserInput
     leaves?: LeaveCreateNestedManyWithoutUserInput
     shiftMappings?: ShiftMappingCreateNestedManyWithoutUserInput
-    FaceRegistration?: FaceRegistrationCreateNestedOneWithoutUserInput
+    defaultShift?: ShiftCreateNestedOneWithoutDefaultForUsersInput
+    Shift?: ShiftCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutOvertimesInput = {
@@ -13698,11 +14313,13 @@ export namespace Prisma {
     password: string
     photo?: string | null
     updatedAt?: Date | string
+    defaultShiftId?: string | null
+    shiftId?: string | null
     attendances?: AttendanceUncheckedCreateNestedManyWithoutUserInput
     Document?: DocumentUncheckedCreateNestedManyWithoutUserInput
+    FaceRegistration?: FaceRegistrationUncheckedCreateNestedOneWithoutUserInput
     leaves?: LeaveUncheckedCreateNestedManyWithoutUserInput
     shiftMappings?: ShiftMappingUncheckedCreateNestedManyWithoutUserInput
-    FaceRegistration?: FaceRegistrationUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutOvertimesInput = {
@@ -13732,9 +14349,11 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     attendances?: AttendanceUpdateManyWithoutUserNestedInput
     Document?: DocumentUpdateManyWithoutUserNestedInput
+    FaceRegistration?: FaceRegistrationUpdateOneWithoutUserNestedInput
     leaves?: LeaveUpdateManyWithoutUserNestedInput
     shiftMappings?: ShiftMappingUpdateManyWithoutUserNestedInput
-    FaceRegistration?: FaceRegistrationUpdateOneWithoutUserNestedInput
+    defaultShift?: ShiftUpdateOneWithoutDefaultForUsersNestedInput
+    Shift?: ShiftUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOvertimesInput = {
@@ -13746,11 +14365,13 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     photo?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    defaultShiftId?: NullableStringFieldUpdateOperationsInput | string | null
+    shiftId?: NullableStringFieldUpdateOperationsInput | string | null
     attendances?: AttendanceUncheckedUpdateManyWithoutUserNestedInput
     Document?: DocumentUncheckedUpdateManyWithoutUserNestedInput
+    FaceRegistration?: FaceRegistrationUncheckedUpdateOneWithoutUserNestedInput
     leaves?: LeaveUncheckedUpdateManyWithoutUserNestedInput
     shiftMappings?: ShiftMappingUncheckedUpdateManyWithoutUserNestedInput
-    FaceRegistration?: FaceRegistrationUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type UserCreateWithoutLeavesInput = {
@@ -13764,9 +14385,11 @@ export namespace Prisma {
     updatedAt?: Date | string
     attendances?: AttendanceCreateNestedManyWithoutUserInput
     Document?: DocumentCreateNestedManyWithoutUserInput
+    FaceRegistration?: FaceRegistrationCreateNestedOneWithoutUserInput
     overtimes?: OvertimeCreateNestedManyWithoutUserInput
     shiftMappings?: ShiftMappingCreateNestedManyWithoutUserInput
-    FaceRegistration?: FaceRegistrationCreateNestedOneWithoutUserInput
+    defaultShift?: ShiftCreateNestedOneWithoutDefaultForUsersInput
+    Shift?: ShiftCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutLeavesInput = {
@@ -13778,11 +14401,13 @@ export namespace Prisma {
     password: string
     photo?: string | null
     updatedAt?: Date | string
+    defaultShiftId?: string | null
+    shiftId?: string | null
     attendances?: AttendanceUncheckedCreateNestedManyWithoutUserInput
     Document?: DocumentUncheckedCreateNestedManyWithoutUserInput
+    FaceRegistration?: FaceRegistrationUncheckedCreateNestedOneWithoutUserInput
     overtimes?: OvertimeUncheckedCreateNestedManyWithoutUserInput
     shiftMappings?: ShiftMappingUncheckedCreateNestedManyWithoutUserInput
-    FaceRegistration?: FaceRegistrationUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutLeavesInput = {
@@ -13812,9 +14437,11 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     attendances?: AttendanceUpdateManyWithoutUserNestedInput
     Document?: DocumentUpdateManyWithoutUserNestedInput
+    FaceRegistration?: FaceRegistrationUpdateOneWithoutUserNestedInput
     overtimes?: OvertimeUpdateManyWithoutUserNestedInput
     shiftMappings?: ShiftMappingUpdateManyWithoutUserNestedInput
-    FaceRegistration?: FaceRegistrationUpdateOneWithoutUserNestedInput
+    defaultShift?: ShiftUpdateOneWithoutDefaultForUsersNestedInput
+    Shift?: ShiftUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLeavesInput = {
@@ -13826,11 +14453,13 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     photo?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    defaultShiftId?: NullableStringFieldUpdateOperationsInput | string | null
+    shiftId?: NullableStringFieldUpdateOperationsInput | string | null
     attendances?: AttendanceUncheckedUpdateManyWithoutUserNestedInput
     Document?: DocumentUncheckedUpdateManyWithoutUserNestedInput
+    FaceRegistration?: FaceRegistrationUncheckedUpdateOneWithoutUserNestedInput
     overtimes?: OvertimeUncheckedUpdateManyWithoutUserNestedInput
     shiftMappings?: ShiftMappingUncheckedUpdateManyWithoutUserNestedInput
-    FaceRegistration?: FaceRegistrationUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type UserCreateWithoutDocumentInput = {
@@ -13843,10 +14472,12 @@ export namespace Prisma {
     photo?: string | null
     updatedAt?: Date | string
     attendances?: AttendanceCreateNestedManyWithoutUserInput
+    FaceRegistration?: FaceRegistrationCreateNestedOneWithoutUserInput
     leaves?: LeaveCreateNestedManyWithoutUserInput
     overtimes?: OvertimeCreateNestedManyWithoutUserInput
     shiftMappings?: ShiftMappingCreateNestedManyWithoutUserInput
-    FaceRegistration?: FaceRegistrationCreateNestedOneWithoutUserInput
+    defaultShift?: ShiftCreateNestedOneWithoutDefaultForUsersInput
+    Shift?: ShiftCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDocumentInput = {
@@ -13858,11 +14489,13 @@ export namespace Prisma {
     password: string
     photo?: string | null
     updatedAt?: Date | string
+    defaultShiftId?: string | null
+    shiftId?: string | null
     attendances?: AttendanceUncheckedCreateNestedManyWithoutUserInput
+    FaceRegistration?: FaceRegistrationUncheckedCreateNestedOneWithoutUserInput
     leaves?: LeaveUncheckedCreateNestedManyWithoutUserInput
     overtimes?: OvertimeUncheckedCreateNestedManyWithoutUserInput
     shiftMappings?: ShiftMappingUncheckedCreateNestedManyWithoutUserInput
-    FaceRegistration?: FaceRegistrationUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDocumentInput = {
@@ -13891,10 +14524,12 @@ export namespace Prisma {
     photo?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     attendances?: AttendanceUpdateManyWithoutUserNestedInput
+    FaceRegistration?: FaceRegistrationUpdateOneWithoutUserNestedInput
     leaves?: LeaveUpdateManyWithoutUserNestedInput
     overtimes?: OvertimeUpdateManyWithoutUserNestedInput
     shiftMappings?: ShiftMappingUpdateManyWithoutUserNestedInput
-    FaceRegistration?: FaceRegistrationUpdateOneWithoutUserNestedInput
+    defaultShift?: ShiftUpdateOneWithoutDefaultForUsersNestedInput
+    Shift?: ShiftUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDocumentInput = {
@@ -13906,11 +14541,13 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     photo?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    defaultShiftId?: NullableStringFieldUpdateOperationsInput | string | null
+    shiftId?: NullableStringFieldUpdateOperationsInput | string | null
     attendances?: AttendanceUncheckedUpdateManyWithoutUserNestedInput
+    FaceRegistration?: FaceRegistrationUncheckedUpdateOneWithoutUserNestedInput
     leaves?: LeaveUncheckedUpdateManyWithoutUserNestedInput
     overtimes?: OvertimeUncheckedUpdateManyWithoutUserNestedInput
     shiftMappings?: ShiftMappingUncheckedUpdateManyWithoutUserNestedInput
-    FaceRegistration?: FaceRegistrationUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type UserCreateWithoutFaceRegistrationInput = {
@@ -13927,6 +14564,8 @@ export namespace Prisma {
     leaves?: LeaveCreateNestedManyWithoutUserInput
     overtimes?: OvertimeCreateNestedManyWithoutUserInput
     shiftMappings?: ShiftMappingCreateNestedManyWithoutUserInput
+    defaultShift?: ShiftCreateNestedOneWithoutDefaultForUsersInput
+    Shift?: ShiftCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutFaceRegistrationInput = {
@@ -13938,6 +14577,8 @@ export namespace Prisma {
     password: string
     photo?: string | null
     updatedAt?: Date | string
+    defaultShiftId?: string | null
+    shiftId?: string | null
     attendances?: AttendanceUncheckedCreateNestedManyWithoutUserInput
     Document?: DocumentUncheckedCreateNestedManyWithoutUserInput
     leaves?: LeaveUncheckedCreateNestedManyWithoutUserInput
@@ -13975,6 +14616,8 @@ export namespace Prisma {
     leaves?: LeaveUpdateManyWithoutUserNestedInput
     overtimes?: OvertimeUpdateManyWithoutUserNestedInput
     shiftMappings?: ShiftMappingUpdateManyWithoutUserNestedInput
+    defaultShift?: ShiftUpdateOneWithoutDefaultForUsersNestedInput
+    Shift?: ShiftUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFaceRegistrationInput = {
@@ -13986,6 +14629,8 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     photo?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    defaultShiftId?: NullableStringFieldUpdateOperationsInput | string | null
+    shiftId?: NullableStringFieldUpdateOperationsInput | string | null
     attendances?: AttendanceUncheckedUpdateManyWithoutUserNestedInput
     Document?: DocumentUncheckedUpdateManyWithoutUserNestedInput
     leaves?: LeaveUncheckedUpdateManyWithoutUserNestedInput
@@ -14190,6 +14835,30 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type UserCreateManyShiftInput = {
+    id?: string
+    name: string
+    email: string
+    role?: $Enums.Role
+    createdAt?: Date | string
+    password: string
+    photo?: string | null
+    updatedAt?: Date | string
+    defaultShiftId?: string | null
+  }
+
+  export type UserCreateManyDefaultShiftInput = {
+    id?: string
+    name: string
+    email: string
+    role?: $Enums.Role
+    createdAt?: Date | string
+    password: string
+    photo?: string | null
+    updatedAt?: Date | string
+    shiftId?: string | null
+  }
+
   export type ShiftMappingUpdateWithoutShiftInput = {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14211,6 +14880,102 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserUpdateWithoutShiftInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    password?: StringFieldUpdateOperationsInput | string
+    photo?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    attendances?: AttendanceUpdateManyWithoutUserNestedInput
+    Document?: DocumentUpdateManyWithoutUserNestedInput
+    FaceRegistration?: FaceRegistrationUpdateOneWithoutUserNestedInput
+    leaves?: LeaveUpdateManyWithoutUserNestedInput
+    overtimes?: OvertimeUpdateManyWithoutUserNestedInput
+    shiftMappings?: ShiftMappingUpdateManyWithoutUserNestedInput
+    defaultShift?: ShiftUpdateOneWithoutDefaultForUsersNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutShiftInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    password?: StringFieldUpdateOperationsInput | string
+    photo?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    defaultShiftId?: NullableStringFieldUpdateOperationsInput | string | null
+    attendances?: AttendanceUncheckedUpdateManyWithoutUserNestedInput
+    Document?: DocumentUncheckedUpdateManyWithoutUserNestedInput
+    FaceRegistration?: FaceRegistrationUncheckedUpdateOneWithoutUserNestedInput
+    leaves?: LeaveUncheckedUpdateManyWithoutUserNestedInput
+    overtimes?: OvertimeUncheckedUpdateManyWithoutUserNestedInput
+    shiftMappings?: ShiftMappingUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateManyWithoutShiftInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    password?: StringFieldUpdateOperationsInput | string
+    photo?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    defaultShiftId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type UserUpdateWithoutDefaultShiftInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    password?: StringFieldUpdateOperationsInput | string
+    photo?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    attendances?: AttendanceUpdateManyWithoutUserNestedInput
+    Document?: DocumentUpdateManyWithoutUserNestedInput
+    FaceRegistration?: FaceRegistrationUpdateOneWithoutUserNestedInput
+    leaves?: LeaveUpdateManyWithoutUserNestedInput
+    overtimes?: OvertimeUpdateManyWithoutUserNestedInput
+    shiftMappings?: ShiftMappingUpdateManyWithoutUserNestedInput
+    Shift?: ShiftUpdateOneWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutDefaultShiftInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    password?: StringFieldUpdateOperationsInput | string
+    photo?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    shiftId?: NullableStringFieldUpdateOperationsInput | string | null
+    attendances?: AttendanceUncheckedUpdateManyWithoutUserNestedInput
+    Document?: DocumentUncheckedUpdateManyWithoutUserNestedInput
+    FaceRegistration?: FaceRegistrationUncheckedUpdateOneWithoutUserNestedInput
+    leaves?: LeaveUncheckedUpdateManyWithoutUserNestedInput
+    overtimes?: OvertimeUncheckedUpdateManyWithoutUserNestedInput
+    shiftMappings?: ShiftMappingUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateManyWithoutDefaultShiftInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    password?: StringFieldUpdateOperationsInput | string
+    photo?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    shiftId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
 

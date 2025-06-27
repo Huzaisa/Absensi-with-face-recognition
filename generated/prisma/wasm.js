@@ -128,7 +128,9 @@ exports.Prisma.UserScalarFieldEnum = {
   createdAt: 'createdAt',
   password: 'password',
   photo: 'photo',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  defaultShiftId: 'defaultShiftId',
+  shiftId: 'shiftId'
 };
 
 exports.Prisma.AttendanceScalarFieldEnum = {
@@ -194,8 +196,8 @@ exports.Prisma.FaceRegistrationScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   imagePath: 'imagePath',
-  faceEncoding: 'faceEncoding',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  faceEncoding: 'faceEncoding'
 };
 
 exports.Prisma.SortOrder = {

@@ -19,10 +19,15 @@ model User {
   updatedAt        DateTime          @updatedAt
   attendances      Attendance[]
   Document         Document[]
+  FaceRegistration FaceRegistration?
   leaves           Leave[]
   overtimes        Overtime[]
   shiftMappings    ShiftMapping[]
-  FaceRegistration FaceRegistration?
+
+  defaultShiftId String?
+  defaultShift   Shift?  @relation("UserDefaultShift", fields: [defaultShiftId], references: [id])
+  Shift          Shift?  @relation(fields: [shiftId], references: [id])
+  shiftId        String?
 }
 
 model Attendance {
@@ -42,11 +47,13 @@ model Attendance {
 }
 
 model Shift {
-  id        String         @id @default(uuid())
-  name      String
-  startTime DateTime
-  endTime   DateTime
-  mappings  ShiftMapping[]
+  id              String         @id @default(uuid())
+  name            String
+  startTime       DateTime
+  endTime         DateTime
+  mappings        ShiftMapping[]
+  User            User[]
+  defaultForUsers User[]         @relation("UserDefaultShift")
 }
 
 model ShiftMapping {
@@ -101,10 +108,9 @@ model FaceRegistration {
   id           String   @id @default(uuid())
   userId       String   @unique
   imagePath    String
-  faceEncoding Bytes?
   createdAt    DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id])
+  faceEncoding Bytes?
+  user         User     @relation(fields: [userId], references: [id])
 }
 
 enum LeaveStatus {
