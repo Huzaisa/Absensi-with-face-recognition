@@ -28,8 +28,24 @@ exports.uploadDocument = async (req, res, next) => {
 exports.getUserDocuments = async (req, res, next) => {
   try {
     const docs = await uploadService.getUserDocuments(req.user.id);
-    res.json(docs);
-  } catch (err) { next(err); }
+
+    const result = docs.map(doc => ({
+      id: doc.id,
+      fileName: doc.fileName,
+      filePath: doc.filePath,
+      type: doc.type,
+      uploadedAt: doc.uploadedAt,
+      user: doc.user ? {
+        id: doc.user.id,
+        name: doc.user.name,
+        email: doc.user.email
+      } : null
+    }));
+
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
 };
 
 exports.getAllDocuments = async (_req, res, next) => {
@@ -44,10 +60,23 @@ exports.getDocument = async (req, res, next) => {
   try {
     const doc = await uploadService.getDocument(req.params.id);
     if (!doc) return res.status(404).json({ message: 'Dokumen tidak ditemukan' });
-    res.json(doc);
-  } catch (err) { next(err); }
-};
 
+    res.json({
+      id: doc.id,
+      fileName: doc.fileName,
+      filePath: doc.filePath,
+      type: doc.type,
+      uploadedAt: doc.uploadedAt,
+      user: {
+        id: doc.user.id,
+        name: doc.user.name,
+        email: doc.user.email
+      }
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 /* ───────────────  DELETE /api/upload/:id  ─────────────── */
 exports.deleteDocument = async (req, res, next) => {
   try {

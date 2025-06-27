@@ -72,7 +72,21 @@ exports.getUserShiftByDate = async (userId, date) => {
 };
 
 
-exports.getAllShiftMappings = async () => prisma.shiftMapping.findMany();
+exports.getAllShiftMappings = async () => {
+  return prisma.shiftMapping.findMany({
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true
+        }
+      },
+      shift: true
+    }
+  });
+};
+
 
 
 exports.getAllShifts = async () => {

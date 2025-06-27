@@ -44,11 +44,24 @@ exports.clockIn = async (userId) => {
   }
 
  
-  const attendance = await prisma.attendance.upsert({
-    where : { userId_date: { userId, date: midnightUtc } },
-    create: { userId, date: midnightUtc, clockIn: nowUtc, status, isLate },
-    update: { clockIn: nowUtc, status, isLate },
-  });
+const attendance = await prisma.attendance.upsert({
+  where : { userId_date: { userId, date: midnightUtc } },
+  create: { userId, date: midnightUtc, clockIn: nowUtc, status, isLate },
+  update: { clockIn: nowUtc, status, isLate },
+  include: {
+    user: {
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      }
+    },
+    shift: {
+      include: { shift: true }
+    }
+  }
+});
+
 
   return attendance;
 };
@@ -63,5 +76,17 @@ exports.clockOut = async (userId) => {
   return prisma.attendance.update({
     where: { userId_date: { userId, date: midnightUtc } },
     data : { clockOut: nowUtc },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true
+        }
+      },
+      shift: {
+        include: { shift: true }
+      }
+    }
   });
 };

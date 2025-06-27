@@ -22,11 +22,25 @@ exports.getUserDocuments = async (userId) => {
   return prisma.document.findMany({
     where: { userId },
     orderBy: { uploadedAt: 'desc' },
+    include: {
+      user: {
+        select: { id: true, name: true, email: true }
+      }
+    }
   });
 };
 
+
 exports.getDocument = (id) =>
-  prisma.document.findUnique({ where: { id } });
+  prisma.document.findUnique({
+    where: { id },
+    include: {
+      user: {
+        select: { id: true, name: true, email: true }
+      }
+    }
+  });
+
 
 /* hapus dokumen */
 exports.deleteDocument = (id) =>

@@ -47,13 +47,57 @@ exports.getShiftForUser = async (req, res, next) => {
 exports.getAllShifts = async (req, res, next) => {
   try {
     const shifts = await shiftService.getAllShifts();
-    const map    = await shiftService.getAllShiftMappings();
+    const mappings = await shiftService.getAllShiftMappings();
 
     res.json(
-      shifts.map((s) => ({
-        ...viewShift(s),
-        assigned: map.find((m) => m.shiftId === s.id) || null,
+      shifts.map((s) => {
+        const assigned = mappings.find((m) => m.shiftId === s.id);
+        return {
+          ...viewShift(s),
+          assigned: assigned
+            ? {
+                id: assigned.id,
+                date: assigned.date,
+                user: assigned.user
+                  ? {
+                      id: assigned.user.id,
+                      name: assigned.user.name,
+                      email: assigned.user.email
+                    }
+                  : null
+              }
+            : null
+        };
+      })
+    );
+  } catch (e) {
+    next(e);
+  }
+};
+
+exports.getAllShiftMappings = async (req, res, next) => {
+  try {
+    const mappings = await shiftService.getAllShiftMappings();
+    res.json(
+      mappings.map((m) => ({
+        id: m.id,
+        date: m.date,
+        user: {
+          id: m.user.id,
+          name: m.user.name,
+          email: m.user.email
+        },
+        shift: {
+          id: m.shift.id,
+          name: m.shift.name,
+          startTime: m.shift.startTime,
+          endTime: m.shift.endTime
+        }
       }))
     );
-  } catch (e) { next(e); }
+  } catch (e) {
+    next(e);
+  }
 };
+
+

@@ -9,6 +9,9 @@ router.post('/', auth,role('ADMIN'), shiftController.createShift);
 
 // Assign shift ke user
 router.post('/assign', auth, role('ADMIN'),shiftController.assignShiftToUser);
+// Ambil semua mapping shift
+router.get('/mappings', auth, role('ADMIN'), shiftController.getAllShiftMappings);
+
 
 // Ambil shift user pada tanggal tertentu
 router.get('/user/:userId/date/:date', auth, (req, res, next) => {

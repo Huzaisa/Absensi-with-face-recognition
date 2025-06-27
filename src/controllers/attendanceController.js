@@ -20,7 +20,16 @@ exports.clockIn = async (req, res, next) => {
     }
 
     const attendance = await attendanceService.clockIn(userId);
-    res.json({ message: 'Clock-in success', attendance });
+    res.json({
+  message: `Clock-in success for ${attendance.user.name}`,
+  user: {
+    id: attendance.user.id,
+    name: attendance.user.name,
+    email: attendance.user.email
+  },
+  attendance,
+});
+
   } catch (err) {
     if (err.response?.data?.detail) {
       return res.status(err.response.status).json({ message: err.response.data.detail });
@@ -33,6 +42,17 @@ exports.clockIn = async (req, res, next) => {
 exports.clockOut = async (req, res, next) => {
   try {
     const attendance = await attendanceService.clockOut(req.user.id);
-    res.json({ message: 'Clock-out success', attendance });
-  } catch (err) { next(err); }
+    res.json({
+      message: `Clock-out success for ${attendance.user.name}`,
+      user: {
+        id: attendance.user.id,
+        name: attendance.user.name,
+        email: attendance.user.email,
+      },
+      attendance,
+    });
+  } catch (err) {
+    next(err);
+  }
 };
+
