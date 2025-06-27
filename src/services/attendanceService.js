@@ -27,7 +27,7 @@ exports.clockIn = async (userId) => {
   }
   const existing = await prisma.attendance.findUnique({
     where: { userId_date: { userId, date: midnightUtc } },
-    include: { shift: { include: { shift: true } } }, 
+    include: { user: { select: { id: true, name: true, email: true } },shift: { include: { shift: true } } }, 
   });
 
  

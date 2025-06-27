@@ -154,31 +154,31 @@ async def verify_face(file: UploadFile = File(None)):
     try:
         rgb_frame = None
 
-        
-        cam = cv2.VideoCapture(0)
-        if cam.isOpened():
-            for _ in range(5):  
-                _ = cam.read()
-            ret, frame = cam.read()
-            cam.release()
-
-            if not ret or frame is None or frame.size == 0:
-                raise HTTPException(status_code=400, detail="Gagal mengambil gambar dari kamera.")
-
-            rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
-        
-        elif file is not None:
+        # 🔁 Prioritaskan gambar dari file
+        if file is not None:
             image_bytes = await file.read()
             nparr = np.frombuffer(image_bytes, np.uint8)
             img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
             if img is None:
                 raise HTTPException(400, "Gambar tidak valid.")
             rgb_frame = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        else:
-            raise HTTPException(400, "Kamera tidak tersedia dan file tidak dikirim.")
 
-        
+        # ✅ Jika tidak ada file, baru fallback ke kamera
+        else:
+            cam = cv2.VideoCapture(0)
+            if cam.isOpened():
+                for _ in range(5): cam.read()
+                ret, frame = cam.read()
+                cam.release()
+
+                if not ret or frame is None or frame.size == 0:
+                    raise HTTPException(status_code=400, detail="Gagal mengambil gambar dari kamera.")
+
+                rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            else:
+                raise HTTPException(400, "Kamera tidak tersedia dan file tidak dikirim.")
+
+        # Debug simpan gambar terakhir
         cv2.imwrite("last_frame.jpg", cv2.cvtColor(rgb_frame, cv2.COLOR_RGB2BGR))
 
         face_locations = face_recognition.face_locations(rgb_frame, model='hog')
@@ -189,13 +189,11 @@ async def verify_face(file: UploadFile = File(None)):
         if not face_encodings:
             raise HTTPException(404, "Gagal mengenali encoding wajah.")
 
-        
         for encoding in face_encodings:
             best_match_user = None
-            best_match_dist = 1.0  
+            best_match_dist = 1.0
             for user_id, known_encoding in KNOWN_ENCODINGS.items():
                 dist = face_recognition.face_distance([known_encoding], encoding)[0]
-                print(f"Distance ke user {user_id}: {dist}")
                 if dist < 0.7 and dist < best_match_dist:
                     best_match_dist = dist
                     best_match_user = user_id
@@ -206,6 +204,8 @@ async def verify_face(file: UploadFile = File(None)):
 
         raise HTTPException(status_code=403, detail="Wajah tidak dikenali atau belum diregistrasi.")
 
+    except HTTPException as he:
+        raise he
     except Exception as e:
         print(f"Error di endpoint /verify/: {e}")
         raise HTTPException(500, detail="Terjadi kesalahan pada sistem verifikasi.")

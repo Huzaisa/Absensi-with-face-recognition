@@ -6,7 +6,11 @@ const attendanceService = require('../services/attendanceService');
 exports.clockIn = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const filePath = req.file.path;
+    const filePath = req.file?.path;
+
+    if (!filePath) {
+      return res.status(400).json({ message: 'File tidak ditemukan dalam request.' });
+    }
 
     const form = new FormData();
     form.append('file', fs.createReadStream(filePath));
@@ -20,16 +24,16 @@ exports.clockIn = async (req, res, next) => {
     }
 
     const attendance = await attendanceService.clockIn(userId);
-    res.json({
-  message: `Clock-in success for ${attendance.user.name}`,
-  user: {
-    id: attendance.user.id,
-    name: attendance.user.name,
-    email: attendance.user.email
-  },
-  attendance,
-});
 
+    res.json({
+      message: `Clock-in success for ${attendance.user.name}`,
+      user: {
+        id: attendance.user.id,
+        name: attendance.user.name,
+        email: attendance.user.email,
+      },
+      attendance,
+    });
   } catch (err) {
     if (err.response?.data?.detail) {
       return res.status(err.response.status).json({ message: err.response.data.detail });
@@ -37,6 +41,8 @@ exports.clockIn = async (req, res, next) => {
     next(err);
   }
 };
+
+
 
 
 exports.clockOut = async (req, res, next) => {
