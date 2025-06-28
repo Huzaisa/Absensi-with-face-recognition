@@ -5,3 +5,6 @@ face-recognition
 numpy
 pillow
 python-multipart
+sqlalchemy
+psycopg2-binary
+pytz
