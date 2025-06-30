@@ -24,7 +24,7 @@ app.add_middleware(
 
 
 FACE_DIR = "../public/uploads/employee_faces"
-DATABASE_URL = "postgresql://postgres:pinter12@localhost:5432/absensi"
+DATABASE_URL = "postgresql://postgres.kfncktongtrwotigahdu:pinter12@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres"
 engine = create_engine(DATABASE_URL)
 
 
@@ -67,36 +67,62 @@ def encode_face(image_bytes):
 
 
 def save_attendance(user_id: str):
-    now_local = datetime.now(TIME_ZONE)           
+    now_local = datetime.now(TIME_ZONE)
     midnight_utc = datetime.strptime(
         f"{now_local.strftime('%Y-%m-%d')}T00:00:00Z", "%Y-%m-%dT%H:%M:%SZ"
-    )                                             
-
+    )
     attendance_id = str(uuid.uuid4())
 
     with engine.begin() as conn:
-        row = conn.execute(text("""
-            SELECT s."startTime"
+        # 1. Ambil shift user hari ini
+        result = conn.execute(text("""
+            SELECT sm."shiftId", s."startTime"
             FROM "ShiftMapping" sm
             JOIN "Shift" s ON sm."shiftId" = s."id"
             WHERE sm."userId" = :userId AND sm."date" = :date
-        """), {"userId": user_id, "date": midnight_utc}).mappings().fetchone()
+        """), {
+            "userId": user_id,
+            "date": midnight_utc
+        }).mappings().fetchone()
 
-        if not row:
-            raise HTTPException(400, "User belum punya shift hari ini.")
+        # 2. Kalau belum ada ShiftMapping → fallback ke defaultShift
+        if not result:
+            fallback = conn.execute(text("""
+                SELECT "defaultShiftId" FROM "User" WHERE id = :userId
+            """), {"userId": user_id}).scalar()
 
-        
-        shift_start_local = row["startTime"].astimezone(TIME_ZONE)
+            if not fallback:
+                raise HTTPException(400, "User belum punya shift hari ini (dan tidak ada default shift).")
 
+            # Insert ShiftMapping agar relasi Attendance tidak gagal
+            conn.execute(text("""
+                INSERT INTO "ShiftMapping" ("id","userId", "shiftId", "date", "createdAt")
+                VALUES (:id,:userId, :shiftId, :date, NOW())
+                ON CONFLICT ("userId", "date") DO UPDATE
+                SET "shiftId" = EXCLUDED."shiftId";
+                """), {
+                "id": str(uuid.uuid4()),
+                "userId": user_id,
+                "shiftId": fallback,
+                "date": midnight_utc
+            })
+
+            # Ambil startTime dari shift default
+            result = conn.execute(text("""
+                SELECT "startTime" FROM "Shift" WHERE id = :id
+            """), {"id": fallback}).mappings().fetchone()
+
+        shift_start_local = result["startTime"].astimezone(TIME_ZONE)
         is_late = now_local.time() > shift_start_local.time()
-        status  = "LATE" if is_late else "ONTIME"
+        status = "LATE" if is_late else "ONTIME"
 
+        # 3. Insert attendance
         conn.execute(text("""
             INSERT INTO "Attendance"
-              ("id","userId","date","clockIn","status","isLate","createdAt","updatedAt")
+              ("id", "userId", "date", "clockIn", "status", "isLate", "createdAt", "updatedAt")
             VALUES
-              (:id,:userId,:date,:clockIn,:status,:isLate,:createdAt,:updatedAt)
-            ON CONFLICT ("userId","date") DO NOTHING;
+              (:id, :userId, :date, :clockIn, :status, :isLate, :createdAt, :updatedAt)
+            ON CONFLICT ("userId", "date") DO NOTHING;
         """), {
             "id": attendance_id,
             "userId": user_id,
@@ -107,6 +133,7 @@ def save_attendance(user_id: str):
             "createdAt": now_local,
             "updatedAt": now_local
         })
+
 
 
 

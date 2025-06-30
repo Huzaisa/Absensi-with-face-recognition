@@ -128,3 +128,30 @@ exports.getAllShifts = async () => {
   const shifts = await prisma.shift.findMany();
   return shifts.map(toLocalShift);
 };
+exports.deleteShiftMapping = async (userId, date) => {
+  const midnightUtc = parseDateParamToMidnightUtc(date);
+
+  // Cek apakah sudah ada data absensi
+  const attendance = await prisma.attendance.findFirst({
+    where: {
+      userId,
+      date: midnightUtc,
+    },
+  });
+
+  if (attendance) {
+    throw new Error('Tidak bisa menghapus shiftMapping karena sudah ada data absensi pada tanggal tersebut.');
+  }
+
+  // Jika aman, baru hapus
+  return prisma.shiftMapping.delete({
+    where: {
+      userId_date: {
+        userId,
+        date: midnightUtc,
+      },
+    },
+  });
+};
+
+

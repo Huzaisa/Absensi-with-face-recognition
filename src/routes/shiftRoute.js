@@ -12,6 +12,9 @@ router.post('/assign', auth, role('ADMIN'),shiftController.assignShiftToUser);
 // Ambil semua mapping shift
 router.get('/mappings', auth, role('ADMIN'), shiftController.getAllShiftMappings);
 
+// Hapus shift mapping (pastikan ini di bawah import controller)
+router.delete('/mapping', auth, role('ADMIN'), shiftController.deleteShiftMapping);
+
 
 // Ambil shift user pada tanggal tertentu
 router.get('/user/:userId/date/:date', auth, (req, res, next) => {
@@ -22,5 +25,6 @@ router.get('/user/:userId/date/:date', auth, (req, res, next) => {
 
 // Ambil semua shift
 router.get('/', auth, shiftController.getAllShifts);
+router.delete('/:id', auth, role('ADMIN'), shiftController.deleteShift);
 
 module.exports = router;

@@ -103,4 +103,34 @@ exports.getAllShiftMappings = async (req, res, next) => {
   }
 };
 
+exports.deleteShiftMapping = async (req, res, next) => {
+  try {
+    const { userId, date } = req.body;
+
+    if (!userId || !date) {
+      return res.status(400).json({ message: 'userId dan date wajib diisi.' });
+    }
+
+    const result = await shiftService.deleteShiftMapping(userId, date);
+    if (!result) {
+      return res.status(404).json({ message: 'ShiftMapping tidak ditemukan.' });
+    }
+
+    res.json({ message: 'ShiftMapping berhasil dihapus.', mapping: result });
+  } catch (e) {
+    next(e);
+  }
+};
+
+exports.deleteShift = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const deleted = await prisma.shift.delete({ where: { id } });
+    res.json({ message: 'Shift berhasil dihapus', shift: deleted });
+  } catch (e) {
+    next(e);
+  }
+};
+
+
 
