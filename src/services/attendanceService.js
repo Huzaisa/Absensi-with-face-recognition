@@ -44,13 +44,21 @@ exports.clockIn = async (userId) => {
     },
   });
 
-  if (existing?.clockIn) return existing;
+  if (existing?.clockIn) {
+    const tanggal = nowJakarta.toLocaleDateString('id-ID', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+    const error = new Error(`Anda sudah absen pada tanggal ${tanggal}.`);
+    error.code = 'ALREADY_CLOCKED_IN';
+    throw error;
+  }
 
   // ================= LOGIKA SHIFT =================
   let status = 'ONTIME';
   let isLate = false;
 
-  // Ambil shift dari shiftMapping harian atau fallback ke defaultShift
   const dateStr = nowJakarta.toISOString().split('T')[0];
   const shiftMapping = await getUserShiftByDate(userId, dateStr);
 
@@ -66,7 +74,6 @@ exports.clockIn = async (userId) => {
   isLate = isAfter(nowJakarta, shiftStartToday);
   if (isLate) status = 'LATE';
 
-  // ================= SIMPAN ABSENSI =================
   const attendance = await prisma.attendance.upsert({
     where: { userId_date: { userId, date: midnightUtc } },
     create: { userId, date: midnightUtc, clockIn: nowUtc, status, isLate },
@@ -88,29 +95,6 @@ exports.clockIn = async (userId) => {
   return attendance;
 };
 
-exports.clockOut = async (userId) => {
-  const nowUtc = new Date();
-  const midnightUtc = midnightUtcFromJakarta(
-    utcToZonedTime(nowUtc, TIME_ZONE)
-  );
-
-  return prisma.attendance.update({
-    where: { userId_date: { userId, date: midnightUtc } },
-    data: { clockOut: nowUtc },
-    include: {
-      user: {
-        select: {
-          id: true,
-          name: true,
-          email: true
-        }
-      },
-      shift: {
-        include: { shift: true }
-      }
-    }
-  });
-};
 
 
 

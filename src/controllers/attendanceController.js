@@ -35,6 +35,9 @@ exports.clockIn = async (req, res, next) => {
       attendance,
     });
   } catch (err) {
+    if (err.code === 'ALREADY_CLOCKED_IN') {
+      return res.status(400).json({ message: err.message });
+    }
     if (err.response?.data?.detail) {
       return res.status(err.response.status).json({ message: err.response.data.detail });
     }
