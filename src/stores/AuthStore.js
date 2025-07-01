@@ -7,13 +7,13 @@ const useAuthStore = create(
     (set, get) => ({
       token: "",
       isAdmin: false,
-      userData: null,
-      userRole: null,
-      hasPermissionCamera: null,
+      name: null,
+      role: null,
+      photo: null,
 
-      setHasPermissionCamera: (value) => set({ hasPermissionCamera: value }),
-      setUserRole: (role) => set({ userRole: role }),
-      setUserData: (data) => set({ userData: data }),
+      setPhoto: (url) => set({ photo: url }),
+      setRole: (role) => set({ role: role }),
+      setName: (data) => set({ name: data }),
       setIsAdmin: (value) => set({ isAdmin: value }),
       setToken: (data) => set({ token: data }),
 
@@ -35,8 +35,8 @@ const useAuthStore = create(
         isAdmin: state.isAdmin,
         userRole: state.userRole,
       }),
-    },
-  ),
+    }
+  )
 );
 
 export default useAuthStore;

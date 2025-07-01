@@ -1,56 +1,227 @@
-import { Camera } from "expo-camera";
-import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useRef, useState, useEffect, useCallback } from "react";
+import {
+  StyleSheet,
+  View,
+  Text,
+  Alert,
+  ActivityIndicator,
+  ToastAndroid,
+} from "react-native";
+import { Camera, useCameraDevices } from "react-native-vision-camera";
+import axios from "axios";
+import useAuthStore from "../../stores/AuthStore";
+import { useNavigation } from "@react-navigation/native";
+import MediumText from "../text/MediumText";
+import SemiBoldText from "../text/SemiBoldText";
+import { ms, vs } from "../../constant/Dimension";
 
-const CameraView = ({ ref }) => {
+const CameraView = ({ CloseCamera }) => {
+  const { token } = useAuthStore();
+  const navigation = useNavigation();
+
+  const cameraRef = useRef(null);
+  const devices = useCameraDevices();
+  const [hasPermission, setHasPermission] = useState(false);
+  const [isCameraInitialized, setIsCameraInitialized] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isAttemptingCapture, setIsAttemptingCapture] = useState(false);
+  const [hasAttemptedCapture, setHasAttemptedCapture] = useState(false);
+
+  const frontCamera = devices
+    ? Object.values(devices).find((device) => device?.position === "front")
+    : null;
+  const device = frontCamera;
+
+  useEffect(() => {
+    const requestPermission = async () => {
+      try {
+        const cameraPermissionStatus = await Camera.requestCameraPermission();
+        setHasPermission(cameraPermissionStatus === "granted");
+
+        if (cameraPermissionStatus !== "granted") {
+          Alert.alert(
+            "Camera Permission Required",
+            "The application requires camera access to function. Please grant access in the app settings.",
+            [{ text: "OK", onPress: () => CloseCamera() }]
+          );
+        }
+      } catch (error) {
+        console.error("Error requesting camera permission:", error);
+        Alert.alert("Error", "Failed to request camera permission", [
+          { text: "OK", onPress: () => CloseCamera() },
+        ]);
+      }
+    };
+
+    requestPermission();
+  }, []);
+
+  const captureAndSendPhoto = useCallback(async () => {
+    setIsAttemptingCapture(true);
+
+    try {
+      const photo = await cameraRef.current.takePhoto({
+        qualityPrioritization: "quality",
+        flash: "off",
+        enableShutterSound: false,
+        skipMetadata: true,
+      });
+
+      setIsProcessing(true);
+
+      const photoPath = photo.path;
+
+      const photoFile = {
+        uri: `file://${photoPath}`,
+        name: "attendance_photo.jpg",
+        type: "image/jpeg",
+      };
+
+      const formData = new FormData();
+      formData.append("file", photoFile);
+
+      const API_URL = `${process.env.EXPO_PUBLIC_API}/api/attendance/clock-in?type=faceImage`;
+
+      const response = await axios.post(API_URL, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+        timeout: 60000,
+      });
+
+      console.log("RES: ", response);
+
+      ToastAndroid.show(`Clock-In Successful`, ToastAndroid.SHORT);
+
+      setTimeout(() => {
+        CloseCamera();
+      }, 2000);
+    } catch (error) {
+      console.log("Failed to process photo or send:", error);
+
+      Alert.alert("Warning!", error.response.data.message, [
+        { text: "OK", onPress: () => CloseCamera() },
+      ]);
+    } finally {
+      setIsProcessing(false);
+      setIsAttemptingCapture(false);
+      setHasAttemptedCapture(true);
+    }
+  }, [
+    isCameraInitialized,
+    token,
+    navigation,
+    isProcessing,
+    isAttemptingCapture,
+    hasAttemptedCapture,
+  ]);
+
+  useEffect(() => {
+    if (
+      isCameraInitialized &&
+      hasPermission &&
+      !isProcessing &&
+      !isAttemptingCapture &&
+      !hasAttemptedCapture
+    ) {
+      const timer = setTimeout(() => {
+        captureAndSendPhoto();
+      }, 1500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [
+    isCameraInitialized,
+    hasPermission,
+    isProcessing,
+    isAttemptingCapture,
+    hasAttemptedCapture,
+    captureAndSendPhoto,
+  ]);
+
+  if (!hasPermission) {
+    return (
+      <View style={styles.container}>
+        <MediumText
+          text={"Requesting camera permission..."}
+          size={16}
+          color="#fff"
+          textAlign
+        />
+      </View>
+    );
+  }
+
+  if (devices == null) {
+    return (
+      <View style={styles.container}>
+        <MediumText
+          text={"Loading camera devices..."}
+          size={16}
+          color="#fff"
+          textAlign
+        />
+      </View>
+    );
+  }
+
+  if (device == null) {
+    return (
+      <View style={styles.container}>
+        <MediumText
+          text={"Cannot find camera on this device."}
+          size={16}
+          color="#fff"
+          textAlign
+        />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Camera
-        style={styles.camera}
-        type={Camera.Constants.Type.front}
-        //ref={ref}
-        ratio="16:9"
-      >
-        <View style={styles.overlay}>
-          {/* Header */}
-          <View style={styles.header}>
-            <Text style={styles.headerText}>Remote Attendance Punch</Text>
+        ref={cameraRef}
+        style={StyleSheet.absoluteFill}
+        device={device}
+        isActive={!isProcessing && !hasAttemptedCapture}
+        photo={true}
+        onInitialized={() => {
+          setIsCameraInitialized(true);
+        }}
+        onError={(error) => {
+          Alert.alert("Camera Error", "Failed to activate camera", [
+            { text: "OK", onPress: () => CloseCamera() },
+          ]);
+          setHasAttemptedCapture(true);
+          setIsProcessing(false);
+          setIsAttemptingCapture(false);
+        }}
+      />
+
+      <View style={styles.overlay}>
+        {isProcessing ? (
+          <View>
+            <ActivityIndicator size="large" color="#00ff00" />
+            <MediumText
+              text={"Processing attendance.."}
+              size={16}
+              color="#fff"
+              textAlign
+            />
           </View>
+        ) : null}
 
-          {/* Face Guide Circle */}
-          <View style={styles.faceGuideContainer}>
-            <View style={styles.faceGuide}>
-              <Text style={styles.guideText}>
-                Make sure your face is in the centre of the frame
-              </Text>
-            </View>
-          </View>
-
-          {/* Bottom Controls */}
-          <View style={styles.bottomControls}>
-            <TouchableOpacity
-              style={styles.flipButton} //onPress={flipCamera}
-            >
-              <Text style={styles.flipButtonText}>Flip</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[
-                styles.captureButton,
-                //isCapturing && styles.captureButtonDisabled,
-              ]}
-              // onPress={takePicture}
-              //disabled={isCapturing}
-            >
-              <Text style={styles.captureButtonText}>
-                {/* {isCapturing ? "Capturing..." : "Capture"} */}
-              </Text>
-            </TouchableOpacity>
-
-            <View style={styles.placeholder} />
-          </View>
-        </View>
-      </Camera>
+        {hasAttemptedCapture && !isProcessing && (
+          <MediumText
+            text={"Capture process finished."}
+            size={16}
+            color="#fff"
+            textAlign
+          />
+        )}
+      </View>
     </View>
   );
 };
@@ -58,84 +229,17 @@ const CameraView = ({ ref }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "black",
-  },
-  camera: {
-    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "transparent",
   },
   overlay: {
-    flex: 1,
-    backgroundColor: "transparent",
-    justifyContent: "space-between",
-  },
-  header: {
-    paddingTop: 20,
-    paddingHorizontal: 20,
+    position: "absolute",
+    bottom: vs(50),
+    width: "100%",
     alignItems: "center",
-  },
-  headerText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  faceGuideContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  faceGuide: {
-    width: 250,
-    height: 250,
-    borderRadius: 125,
-    borderWidth: 3,
-    borderColor: "rgba(255, 255, 255, 0.8)",
-    borderStyle: "dashed",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
-  },
-  guideText: {
-    color: "white",
-    textAlign: "center",
-    fontSize: 14,
-    paddingHorizontal: 20,
-  },
-  bottomControls: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 30,
-    paddingBottom: 40,
-  },
-  flipButton: {
-    backgroundColor: "rgba(255, 255, 255, 0.3)",
-    padding: 15,
-    borderRadius: 25,
-    minWidth: 70,
-    alignItems: "center",
-  },
-  flipButtonText: {
-    color: "white",
-    fontWeight: "bold",
-  },
-  captureButton: {
-    backgroundColor: "#007AFF",
-    paddingHorizontal: 30,
-    paddingVertical: 15,
-    borderRadius: 25,
-    minWidth: 120,
-    alignItems: "center",
-  },
-  captureButtonDisabled: {
-    backgroundColor: "rgba(0, 122, 255, 0.5)",
-  },
-  captureButtonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  placeholder: {
-    width: 70,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    padding: ms(20),
   },
 });
 

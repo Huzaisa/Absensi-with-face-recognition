@@ -8,6 +8,8 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Button,
+  ToastAndroid,
+  Alert,
 } from "react-native";
 import { ms, sc, vs } from "../../constant/Dimension";
 import SemiBoldText from "../../components/text/SemiBoldText";
@@ -20,73 +22,63 @@ import useAuthStore from "../../stores/AuthStore";
 import MediumText from "../../components/text/MediumText";
 import AttendanceButton from "../../components/button/AttendanceButton";
 import axios from "axios";
-import { CameraView, useCameraPermissions } from "expo-camera";
 import { StatusBar } from "expo-status-bar";
+import CameraView from "../../components/camera/CameraView";
 
 const HomeScreen = () => {
-  const { isAdmin, token } = useAuthStore();
-  const [permission, requestPermission] = useCameraPermissions();
+  const { isAdmin, name, token, photo, role } = useAuthStore();
   const [showCamera, setShowCamera] = useState(false);
+  const [profilePhotoUrl, setProfilePhotoUrl] = useState(null);
 
-  // Handle camera permission
-  if (!permission) {
-    return <View />;
-  }
-
-  if (!permission.granted && !showCamera) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center" }}>
-        <Text style={{ textAlign: "center", paddingBottom: vs(10) }}>
-          We need your permission to show the camera
-        </Text>
-        <Button onPress={requestPermission} title="grant permission" />
-      </View>
-    );
-  }
+  const handleShowCamera = () => {
+    setShowCamera(!showCamera);
+  };
 
   const handleClockIn = () => {
-    setShowCamera(true);
+    handleShowCamera();
   };
 
-  const hitAPI = async () => {
-    // if (permission.granted) {
-    //   await axios.post(
-    //     `${process.env.EXPO_PUBLIC_API}/api/attendance/clock-in`,
-    //     {},
-    //     {
-    //       headers: {
-    //         Authorization: `Bearer ${token}`,
-    //       },
-    //     },
-    //   );
-    // }
+  const handleClockOut = async () => {
+    try {
+      const response = await axios.post(
+        `${process.env.EXPO_PUBLIC_API}/api/attendance/clock-out`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      console.log("Response: ", response.data);
+
+      ToastAndroid.show(`Clock-Out Successful`, ToastAndroid.SHORT);
+    } catch (error) {
+      Alert.alert("Warning!", error.response.data.message);
+    }
   };
 
+  const fetchProfileImage = async () => {
+    if (photo) {
+      const imageUrl = `http://192.168.1.7:8000/employee_faces/${photo}`;
+      setProfilePhotoUrl(imageUrl);
+      console.log(imageUrl);
+    } else {
+      setProfilePhotoUrl(null);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfileImage();
+  }, [photo]);
+
+  const defaultProfile = require("../../../assets/images/user.png");
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style="auto" translucent backgroundColor="transparent" />
+      <StatusBar style="dark" translucent backgroundColor="transparent" />
 
       {showCamera ? (
-        <View style={styles.cameraContainer}>
-          <CameraView style={styles.camera} facing="front">
-            <TouchableOpacity
-              style={{
-                position: "absolute",
-                bottom: 0,
-
-                alignSelf: "center",
-                paddingHorizontal: sc(50),
-                paddingVertical: vs(20),
-
-                borderRadius: ms(20),
-                backgroundColor: "#3A86FF",
-              }}
-              onPress={hitAPI}
-            >
-              <BoldText text={"Capture"} size={20} color="#fff" />
-            </TouchableOpacity>
-          </CameraView>
-        </View>
+        <CameraView CloseCamera={handleShowCamera} />
       ) : (
         <>
           <View style={styles.menuWrapper}>
@@ -99,13 +91,15 @@ const HomeScreen = () => {
 
           <View style={styles.profileContainer}>
             <Image
-              source={require("../../../assets/images/user.png")}
+              source={
+                profilePhotoUrl ? { uri: profilePhotoUrl } : defaultProfile
+              }
               style={styles.avatar}
             />
 
             <View style={styles.profileText}>
-              <SemiBoldText text="Holand Bakery" size={13} />
-              <RegularText text="Mobile Developer" size={10} />
+              <SemiBoldText text={name} size={13} capitalize={true} />
+              <RegularText text={role} size={10} />
             </View>
 
             <View style={styles.timeWrapper}>
@@ -165,7 +159,7 @@ const HomeScreen = () => {
 
               <View style={styles.attendanceButtons}>
                 <AttendanceButton text="Clock - In" onPress={handleClockIn} />
-                <AttendanceButton text="Clock - Out" />
+                <AttendanceButton text="Clock - Out" onPress={handleClockOut} />
               </View>
             </View>
           )}

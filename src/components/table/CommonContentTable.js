@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontFamily: "QuicksandBold",
-    color: "white",
+    color: "#fff",
     fontSize: ms(14, 0.3),
     textAlign: "center",
   },
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8f9fa",
   },
   oddRow: {
-    backgroundColor: "white",
+    backgroundColor: "#fff",
   },
   bodyCell: {
     justifyContent: "center",
@@ -112,6 +112,7 @@ const styles = StyleSheet.create({
     fontSize: ms(13, 0.3),
     fontFamily: "QuicksandMedium",
     textAlign: "center",
+    color: "#000",
   },
 });
 

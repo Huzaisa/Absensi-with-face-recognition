@@ -14,7 +14,7 @@ const AddPermissionScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style="auto" translucent backgroundColor="transparent" />
+      <StatusBar style="dark" translucent backgroundColor="transparent" />
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}

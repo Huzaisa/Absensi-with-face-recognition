@@ -10,7 +10,7 @@ import { StatusBar } from "expo-status-bar";
 const LoginScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style="auto" translucent backgroundColor="transparent" />
+      <StatusBar style="dark" translucent backgroundColor="transparent" />
 
       <KeyboardAvoidingView behavior="position">
         <View style={styles.titleWrapper}>

@@ -22,10 +22,12 @@ const LoginForm = () => {
   const navigation = useNavigation();
 
   const [email, setEmail] = useState("");
+  //console.log(email);
   const [password, setPassword] = useState("");
+  //console.log(password);
   const [showPassword, setShowPassword] = useState(false);
 
-  const { setToken, setIsAdmin, setUserRole } = useAuthStore();
+  const { setToken, setIsAdmin, setRole, setPhoto, setName } = useAuthStore();
 
   const handleShowPassword = () => {
     setShowPassword(!showPassword);
@@ -33,36 +35,42 @@ const LoginForm = () => {
 
   const handleLogin = async () => {
     try {
+      //TODO Hapus
+      const data = {
+        email: "ardazan1603@gmail.com",
+        password: "arda123",
+      };
+
       // const data = {
-      //   email: "ardazan1603@gmail.com", //loginData.email,
-      //   password: "arda123", //loginData.password,
+      //   email: "admin123@gmail.com", //loginData.email,
+      //   password: "admin123", //loginData.password,
       // };
-      // // const data = {
-      // //   email: "admin123@gmail.com", //loginData.email,
-      // //   password: "admin123", //loginData.password,
-      // // };
 
-      // const res = await axios.post(
-      //   `${process.env.EXPO_PUBLIC_API}/api/auth/login`,
-      //   data,
-      // );
-      // console.log(res.data.user);
+      const res = await axios.post(
+        `${process.env.EXPO_PUBLIC_API}/api/auth/login`,
+        data
+      );
+      console.log(res.data);
 
-      // const role = res.data.user.role;
-      // if (role === "ADMIN") {
-      //   setIsAdmin(true);
-      //   setUserRole("ADMIN");
-      // } else {
-      //   setIsAdmin(false);
-      //   setUserRole("EMPLOYEE");
-      // }
+      const role = res.data.user.role;
+      if (role === "ADMIN") {
+        setIsAdmin(true);
+        setRole("ADMIN");
+      } else {
+        setIsAdmin(false);
+        setRole("EMPLOYEE");
+      }
 
-      // const token = res.data.token;
-      // setToken(token);
+      const token = res.data.token;
+      setToken(token);
 
-      //TODO hapus
-      setIsAdmin(false);
-      setUserRole("EMPLOYEE");
+      const photoUrl = res.data.user.photo;
+      setPhoto(photoUrl);
+
+      const name = res.data.user.name;
+      setName(name);
+
+      console.log(name);
 
       Keyboard.dismiss();
       ToastAndroid.show("Log in successful", ToastAndroid.SHORT);
@@ -72,7 +80,7 @@ const LoginForm = () => {
     } catch (e) {
       Alert.alert(
         "Warning!",
-        "Log in failed, please enter the correct email and password ",
+        "Log in failed, please enter the correct email and password "
       );
     }
   };
@@ -86,6 +94,7 @@ const LoginForm = () => {
           <TextInput
             style={styles.textInput}
             placeholder="user@gmail.com"
+            placeholderTextColor={"#999999"}
             inputMode="email"
             onChangeText={(data) => setEmail(data)}
             autoCapitalize="none"

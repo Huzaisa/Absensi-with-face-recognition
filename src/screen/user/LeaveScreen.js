@@ -30,7 +30,7 @@ const LeaveScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style="auto" translucent backgroundColor="transparent" />
+      <StatusBar style="dark" translucent backgroundColor="transparent" />
 
       <View style={styles.menuWrapper}>
         <MenuDrawerButton />
