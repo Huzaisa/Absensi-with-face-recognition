@@ -56,23 +56,46 @@ exports.clockIn = async (userId) => {
     throw error;
   }
 
+  // ================= Pastikan ShiftMapping Ada =================
+  let shiftMapping = await prisma.shiftMapping.findFirst({
+    where: { userId, date: midnightUtc },
+  });
+
+  if (!shiftMapping) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { defaultShiftId: true },
+    });
+
+    if (!user?.defaultShiftId) {
+      throw new Error('User belum memiliki shift hari ini dan tidak ada default shift.');
+    }
+
+    // Buat ShiftMapping dengan defaultShift
+    shiftMapping = await prisma.shiftMapping.create({
+      data: {
+        userId,
+        date: midnightUtc,
+        shiftId: user.defaultShiftId,
+      },
+    });
+  }
+
   // ================= LOGIKA SHIFT =================
   let status = 'ONTIME';
   let isLate = false;
 
-  const dateStr = nowJakarta.toISOString().split('T')[0];
-  const shiftMapping = await getUserShiftByDate(userId, dateStr);
+  const shift = await prisma.shift.findUnique({
+    where: { id: shiftMapping.shiftId },
+  });
 
-  if (!shiftMapping || !shiftMapping.shift) {
-    throw new Error('User belum punya shift hari ini');
-  }
+  if (!shift) throw new Error('Shift tidak ditemukan.');
 
-  const shift = shiftMapping.shift;
   const shiftStartJakarta = utcToZonedTime(shift.startTime, TIME_ZONE);
   const shiftStartToday = normalizeTimeToToday(shiftStartJakarta, nowJakarta);
   const shiftStartWithTolerance = addMinutes(shiftStartToday, GRACE_MINUTES);
 
-  // Debug log
+  // Debug
   console.log('-------------------');
   console.log('🕒 Waktu sekarang (Jakarta):', nowJakarta.toString());
   console.log('⏰ Waktu mulai shift:', shiftStartToday.toString());
@@ -102,6 +125,7 @@ exports.clockIn = async (userId) => {
 
   return attendance;
 };
+
 
 
 exports.clockOut = async (userId) => {
