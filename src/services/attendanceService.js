@@ -1,9 +1,10 @@
 const prisma = require('../config/db');
 const { utcToZonedTime } = require('../utils/time');
-const { isAfter, setHours, setMinutes, setSeconds } = require('date-fns');
+const { isAfter, setHours, setMinutes, setSeconds, addMinutes } = require('date-fns');
 const { getUserShiftByDate } = require('./shiftService');
 
 const TIME_ZONE = 'Asia/Jakarta';
+const GRACE_MINUTES = 10;
 
 const midnightUtcFromJakarta = (dJakarta) =>
   new Date(Date.UTC(dJakarta.getFullYear(), dJakarta.getMonth(), dJakarta.getDate()));
@@ -67,13 +68,20 @@ exports.clockIn = async (userId) => {
   }
 
   const shift = shiftMapping.shift;
-
   const shiftStartJakarta = utcToZonedTime(shift.startTime, TIME_ZONE);
   const shiftStartToday = normalizeTimeToToday(shiftStartJakarta, nowJakarta);
+  const shiftStartWithTolerance = addMinutes(shiftStartToday, GRACE_MINUTES);
 
-  isLate = isAfter(nowJakarta, shiftStartToday);
+  // Debug log
+  console.log('-------------------');
+  console.log('🕒 Waktu sekarang (Jakarta):', nowJakarta.toString());
+  console.log('⏰ Waktu mulai shift:', shiftStartToday.toString());
+  console.log('🎟️ Toleransi keterlambatan (10 menit):', shiftStartWithTolerance.toString());
+
+  isLate = isAfter(nowJakarta, shiftStartWithTolerance);
   if (isLate) status = 'LATE';
 
+  // ================= SIMPAN ABSENSI =================
   const attendance = await prisma.attendance.upsert({
     where: { userId_date: { userId, date: midnightUtc } },
     create: { userId, date: midnightUtc, clockIn: nowUtc, status, isLate },
@@ -96,8 +104,6 @@ exports.clockIn = async (userId) => {
 };
 
 
-
-
 exports.clockOut = async (userId) => {
   const nowUtc = new Date();
   const midnightUtc = midnightUtcFromJakarta(
@@ -106,7 +112,7 @@ exports.clockOut = async (userId) => {
 
   return prisma.attendance.update({
     where: { userId_date: { userId, date: midnightUtc } },
-    data : { clockOut: nowUtc },
+    data: { clockOut: nowUtc },
     include: {
       user: {
         select: {
