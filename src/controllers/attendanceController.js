@@ -100,3 +100,41 @@ exports.clockOut = async (req, res, next) => {
     next(err);
   }
 };
+
+// Ambil semua riwayat absensi user login
+exports.getAttendanceHistory = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+
+    const records = await prisma.attendance.findMany({
+      where: { userId },
+      orderBy: { date: 'desc' }, // Urutkan dari terbaru
+      include: {
+        shift: {
+          include: {
+            shift: true, // Include data shift detail
+          }
+        }
+      }
+    });
+
+    const history = records.map((a) => ({
+      date: a.date.toISOString().split('T')[0], // Format tanggal YYYY-MM-DD
+      clockIn: a.clockIn ? new Date(a.clockIn).toLocaleTimeString('id-ID') : null,
+      clockOut: a.clockOut ? new Date(a.clockOut).toLocaleTimeString('id-ID') : null,
+      status: a.status,
+      isLate: a.isLate,
+      shift: a.shift?.shift
+        ? {
+            name: a.shift.shift.name,
+            startTime: new Date(a.shift.shift.startTime).toLocaleTimeString('id-ID'),
+            endTime: new Date(a.shift.shift.endTime).toLocaleTimeString('id-ID'),
+          }
+        : null,
+    }));
+
+    res.json({ userId, history });
+  } catch (err) {
+    next(err);
+  }
+};

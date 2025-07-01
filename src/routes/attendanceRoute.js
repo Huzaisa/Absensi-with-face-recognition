@@ -12,5 +12,6 @@ router.post(
 );
 
 router.post('/clock-out', authMiddleware, attendanceController.clockOut);
+router.get('/history', authMiddleware, attendanceController.getAttendanceHistory);
 
 module.exports = router;
