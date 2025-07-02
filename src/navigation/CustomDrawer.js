@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Alert,
   Image,
@@ -29,9 +29,39 @@ import OvertimeOn from "../../assets/images/overtime-on.svg";
 import LeaveOn from "../../assets/images/leave-on.svg";
 import ReportOn from "../../assets/images/report-on.svg";
 import ShiftOn from "../../assets/images/shift-on.svg";
+import axios from "axios";
 
 const CustomDrawer = (props) => {
-  const { isAdmin, logout } = useAuthStore();
+  const {
+    isAdmin,
+    logout,
+    setEmployeeData,
+    token,
+    profilePhotoUrl,
+    name,
+    role,
+  } = useAuthStore();
+
+  useEffect(() => {
+    if (isAdmin) {
+      fetchEmployeesData();
+    }
+  });
+
+  const fetchEmployeesData = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.EXPO_PUBLIC_API}/api/users/`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("DATA EMPLOYEE", response.data);
+    } catch (error) {}
+  };
 
   const adminMenuItems = [
     { name: "Home", label: "Home", iconOn: HomeOn, iconOff: HomeOff },
@@ -94,9 +124,11 @@ const CustomDrawer = (props) => {
           },
         },
       ],
-      { cancelable: false },
+      { cancelable: false }
     );
   };
+
+  const defaultProfile = require("../../assets/images/user.png");
 
   return (
     <DrawerContentScrollView
@@ -107,12 +139,12 @@ const CustomDrawer = (props) => {
       <View style={styles.profileWrapper}>
         <View style={styles.profileRow}>
           <Image
-            source={require("../../assets/images/user.png")}
+            source={profilePhotoUrl ? { uri: profilePhotoUrl } : defaultProfile}
             style={styles.profileImage}
           />
           <View style={styles.profileText}>
-            <SemiBoldText text="Holand Bakery" size={15} color="#F4F7FB" />
-            <RegularText text="Mobile Developer" size={12} color="#F4F7FB" />
+            <SemiBoldText text={name} size={15} color="#F4F7FB" capitalize />
+            <RegularText text={role} size={12} color="#F4F7FB" />
           </View>
           <TouchableOpacity
             style={styles.closeButton}
@@ -171,12 +203,12 @@ const styles = StyleSheet.create({
   },
   profileWrapper: {
     alignSelf: "flex-start",
-    paddingHorizontal: sc(10),
+    paddingLeft: sc(15),
   },
   profileRow: {
     alignSelf: "center",
     flexDirection: "row",
-    gap: sc(15),
+    gap: sc(19),
   },
   profileImage: {
     width: sc(52),
@@ -186,7 +218,7 @@ const styles = StyleSheet.create({
   profileText: {
     gap: vs(2),
     alignItems: "center",
-    marginRight: sc(38),
+    flex: 1,
   },
   closeButton: {
     alignSelf: "center",

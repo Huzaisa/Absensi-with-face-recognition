@@ -16,7 +16,7 @@ import SemiBoldText from "../text/SemiBoldText";
 import { ms, vs } from "../../constant/Dimension";
 
 const CameraView = ({ CloseCamera }) => {
-  const { token } = useAuthStore();
+  const { token, setClockIn } = useAuthStore();
   const navigation = useNavigation();
 
   const cameraRef = useRef(null);
@@ -46,7 +46,7 @@ const CameraView = ({ CloseCamera }) => {
           );
         }
       } catch (error) {
-        console.error("Error requesting camera permission:", error);
+        console.log("Error requesting camera permission:", error);
         Alert.alert("Error", "Failed to request camera permission", [
           { text: "OK", onPress: () => CloseCamera() },
         ]);
@@ -90,19 +90,29 @@ const CameraView = ({ CloseCamera }) => {
         timeout: 60000,
       });
 
-      console.log("RES: ", response);
+      const clockInTime = new Date(
+        response.data.attendance.clockIn
+      ).toLocaleTimeString("id-ID", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      });
 
+      setClockIn(clockInTime);
       ToastAndroid.show(`Clock-In Successful`, ToastAndroid.SHORT);
 
       setTimeout(() => {
         CloseCamera();
       }, 2000);
     } catch (error) {
-      console.log("Failed to process photo or send:", error);
+      if (error) {
+        Alert.alert("Warning!", error.response.data.message, [
+          { text: "OK", onPress: () => CloseCamera() },
+        ]);
 
-      Alert.alert("Warning!", error.response.data.message, [
-        { text: "OK", onPress: () => CloseCamera() },
-      ]);
+        console.log("Failed to process photo or send: ", error);
+      }
     } finally {
       setIsProcessing(false);
       setIsAttemptingCapture(false);

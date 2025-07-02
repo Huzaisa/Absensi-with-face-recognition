@@ -1,13 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { DataTable } from "react-native-paper";
 import { sc, vs, ms } from "../../constant/Dimension";
 import SearchDropdown from "../dropdown/SearchDropdown";
+import axios from "axios";
+import useAuthStore from "../../stores/AuthStore";
 
 const DropdownAssignContentTable = ({ headerData, bodyData }) => {
+  const { token } = useAuthStore();
   const [rows, setRows] = useState(bodyData);
 
-  console.log("ROW: ", rows);
+  useEffect(() => {
+    setRows(bodyData);
+  }, [bodyData]);
 
   const employees = [
     { id: 1, name: "Andi Saputra" },
@@ -25,7 +30,7 @@ const DropdownAssignContentTable = ({ headerData, bodyData }) => {
 
   const handleAssign = (itemId, employee) => {
     setRows((prev) =>
-      prev.map((r) => (r.id === itemId ? { ...r, assign: employee } : r)),
+      prev.map((r) => (r.id === itemId ? { ...r, assign: employee } : r))
     );
   };
 

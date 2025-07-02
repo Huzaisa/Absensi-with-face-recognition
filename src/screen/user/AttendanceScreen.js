@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback } from "react";
 import { View, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MenuDrawerButton from "../../components/button/MenuDrawerButton";
@@ -6,16 +6,36 @@ import { sc, vs } from "../../constant/Dimension";
 import CommonContentTable from "../../components/table/CommonContentTable";
 import axios from "axios";
 import useAuthStore from "../../stores/AuthStore";
+import { useFocusEffect } from "@react-navigation/native";
 
 const AttendanceScreen = () => {
-  const { token } = useAuthStore();
-  const [attendanceData, setAttendanceData] = useState([]);
+  const { token, attendanceHistoryData, setAttendanceHistoryData } =
+    useAuthStore();
 
-  useEffect(() => {
-    fetchAttendanceData();
-  }, []);
+  const formatDate = (dateString) => {
+    const parts = dateString.split("-");
 
-  const fetchAttendanceData = async () => {
+    const year = parts[0];
+    const month = parts[1];
+    const day = parts[2];
+
+    const formattedDay = day.padStart(2, "0");
+    const formattedMonth = month.padStart(2, "0");
+
+    return `${formattedDay}-${formattedMonth}-${year}`;
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchAttendanceData();
+
+      return () => {
+        console.log("AttendanceScreen is blurring...");
+      };
+    }, [fetchAttendanceData]),
+  );
+
+  const fetchAttendanceData = useCallback(async () => {
     try {
       const response = await axios.get(
         `${process.env.EXPO_PUBLIC_API}/api/attendance/history`,
@@ -23,31 +43,30 @@ const AttendanceScreen = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       if (response.data && Array.isArray(response.data.history)) {
         const formattedData = response.data.history.map((item, index) => ({
           id: index + 1,
           no: (index + 1).toString(),
-          date: item.date
-            ? new Date(item.date)
-                .toLocaleDateString("id-ID", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric",
-                })
-                .replace(/\//g, "-")
-            : "",
-          clockIn: item.clockIn || "",
-          clockOut: item.clockOut || "",
+          date: formatDate(item.date),
+          clockIn: item.clockIn || "-",
+          clockOut: item.clockOut || "-",
         }));
-        setAttendanceData(formattedData);
+        setAttendanceHistoryData(formattedData);
+      } else {
+        console.log("API response.data.history is not an array or is missing.");
+        setAttendanceHistoryData([]);
       }
     } catch (error) {
-      console.error("Error fetching attendance data:", error);
+      console.log(
+        "Error fetching attendance data:",
+        error.response ? error.response.data : error.message,
+      );
+      setAttendanceHistoryData([]);
     }
-  };
+  }, [token]);
 
   const headerData = [
     { key: "no", label: "No." },
@@ -63,7 +82,10 @@ const AttendanceScreen = () => {
       </View>
 
       <View style={styles.tableWrapper}>
-        <CommonContentTable headerData={headerData} bodyData={attendanceData} />
+        <CommonContentTable
+          headerData={headerData}
+          bodyData={attendanceHistoryData}
+        />
       </View>
     </SafeAreaView>
   );

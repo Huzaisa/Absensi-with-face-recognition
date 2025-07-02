@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { View, Modal, StyleSheet } from "react-native";
 import { sc, vs } from "../../constant/Dimension";
@@ -7,12 +7,53 @@ import PermissionButton from "../../components/button/PermissionButton";
 import DropdownAssignContentTable from "../../components/table/DropdownAssignContentTable";
 import CommonContentTable from "../../components/table/CommonContentTable";
 import ShiftForm from "../../components/form/ShiftForm";
+import axios from "axios";
+import { useFocusEffect } from "@react-navigation/native";
+import useAuthStore from "../../stores/AuthStore";
 
 const ShiftScreen = () => {
+  const { token, shiftData, setShiftData } = useAuthStore();
   const [showModal, setShowModal] = useState(false);
+  //const [shiftData, setShiftData] = useState([]);
+
+  console.log("DATA", shiftData);
 
   const handleShowModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
+
+  const fetchShiftData = useCallback(async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.EXPO_PUBLIC_API}/api/shift/`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const formattedData = response.data.map((item, index) => ({
+        id: index + 1,
+        no: (index + 1).toString(),
+        name: item.name,
+        startTime: item.startTime,
+        endTime: item.endTime,
+      }));
+      setShiftData(formattedData);
+    } catch (error) {
+      console.log(error);
+    }
+  }, [token, setShiftData]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchShiftData();
+
+      return () => {
+        console.log("ShiftScreen is blurring...");
+      };
+    }, [fetchShiftData])
+  );
 
   const headerData = [
     { key: "no", label: "No." },
@@ -21,11 +62,12 @@ const ShiftScreen = () => {
     { key: "endTime", label: "End Time" },
     { key: "assign", label: "Assign" },
   ];
-  const bodyData = [
-    { id: 1, no: "1", name: "Shift 1", startTime: "08:00", endTime: "12:00" },
-    { id: 2, no: "2", name: "Shift 2", startTime: "13:00", endTime: "17:00" },
-    { id: 3, no: "3", name: "Shift 3", startTime: "18:00", endTime: "22:00" },
-  ];
+  // Remove the hardcoded bodyData and use the state variable
+  // const bodyData = [
+  //   { id: 1, no: "1", name: "Shift 1", startTime: "08:00", endTime: "12:00" },
+  //   { id: 2, no: "2", name: "Shift 2", startTime: "13:00", endTime: "17:00" },
+  //   { id: 3, no: "3", name: "Shift 3", startTime: "18:00", endTime: "22:00" },
+  // ];
 
   const headerDataShift = [
     { key: "no", label: "No." },
@@ -83,7 +125,7 @@ const ShiftScreen = () => {
       <View style={styles.tableWrapper}>
         <DropdownAssignContentTable
           headerData={headerData}
-          bodyData={bodyData}
+          bodyData={shiftData}
         />
       </View>
 
@@ -96,8 +138,6 @@ const ShiftScreen = () => {
     </SafeAreaView>
   );
 };
-
-export default ShiftScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -115,3 +155,5 @@ const styles = StyleSheet.create({
     marginTop: vs(20),
   },
 });
+
+export default ShiftScreen;

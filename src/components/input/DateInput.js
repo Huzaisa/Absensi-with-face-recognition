@@ -23,7 +23,6 @@ const DateInput = ({ text, date, setDate, extend }) => {
   };
 
   const formatDate = (d) => {
-    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     const months = [
       "Jan",
       "Feb",
@@ -38,7 +37,7 @@ const DateInput = ({ text, date, setDate, extend }) => {
       "Nov",
       "Dec",
     ];
-    return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+    return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
   };
 
   return (
@@ -57,7 +56,7 @@ const DateInput = ({ text, date, setDate, extend }) => {
         {hasSelectedDate ? (
           <MediumText text={formatDate(date)} size={12} />
         ) : (
-          <LightText text="Fri, 4 July 2025" size={12} />
+          <LightText text="4 July 2025" size={12} />
         )}
       </TouchableOpacity>
 

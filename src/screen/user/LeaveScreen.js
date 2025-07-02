@@ -1,23 +1,72 @@
-import React, { useEffect, useState } from "react";
-import { View, StyleSheet } from "react-native";
+import React, { useCallback } from "react";
+import { View, StyleSheet, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import MenuDrawerButton from "../../components/button/MenuDrawerButton";
-import { ms, sc, vs } from "../../constant/Dimension";
 import { StatusBar } from "expo-status-bar";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import axios from "axios";
+import useAuthStore from "../../stores/AuthStore";
+import { sc, vs } from "../../constant/Dimension";
+
+import MenuDrawerButton from "../../components/button/MenuDrawerButton";
 import PermissionButton from "../../components/button/PermissionButton";
 import LeaveStatusCard from "../../components/card/LeaveStatusCard";
-import { useNavigation } from "@react-navigation/native";
 
 const LeaveScreen = () => {
   const navigation = useNavigation();
-  const [leaveStatus, setLeaveStatus] = useState("Waiting");
+  const { token, leaveData, setLeaveData } = useAuthStore();
 
-  useEffect(() => {
-    getLeavePermission();
-  }, []);
+  const fetchLeavePermissionData = useCallback(async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.EXPO_PUBLIC_API}/api/leave/me`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      setLeaveData(response.data);
+    } catch (error) {
+      console.log(
+        "Error fetching leave permission data:",
+        error.response ? error.response.data : error.message,
+      );
+    }
+  }, [token, setLeaveData]);
 
-  const getLeavePermission = async () => {
-    // TODO: fetch leave status
+  useFocusEffect(
+    useCallback(() => {
+      fetchLeavePermissionData();
+
+      return () => {
+        console.log("LeaveScreen is blurring...");
+      };
+    }, [fetchLeavePermissionData]),
+  );
+
+  const formatDate = (date) => {
+    const parts = date.split("-");
+
+    const year = parts[0];
+    const monthIndex = parseInt(parts[1], 10) - 1;
+    const day = parseInt(parts[2], 10);
+
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+
+    return `${day} ${months[monthIndex]} ${year}`;
   };
 
   const addLeavePermission = () => {
@@ -40,24 +89,25 @@ const LeaveScreen = () => {
         <PermissionButton text="Add Permission" onPress={addLeavePermission} />
       </View>
 
-      <View style={styles.cardsWrapper}>
-        <LeaveStatusCard
-          status="Waiting"
-          startDate={"Fri, 4 July 2025"}
-          endDate={"Fri, 11 July 2025"}
-        />
-        <LeaveStatusCard
-          status="Approve"
-          startDate={"Fri, 4 July 2025"}
-          endDate={"Fri, 11 July 2025"}
-        />
-        <LeaveStatusCard
-          status="Reject"
-          startDate={"Fri, 4 July 2025"}
-          endDate={"Fri, 11 July 2025"}
-        />
-        <LeaveStatusCard status={null} />
-      </View>
+      <ScrollView
+        contentContainerStyle={styles.cardsScrollViewContent}
+        style={styles.cardsScrollView}
+      >
+        <View style={styles.cardsWrapper}>
+          {leaveData && leaveData.length > 0 ? (
+            leaveData.map((leave, index) => (
+              <LeaveStatusCard
+                key={leave.id || index}
+                status={leave.status}
+                startDate={formatDate(leave.startDate)}
+                endDate={formatDate(leave.endDate)}
+              />
+            ))
+          ) : (
+            <LeaveStatusCard status={null} />
+          )}
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -72,7 +122,14 @@ const styles = StyleSheet.create({
   },
   addPermissionWrapper: {
     paddingHorizontal: sc(22),
-    marginTop: vs(20),
+    marginTop: vs(25),
+  },
+  cardsScrollView: {
+    maxHeight: vs(576),
+    marginTop: vs(5),
+  },
+  cardsScrollViewContent: {
+    paddingBottom: vs(20),
   },
   cardsWrapper: {
     marginTop: vs(20),

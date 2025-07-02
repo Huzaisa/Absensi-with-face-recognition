@@ -1,16 +1,6 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {
-  View,
-  Image,
-  StyleSheet,
-  Text,
-  ActivityIndicator,
-  TouchableOpacity,
-  Button,
-  ToastAndroid,
-  Alert,
-} from "react-native";
+import { View, Image, StyleSheet, ToastAndroid, Alert } from "react-native";
 import { ms, sc, vs } from "../../constant/Dimension";
 import SemiBoldText from "../../components/text/SemiBoldText";
 import RegularText from "../../components/text/RegularText";
@@ -26,9 +16,24 @@ import { StatusBar } from "expo-status-bar";
 import CameraView from "../../components/camera/CameraView";
 
 const HomeScreen = () => {
-  const { isAdmin, name, token, photo, role } = useAuthStore();
+  const {
+    isAdmin,
+    name,
+    token,
+    photo,
+    role,
+    clockIn,
+    setClockOut,
+    clockOut,
+    userId,
+    startTimeShift,
+    endTimeShift,
+    setStartTimeShift,
+    setEndTimeShift,
+    profilePhotoUrl,
+    setProfilePhotoUrl,
+  } = useAuthStore();
   const [showCamera, setShowCamera] = useState(false);
-  const [profilePhotoUrl, setProfilePhotoUrl] = useState(null);
 
   const handleShowCamera = () => {
     setShowCamera(!showCamera);
@@ -50,7 +55,16 @@ const HomeScreen = () => {
         },
       );
 
-      console.log("Response: ", response.data);
+      const clockOutTime = new Date(
+        response.data.attendance.clockOut,
+      ).toLocaleTimeString("id-ID", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      });
+
+      setClockOut(clockOutTime);
 
       ToastAndroid.show(`Clock-Out Successful`, ToastAndroid.SHORT);
     } catch (error) {
@@ -60,19 +74,51 @@ const HomeScreen = () => {
 
   const fetchProfileImage = async () => {
     if (photo) {
-      const imageUrl = `http://192.168.1.7:8000/employee_faces/${photo}`;
+      const imageUrl = `${process.env.EXPO_PUBLIC_API}/employee_faces/${photo}`;
       setProfilePhotoUrl(imageUrl);
-      console.log(imageUrl);
     } else {
       setProfilePhotoUrl(null);
     }
   };
 
+  const formatDate = () => {
+    const dateNow = new Date();
+    const year = dateNow.getFullYear();
+    const month = String(dateNow.getMonth() + 1).padStart(2, "0");
+    const day = String(dateNow.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  const fetchTodayShift = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.EXPO_PUBLIC_API}/api/shift/user/${userId}/date/${formatDate()}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      const startTime = response.data.shift.startTime;
+      const endTime = response.data.shift.endTime;
+      setStartTimeShift(startTime);
+      setEndTimeShift(endTime);
+    } catch (error) {
+      console.log(
+        "Error fetching shift today data:",
+        error.response ? error.response.data : error.message,
+      );
+    }
+  };
+
   useEffect(() => {
     fetchProfileImage();
+    fetchTodayShift();
   }, [photo]);
 
   const defaultProfile = require("../../../assets/images/user.png");
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="dark" translucent backgroundColor="transparent" />
@@ -117,11 +163,11 @@ const HomeScreen = () => {
               <View style={styles.shiftTimes}>
                 <View style={styles.shiftPair}>
                   <SemiBoldText text="Start: " size={15} />
-                  <RegularText text="08:00" size={18} />
+                  <RegularText text={startTimeShift} size={18} />
                 </View>
                 <View style={styles.shiftPair}>
                   <SemiBoldText text="End: " size={15} />
-                  <RegularText text="17:00" size={18} />
+                  <RegularText text={endTimeShift} size={18} />
                 </View>
               </View>
             </>
@@ -153,8 +199,8 @@ const HomeScreen = () => {
               <View style={styles.lineSeparator} />
 
               <View style={styles.attendanceTimes}>
-                <MediumText text="08:00:00" size={20} />
-                <MediumText text="17:00:00" size={20} />
+                <MediumText text={clockIn} size={20} />
+                <MediumText text={clockOut} size={20} />
               </View>
 
               <View style={styles.attendanceButtons}>
@@ -240,7 +286,8 @@ const styles = StyleSheet.create({
   attendanceHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: sc(22),
+    paddingLeft: sc(36),
+    paddingRight: sc(27),
   },
   lineSeparator: {
     width: "95%",
@@ -252,13 +299,14 @@ const styles = StyleSheet.create({
   attendanceTimes: {
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: sc(22),
     paddingTop: vs(30),
+    paddingLeft: sc(36),
+    paddingRight: sc(38),
   },
   attendanceButtons: {
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: sc(10),
+    paddingHorizontal: sc(15),
     marginTop: vs(40),
     marginBottom: vs(20),
   },

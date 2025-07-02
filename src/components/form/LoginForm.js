@@ -22,12 +22,10 @@ const LoginForm = () => {
   const navigation = useNavigation();
 
   const [email, setEmail] = useState("");
-  //console.log(email);
   const [password, setPassword] = useState("");
-  //console.log(password);
   const [showPassword, setShowPassword] = useState(false);
-
-  const { setToken, setIsAdmin, setRole, setPhoto, setName } = useAuthStore();
+  const { setToken, setIsAdmin, setRole, setPhoto, setName, setUserId } =
+    useAuthStore();
 
   const handleShowPassword = () => {
     setShowPassword(!showPassword);
@@ -42,8 +40,8 @@ const LoginForm = () => {
       };
 
       // const data = {
-      //   email: "admin123@gmail.com", //loginData.email,
-      //   password: "admin123", //loginData.password,
+      //   email: "admin@gmail.com",
+      //   password: "admin123",
       // };
 
       const res = await axios.post(
@@ -70,7 +68,8 @@ const LoginForm = () => {
       const name = res.data.user.name;
       setName(name);
 
-      console.log(name);
+      const userId = res.data.user.id;
+      setUserId(userId);
 
       Keyboard.dismiss();
       ToastAndroid.show("Log in successful", ToastAndroid.SHORT);

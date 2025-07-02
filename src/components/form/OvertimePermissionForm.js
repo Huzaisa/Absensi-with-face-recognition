@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, ToastAndroid } from "react-native";
 import { sc, vs } from "../../constant/Dimension";
 import DateInput from "../input/DateInput";
 import TimeInput from "../input/TimeInput";
@@ -7,16 +7,82 @@ import ReasonInput from "../input/ReasonInput";
 import SemiBoldText from "../text/SemiBoldText";
 import UploadFile from "../upload/UploadFile";
 import CommonButton from "../button/CommonButton";
+import axios from "axios";
+import useAuthStore from "../../stores/AuthStore";
+import { useNavigation } from "@react-navigation/native";
 
 const OvertimePermissionForm = () => {
+  const navigation = useNavigation();
+  const { token } = useAuthStore();
   const [date, setDate] = useState(new Date());
   const [startTime, setStartTime] = useState(new Date());
   const [endTime, setEndTime] = useState(new Date());
   const [reason, setReason] = useState("");
   const [uploadedFile, setUploadedFile] = useState(null);
 
-  const handleSubmitForm = () => {
-    // TODO: handle submission
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  const formatTime = (time) => {
+    const hours = time.getHours().toString().padStart(2, "0");
+    const minutes = time.getMinutes().toString().padStart(2, "0");
+    return `${hours}:${minutes}`;
+  };
+
+  const handleSubmitForm = async () => {
+    try {
+      const data = {
+        date: formatDate(date),
+        startTime: formatTime(startTime),
+        endTime: formatTime(endTime),
+        reason: reason,
+      };
+
+      const response = await axios.post(
+        `${process.env.EXPO_PUBLIC_API}/api/overtime/request`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (uploadedFile) {
+        const formData = new FormData();
+
+        formData.append("document", {
+          uri: uploadedFile.uri,
+          name: uploadedFile.name,
+          type: uploadedFile.mimeType,
+        });
+        formData.append("type", "overtime");
+
+        const responseUploadFile = await axios.post(
+          `${process.env.EXPO_PUBLIC_API}/api/upload?type=document`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+      }
+
+      ToastAndroid.show("Add Overtime Successful", ToastAndroid.SHORT);
+
+      setTimeout(() => {
+        navigation.goBack();
+      }, 1000);
+    } catch (error) {
+      console.log(error);
+      console.log("Error send overtime request: ", error.response.data.message);
+    }
   };
 
   return (

@@ -7,9 +7,9 @@ import { ms, sc, vs } from "../../constant/Dimension";
 
 const LeaveStatusCard = ({ status, startDate, endDate }) => {
   const backgroundColor =
-    status === "Waiting"
+    status === "PENDING"
       ? "#FFC107"
-      : status === "Approve"
+      : status === "APPROVE"
         ? "#4CAF50"
         : "#F44336";
 

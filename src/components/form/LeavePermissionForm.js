@@ -1,20 +1,79 @@
 import React, { useState } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, ToastAndroid } from "react-native";
 import DateInput from "../input/DateInput";
 import ReasonInput from "../input/ReasonInput";
 import SemiBoldText from "../text/SemiBoldText";
 import UploadFile from "../upload/UploadFile";
 import CommonButton from "../button/CommonButton";
 import { sc, vs } from "../../constant/Dimension";
+import axios from "axios";
+import useAuthStore from "../../stores/AuthStore";
+import { useNavigation } from "@react-navigation/native";
 
 const LeavePermissionForm = () => {
+  const navigation = useNavigation();
+  const { token } = useAuthStore();
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [reason, setReason] = useState("");
   const [uploadedFile, setUploadedFile] = useState(null);
 
-  const handleSubmitForm = () => {
-    // TODO: handle submission
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  const handleSubmitForm = async () => {
+    try {
+      const data = {
+        startDate: formatDate(startDate),
+        endDate: formatDate(endDate),
+        reason: reason,
+      };
+
+      const response = await axios.post(
+        `${process.env.EXPO_PUBLIC_API}/api/leave/request`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (uploadedFile) {
+        const formData = new FormData();
+
+        formData.append("document", {
+          uri: uploadedFile.uri,
+          name: uploadedFile.name,
+          type: uploadedFile.mimeType,
+        });
+        formData.append("type", "leave");
+
+        const responseUploadFile = await axios.post(
+          `${process.env.EXPO_PUBLIC_API}/api/upload?type=document`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+      }
+
+      ToastAndroid.show("Add Leave Successful", ToastAndroid.SHORT);
+
+      setTimeout(() => {
+        navigation.goBack();
+      }, 1000);
+    } catch (error) {
+      console.log(error);
+      console.log("Error send leave request: ", error.response.data.message);
+    }
   };
 
   return (

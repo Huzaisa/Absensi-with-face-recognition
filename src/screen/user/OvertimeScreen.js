@@ -1,15 +1,87 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { View, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import MenuDrawerButton from "../../components/button/MenuDrawerButton";
 import PermissionButton from "../../components/button/PermissionButton";
 import { sc, vs } from "../../constant/Dimension";
 import CommonContentTable from "../../components/table/CommonContentTable";
+import axios from "axios";
+import useAuthStore from "../../stores/AuthStore";
 
 const OvertimeScreen = () => {
   const navigation = useNavigation();
+  const { token, overtimeData, setOvertimeData } = useAuthStore();
+
+  const formatDate = (dateString) => {
+    const dateObj = new Date(dateString);
+    const day = String(dateObj.getDate()).padStart(2, "0");
+    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const year = dateObj.getFullYear();
+
+    return `${day}-${month}-${year}`;
+  };
+
+  const fetchOvertimeData = useCallback(async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.EXPO_PUBLIC_API}/api/overtime/me`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      const formattedData = response.data.map((item, index) => {
+        const startTime = new Date(item.startTime).toLocaleTimeString("id-ID", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        });
+        const endTime = new Date(item.endTime).toLocaleTimeString("id-ID", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        });
+
+        let statusText = "";
+        if (item.approved === false) {
+          statusText = "Waiting";
+        } else if (item.approved === true) {
+          statusText = "Approve";
+        } else {
+          statusText = "Reject";
+        }
+
+        return {
+          id: item.id,
+          no: (index + 1).toString(),
+          date: formatDate(item.date),
+          startTime: startTime,
+          endTime: endTime,
+          status: statusText,
+        };
+      });
+      setOvertimeData(formattedData);
+    } catch (error) {
+      console.log(
+        "Error fetching overtime permission data:",
+        error.response ? error.response.data : error.message,
+      );
+    }
+  }, [token, setOvertimeData]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchOvertimeData();
+
+      return () => {
+        console.log("OvertimeScreen is blurring...");
+      };
+    }, [fetchOvertimeData]),
+  );
 
   const addOvertimePermission = () => {
     navigation.navigate("UserAddPermission", {
@@ -25,33 +97,6 @@ const OvertimeScreen = () => {
     { key: "startTime", label: "Start Time" },
     { key: "endTime", label: "End Time" },
     { key: "status", label: "Status" },
-  ];
-
-  const bodyData = [
-    {
-      id: 1,
-      no: 1,
-      date: "16-06-2025",
-      startTime: "08:00",
-      endTime: "16:00",
-      status: "Approve",
-    },
-    {
-      id: 2,
-      no: 2,
-      date: "2023-01-01",
-      startTime: "18:00",
-      endTime: "22:00",
-      status: "Waiting",
-    },
-    {
-      id: 3,
-      no: 3,
-      date: "2023-01-01",
-      startTime: "18:00",
-      endTime: "02:00",
-      status: "Reject",
-    },
   ];
 
   return (
@@ -70,7 +115,7 @@ const OvertimeScreen = () => {
       </View>
 
       <View style={styles.tableWrapper}>
-        <CommonContentTable headerData={headerData} bodyData={bodyData} />
+        <CommonContentTable headerData={headerData} bodyData={overtimeData} />
       </View>
     </SafeAreaView>
   );
