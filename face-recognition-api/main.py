@@ -145,3 +145,44 @@ async def register_face(file: UploadFile = File(...), userId: str = Form(...)):
 
     return {"detail": f"Wajah untuk {userId} berhasil diregistrasi."}
 
+@app.post("/detect/")
+async def detect_faces(file: UploadFile = File(...)):
+    try:
+        image_bytes = await file.read()
+        nparr = np.frombuffer(image_bytes, np.uint8)
+        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        if img is None:
+            raise HTTPException(status_code=400, detail="Gambar tidak valid")
+
+        rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+        # Deteksi lokasi wajah
+        face_locations = face_recognition.face_locations(rgb_img)
+        face_encodings = face_recognition.face_encodings(rgb_img, face_locations)
+
+        results = []
+        for (top, right, bottom, left), encoding in zip(face_locations, face_encodings):
+            best_match_user = None
+            best_match_dist = 1.0
+
+            for user_id, known_encoding in KNOWN_ENCODINGS.items():
+                dist = face_recognition.face_distance([known_encoding], encoding)[0]
+                if dist < 0.5 and dist < best_match_dist:
+                    best_match_dist = dist
+                    best_match_user = user_id
+
+            results.append({
+                "name": best_match_user or "Unknown",
+                "box": {
+                    "top": top,
+                    "right": right,
+                    "bottom": bottom,
+                    "left": left
+                }
+            })
+
+        return {"results": results}
+
+    except Exception as e:
+        print(f"Error di endpoint /detect/: {e}")
+        raise HTTPException(500, "Terjadi kesalahan saat deteksi wajah.")
