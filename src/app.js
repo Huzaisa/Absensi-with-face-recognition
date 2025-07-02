@@ -19,6 +19,7 @@ app.use(bodyParser.json());
 
 app.use(express.json());
 app.use('/documents', express.static('public/documents'));
+app.use('/employee_faces', express.static('public/uploads/employee_faces'));
 
 app.use('/api/auth', require('./routes/authRoute'));
 app.use('/api/users', require('./routes/userRoute'));
