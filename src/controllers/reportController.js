@@ -1,5 +1,7 @@
+const path = require('path');
+const fs = require('fs');
 const reportService  = require('../services/reportService');
-const { generatePDF }   = require('../utils/pdfGenerator');
+const { generatePDF, generatePDFToFile } = require('../utils/pdfGenerator');
 const { generateExcel } = require('../utils/excelGenerator');
 
 const parseMY = (q) => ({
@@ -26,6 +28,18 @@ exports.exportReportPDF = async (req, res, next) => {
     res.setHeader('Content-Type',        'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename="report-${month}-${year}.pdf"`);
     res.send(buffer);
+  } catch (err) { next(err); }
+};
+
+exports.exportReportPDFToFile = async (req, res, next) => {
+  try {
+    const { month, year } = parseMY(req.query);
+    const report = await reportService.getAttendanceReport({ month, year });
+
+    const filePath = path.join(__dirname, `../../public/documents/laporan-${month}-${year}.pdf`);
+    await generatePDFToFile(report, month, year, filePath);
+
+    res.json({ message: 'PDF disimpan', path: `/documents/laporan-${month}-${year}.pdf` });
   } catch (err) { next(err); }
 };
 

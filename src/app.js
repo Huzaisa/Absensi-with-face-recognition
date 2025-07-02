@@ -9,8 +9,10 @@ const overtimeRoutes = require('./routes/overtimeRoute');
 const leaveRoutes = require('./routes/leaveRoute');
 const shiftRoutes = require('./routes/shiftRoute');
 const uploadRoutes = require('./routes/uploadRoute');
+const reportRoutes = require('./routes/reportRoute');
 
 require('./jobs/dbBackupJob'); // ⏰ cron job jalan otomatis
+require('./jobs/reportEmailJob');
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -25,6 +27,7 @@ app.use('/api/overtime', overtimeRoutes);
 app.use('/api/leave', leaveRoutes);
 app.use('/api/shift', shiftRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/report', reportRoutes);
 
 // Error handler
 app.use((err, req, res, next) => {
