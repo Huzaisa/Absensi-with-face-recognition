@@ -89,14 +89,13 @@ exports.clockOut = async (req, res, next) => {
     const attendance = await attendanceService.clockOut(req.user.id);
     res.json({
       message: `Clock-out berhasil untuk ${attendance.user.name}`,
-      user: {
-        id: attendance.user.id,
-        name: attendance.user.name,
-        email: attendance.user.email,
-      },
+      user: { id: attendance.user.id, name: attendance.user.name, email: attendance.user.email },
       attendance,
     });
   } catch (err) {
+    if (err.message.includes('belum melakukan clock-in')) {
+      return res.status(400).json({ message: err.message });
+    }
     next(err);
   }
 };

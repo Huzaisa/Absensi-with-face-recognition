@@ -17,6 +17,17 @@ const normalizeTimeToToday = (shiftDateObj, nowJakarta) => {
   );
 };
 
+async function validateOvertimeClockOut(userId, nowUtc) {
+  const over = await prisma.overtime.findFirst({
+    where: { userId, approved: true },
+    orderBy: { date: 'desc' },
+  });
+  if (over && nowUtc < over.endTime) {
+    console.warn('⛔ Clock-out sebelum lembur selesai.');
+    // throw new Error('Clock-out dilakukan sebelum lembur selesai.');
+  }
+}
+
 exports.clockIn = async (userId) => {
   const nowUtc = new Date();
   const nowJakarta = utcToZonedTime(nowUtc, TIME_ZONE);
@@ -130,24 +141,24 @@ exports.clockIn = async (userId) => {
 
 exports.clockOut = async (userId) => {
   const nowUtc = new Date();
-  const midnightUtc = midnightUtcFromJakarta(
-    utcToZonedTime(nowUtc, TIME_ZONE)
-  );
+  const nowJakarta = utcToZonedTime(nowUtc, TIME_ZONE);
+  const midnightUtc = midnightUtcFromJakarta(nowJakarta);
 
-  return prisma.attendance.update({
+  // Pastikan sudah pernah clock-in
+  const existing = await prisma.attendance.findUnique({
+    where: { userId_date: { userId, date: midnightUtc } },
+  });
+  if (!existing || !existing.clockIn) {
+    throw new Error('Anda belum melakukan clock-in pada hari ini.');
+  }
+
+  const attendance = await prisma.attendance.update({
     where: { userId_date: { userId, date: midnightUtc } },
     data: { clockOut: nowUtc },
     include: {
-      user: {
-        select: {
-          id: true,
-          name: true,
-          email: true
-        }
-      },
-      shift: {
-        include: { shift: true }
-      }
-    }
+      user: { select: { id: true, name: true, email: true } },
+      shift: { include: { shift: true } },
+    },
   });
+  return attendance;
 };

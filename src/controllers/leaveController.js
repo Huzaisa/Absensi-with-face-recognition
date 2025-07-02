@@ -47,10 +47,17 @@ exports.rejectLeave = async (req, res, next) => {
 /* ▸ list */
 exports.getUserLeaves = async (req, res, next) => {
   try {
-    const list = await leaveService.getUserLeaves(req.user.id);
+    const { startDate, endDate, skip = 0, take = 10 } = req.query;
+    const list = await leaveService.getUserLeaves(req.user.id, {
+      startDate, endDate,
+      skip: parseInt(skip), take: parseInt(take)
+    });
     res.json(list.map(view));
-  } catch (e) { next(e); }
+  } catch (e) {
+    next(e);
+  }
 };
+
 
 exports.getAllLeaves = async (_req, res, next) => {
   try {
