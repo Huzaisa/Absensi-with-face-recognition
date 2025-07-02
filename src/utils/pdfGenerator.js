@@ -1,28 +1,76 @@
 const fs = require('fs');
 const PDFDocument = require('pdfkit');
 
+function generateStyledReport(doc, data, month, year) {
+  doc.fontSize(18).font('Helvetica-Bold').text(`Laporan Kehadiran Bulanan`, { align: 'center' });
+  doc.moveDown(0.3);
+  doc.fontSize(13).font('Helvetica').text(`Periode: ${month}/${year}`, { align: 'center' });
+  doc.moveDown(1);
+
+  const tableTop = doc.y;
+  const rowHeight = 22;
+
+  const col = {
+    nama: 40,
+    hadir: 170,
+    izin: 230,
+    cuti: 290,
+    telat: 350,
+    lembur: 410,
+  };
+
+  // Header background
+  doc
+    .rect(col.nama - 2, tableTop - 2, 500, rowHeight)
+    .fill('#f0f0f0');
+
+  doc
+    .fillColor('#000000')
+    .fontSize(12)
+    .font('Helvetica-Bold')
+    .text('Nama', col.nama, tableTop + 4, { width: 120 })
+    .text('Hadir', col.hadir, tableTop + 4, { width: 50, align: 'center' })
+    .text('Izin', col.izin, tableTop + 4, { width: 50, align: 'center' })
+    .text('Cuti', col.cuti, tableTop + 4, { width: 50, align: 'center' })
+    .text('Telat', col.telat, tableTop + 4, { width: 50, align: 'center' })
+    .text('Lembur (jam)', col.lembur, tableTop + 4, { width: 90, align: 'center' });
+
+  doc
+    .moveTo(col.nama - 2, tableTop + rowHeight)
+    .lineTo(col.lembur + 90, tableTop + rowHeight)
+    .strokeColor('#999999')
+    .stroke();
+
+  let y = tableTop + rowHeight + 5;
+  doc.font('Helvetica').fontSize(11);
+
+  data.forEach((row, index) => {
+    const bgColor = index % 2 === 0 ? '#ffffff' : '#f9f9f9';
+    doc.rect(col.nama - 2, y - 3, 500, rowHeight).fill(bgColor).fillColor('#000000');
+
+    doc
+      .text(row.name, col.nama, y, { width: 120 })
+      .text(row.hadir || 0, col.hadir, y, { width: 50, align: 'center' })
+      .text(row.izin || 0, col.izin, y, { width: 50, align: 'center' })
+      .text(row.cuti || 0, col.cuti, y, { width: 50, align: 'center' })
+      .text(row.telat || 0, col.telat, y, { width: 50, align: 'center' })
+      .text(row.lembur || 0, col.lembur, y, { width: 90, align: 'center' });
+
+    y += rowHeight;
+  });
+
+  doc.moveDown(2);
+  doc.fontSize(10).fillColor('#999999').text(
+    'Laporan ini dihasilkan otomatis oleh sistem Absensi Face Recognition',
+    { align: 'center' }
+  );
+}
+
 exports.generatePDF = (data, month, year) => new Promise((resolve) => {
   const doc = new PDFDocument({ margin: 40 });
   const buffers = [];
 
-  doc.fontSize(16).text(`Laporan Kehadiran – ${month}/${year}`, { align: 'center' });
-  doc.moveDown();
-
-  doc.fontSize(12).text('Nama',  40, doc.y, { width: 150, continued: true });
-  doc.text('Hadir',             190, doc.y, { width: 60,  continued: true, align: 'center' });
-  doc.text('Izin',              250, doc.y, { width: 60,  continued: true, align: 'center' });
-  doc.text('Cuti',              310, doc.y, { width: 60,  continued: true, align: 'center' });
-  doc.text('Lembur (jam)',      370, doc.y, { width: 100, align: 'center' });
-  doc.moveDown(0.5);
-
-  data.forEach((row) => {
-    doc.text(row.name, 40, doc.y, { width: 150, continued: true });
-    doc.text(row.hadir || 0, 190, doc.y, { width: 60, continued: true, align: 'center' });
-    doc.text(row.izin  || 0, 250, doc.y, { width: 60, continued: true, align: 'center' });
-    doc.text(row.cuti  || 0, 310, doc.y, { width: 60, continued: true, align: 'center' });
-    doc.text(row.lembur|| 0, 370, doc.y, { width: 100, align: 'center' });
-    doc.moveDown(0.5);
-  });
+  generateStyledReport(doc, data, month, year);
 
   doc.end();
   doc.on('data', buffers.push.bind(buffers));
@@ -35,62 +83,26 @@ exports.generatePDFToFile = (data, month, year, filePath) => new Promise((resolv
 
   doc.pipe(stream);
 
-  doc.fontSize(16).text(`Laporan Kehadiran – ${month}/${year}`, { align: 'center' });
-  doc.moveDown();
-
-  doc.fontSize(12).text('Nama',  40, doc.y, { width: 150, continued: true });
-  doc.text('Hadir',             190, doc.y, { width: 60,  continued: true, align: 'center' });
-  doc.text('Izin',              250, doc.y, { width: 60,  continued: true, align: 'center' });
-  doc.text('Cuti',              310, doc.y, { width: 60,  continued: true, align: 'center' });
-  doc.text('Lembur (jam)',      370, doc.y, { width: 100, align: 'center' });
-  doc.moveDown(0.5);
-
-  data.forEach((row) => {
-    doc.text(row.name, 40, doc.y, { width: 150, continued: true });
-    doc.text(row.hadir || 0, 190, doc.y, { width: 60, continued: true, align: 'center' });
-    doc.text(row.izin  || 0, 250, doc.y, { width: 60, continued: true, align: 'center' });
-    doc.text(row.cuti  || 0, 310, doc.y, { width: 60, continued: true, align: 'center' });
-    doc.text(row.lembur|| 0, 370, doc.y, { width: 100, align: 'center' });
-    doc.moveDown(0.5);
-  });
+  generateStyledReport(doc, data, month, year);
 
   doc.end();
-
-  stream.on('finish', () => resolve());
-  stream.on('error', (err) => reject(err));
+  stream.on('finish', resolve);
+  stream.on('error', reject);
 });
 
 exports.generateMonthlyReport = (data, filePath) => new Promise((resolve, reject) => {
-  const PDFDocument = require('pdfkit');
-  const fs = require('fs');
   const doc = new PDFDocument({ margin: 40 });
   const stream = fs.createWriteStream(filePath);
 
   doc.pipe(stream);
 
   const today = new Date();
-  const title = `Laporan Kehadiran Bulanan – ${today.getMonth() + 1}/${today.getFullYear()}`;
-  doc.fontSize(16).text(title, { align: 'center' });
-  doc.moveDown();
+  const month = today.getMonth() + 1;
+  const year = today.getFullYear();
 
-  doc.fontSize(12).text('Nama',  40, doc.y, { width: 150, continued: true });
-  doc.text('Hadir',             190, doc.y, { width: 60,  continued: true, align: 'center' });
-  doc.text('Izin',              250, doc.y, { width: 60,  continued: true, align: 'center' });
-  doc.text('Cuti',              310, doc.y, { width: 60,  continued: true, align: 'center' });
-  doc.text('Lembur (jam)',      370, doc.y, { width: 100, align: 'center' });
-  doc.moveDown(0.5);
-
-  data.forEach((row) => {
-    doc.text(row.name,        40, doc.y, { width: 150, continued: true });
-    doc.text(row.hadir || 0, 190, doc.y, { width: 60, continued: true, align: 'center' });
-    doc.text(row.izin  || 0, 250, doc.y, { width: 60, continued: true, align: 'center' });
-    doc.text(row.cuti  || 0, 310, doc.y, { width: 60, continued: true, align: 'center' });
-    doc.text(row.lembur|| 0, 370, doc.y, { width: 100, align: 'center' });
-    doc.moveDown(0.5);
-  });
+  generateStyledReport(doc, data, month, year);
 
   doc.end();
-
   stream.on('finish', resolve);
   stream.on('error', reject);
 });

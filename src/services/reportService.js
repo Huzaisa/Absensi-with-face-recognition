@@ -11,9 +11,8 @@ const { startOfMonth,
  */
 exports.getAttendanceReport = async ({ userId, month, year }) => {
   const startDate = startOfMonth(new Date(year, month - 1));
-  const endDate   = endOfMonth  (new Date(year, month - 1));
+  const endDate = endOfMonth(new Date(year, month - 1));
 
-  /* ─────────── Query di pr isma ─────────── */
   const [attendances, leaves, overtimes, users] = await Promise.all([
     prisma.attendance.findMany({
       where: {
@@ -40,21 +39,31 @@ exports.getAttendanceReport = async ({ userId, month, year }) => {
     }),
   ]);
 
-  /* ─────────── Rekap per-user ─────────── */
   const rekap = {};
   const ensure = (uid) => {
-    if (!rekap[uid]) rekap[uid] = { hadir: 0, izin: 0, cuti: 0, lembur: 0 };
+    if (!rekap[uid]) rekap[uid] = { hadir: 0, izin: 0, cuti: 0, lembur: 0, telat: 0 };
     return rekap[uid];
   };
 
   attendances.forEach((a) => {
-    if (a.clockIn) ensure(a.userId).hadir += 1;
+    const bucket = ensure(a.userId);
+    if (a.clockIn) {
+      bucket.hadir += 1;
+
+      const expectedStart = new Date(a.date);
+      expectedStart.setHours(8, 5, 0, 0); // batas toleransi jam 08:05
+
+      const actualClockIn = new Date(a.clockIn);
+      if (actualClockIn > expectedStart) {
+        bucket.telat += 1;
+      }
+    }
   });
 
   leaves.forEach((l) => {
     const bucket = ensure(l.userId);
     if (l.status === 'APPROVED') bucket.cuti += 1;
-    else                         bucket.izin  += 1;
+    else                         bucket.izin += 1;
   });
 
   overtimes.forEach((o) => {
@@ -62,6 +71,6 @@ exports.getAttendanceReport = async ({ userId, month, year }) => {
     ensure(o.userId).lembur += jam;
   });
 
-  /* ─────────── Gabungkan dengan nama user ─────────── */
   return users.map((u) => ({ name: u.name, ...rekap[u.id] }));
 };
+
