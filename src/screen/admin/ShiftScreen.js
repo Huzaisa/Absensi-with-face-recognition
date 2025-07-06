@@ -1,6 +1,12 @@
 import React, { useCallback, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { View, Modal, StyleSheet } from "react-native";
+import {
+  View,
+  Modal,
+  StyleSheet,
+  ScrollView,
+  RefreshControl,
+} from "react-native";
 import { sc, vs } from "../../constant/Dimension";
 import MenuDrawerButton from "../../components/button/MenuDrawerButton";
 import PermissionButton from "../../components/button/PermissionButton";
@@ -12,129 +18,170 @@ import { useFocusEffect } from "@react-navigation/native";
 import useAuthStore from "../../stores/AuthStore";
 
 const ShiftScreen = () => {
-  const { token, shiftData, setShiftData } = useAuthStore();
+  const { token, shiftData, setShiftData, assignedShift, setAssignedShift } =
+    useAuthStore();
   const [showModal, setShowModal] = useState(false);
-  //const [shiftData, setShiftData] = useState([]);
-
-  console.log("DATA", shiftData);
+  const [refreshing, setRefreshing] = useState(false);
 
   const handleShowModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
 
-  const fetchShiftData = useCallback(async () => {
+  const formatDate = (dateString) => {
+    const dateObj = new Date(dateString);
+    if (isNaN(dateObj.getTime())) {
+      console.log("Invalid date string provided to formatDate:", dateString);
+      return "";
+    }
+    const day = String(dateObj.getDate()).padStart(2, "0");
+    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const year = dateObj.getFullYear();
+
+    return `${day}-${month}-${year}`;
+  };
+
+  const formatTime = (isoString) => {
+    if (!isoString) return "";
+    const dateObj = new Date(isoString);
+    if (isNaN(dateObj.getTime())) {
+      console.log("Invalid ISO string provided to formatTime:", isoString);
+      return "";
+    }
+    const hours = dateObj.getHours().toString().padStart(2, "0");
+    const minutes = dateObj.getMinutes().toString().padStart(2, "0");
+    return `${hours}:${minutes}`;
+  };
+
+  const onRefreshContent = useCallback(async () => {
+    setRefreshing(true);
+
     try {
-      const response = await axios.get(
-        `${process.env.EXPO_PUBLIC_API}/api/shift/`,
+      const shiftDataResponse = await axios.get(
+        `http://192.168.1.7:3000/api/shift/`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
-      const formattedData = response.data.map((item, index) => ({
-        id: index + 1,
+      const formattedShiftData = shiftDataResponse.data.map((item, index) => ({
+        id: item.id,
         no: (index + 1).toString(),
         name: item.name,
         startTime: item.startTime,
         endTime: item.endTime,
       }));
-      setShiftData(formattedData);
+
+      setShiftData(formattedShiftData);
+
+      const assignedShiftDataResponse = await axios.get(
+        `http://192.168.1.7:3000/api/shift/mappings`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      const rawAssignedShifts = [...assignedShiftDataResponse.data];
+
+      rawAssignedShifts.sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return dateB.getTime() - dateA.getTime();
+      });
+
+      const formattedAssignedShifts = rawAssignedShifts.map((item, index) => ({
+        id: item.id,
+        no: (index + 1).toString(),
+        date: formatDate(item.date),
+        startTime: formatTime(item.shift.startTime),
+        endTime: formatTime(item.shift.endTime),
+        assigned: item.user.name,
+        userId: item.user.id,
+      }));
+
+      setAssignedShift(formattedAssignedShifts);
     } catch (error) {
-      console.log(error);
+      console.log(
+        "Error refreshing data:",
+        error.response ? error.response.data : error.message,
+      );
+    } finally {
+      setRefreshing(false);
     }
-  }, [token, setShiftData]);
+  }, [token, setShiftData, setAssignedShift]);
 
   useFocusEffect(
     useCallback(() => {
-      fetchShiftData();
-
+      onRefreshContent();
       return () => {
         console.log("ShiftScreen is blurring...");
       };
-    }, [fetchShiftData])
+    }, [onRefreshContent]),
   );
 
-  const headerData = [
+  const headerShiftData = [
     { key: "no", label: "No." },
     { key: "name", label: "Name" },
     { key: "startTime", label: "Start Time" },
     { key: "endTime", label: "End Time" },
     { key: "assign", label: "Assign" },
   ];
-  // Remove the hardcoded bodyData and use the state variable
-  // const bodyData = [
-  //   { id: 1, no: "1", name: "Shift 1", startTime: "08:00", endTime: "12:00" },
-  //   { id: 2, no: "2", name: "Shift 2", startTime: "13:00", endTime: "17:00" },
-  //   { id: 3, no: "3", name: "Shift 3", startTime: "18:00", endTime: "22:00" },
-  // ];
 
-  const headerDataShift = [
+  const headerAssignedShiftData = [
     { key: "no", label: "No." },
     { key: "date", label: "Date" },
     { key: "startTime", label: "Start Time" },
     { key: "endTime", label: "End Time" },
     { key: "assigned", label: "Assigned" },
-  ];
-  const bodyDataShift = [
-    {
-      id: 1,
-      no: 1,
-      date: "19-06-2025",
-      startTime: "08:00",
-      endTime: "12:00",
-      assigned: "Arda",
-    },
-    {
-      id: 2,
-      no: 2,
-      date: "19-06-2025",
-      startTime: "13:00",
-      endTime: "17:00",
-      assigned: "Hajik",
-    },
-    {
-      id: 3,
-      no: 4,
-      date: "19-06-2025",
-      startTime: "18:00",
-      endTime: "22:00",
-      assigned: "Damar",
-    },
+    { key: "action", label: "Action" },
   ];
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.menuWrapper}>
-        <MenuDrawerButton />
-      </View>
-
-      <View style={styles.addPermissionWrapper}>
-        <PermissionButton text="Add Shift" onPress={handleShowModal} />
-      </View>
-
       <Modal
         visible={showModal}
         animationType="slide"
         transparent
         onRequestClose={handleCloseModal}
       >
-        <ShiftForm onPress={handleCloseModal} />
+        <ShiftForm onDismiss={handleCloseModal} onRefresh={onRefreshContent} />
       </Modal>
 
-      <View style={styles.tableWrapper}>
-        <DropdownAssignContentTable
-          headerData={headerData}
-          bodyData={shiftData}
-        />
-      </View>
+      <ScrollView
+        contentContainerStyle={styles.scrollViewContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefreshContent}
+          />
+        }
+      >
+        <View style={styles.menuWrapper}>
+          <MenuDrawerButton />
+        </View>
 
-      <View style={styles.tableWrapper}>
-        <CommonContentTable
-          headerData={headerDataShift}
-          bodyData={bodyDataShift}
-        />
-      </View>
+        <View style={styles.addPermissionWrapper}>
+          <PermissionButton text="Add Shift" onPress={handleShowModal} />
+        </View>
+
+        <View style={styles.tableWrapper}>
+          <DropdownAssignContentTable
+            headerData={headerShiftData}
+            bodyData={shiftData}
+            onRefresh={onRefreshContent}
+          />
+        </View>
+
+        <View style={styles.tableWrapper}>
+          <CommonContentTable
+            headerData={headerAssignedShiftData}
+            bodyData={assignedShift}
+            onRefresh={onRefreshContent}
+          />
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -143,6 +190,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F4F7FB",
+  },
+  scrollViewContent: {
+    paddingBottom: vs(20),
   },
   menuWrapper: {
     paddingHorizontal: sc(22),

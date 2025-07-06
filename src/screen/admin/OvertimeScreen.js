@@ -1,11 +1,72 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MenuDrawerButton from "../../components/button/MenuDrawerButton";
 import { StyleSheet, View } from "react-native";
 import { sc, vs, ms } from "../../constant/Dimension";
 import DropdownStatusContentTable from "../../components/table/DropdownStatusContentTable";
+import axios from "axios";
+import useAuthStore from "../../stores/AuthStore";
+import { useFocusEffect } from "@react-navigation/native";
 
 const OvertimeScreen = () => {
+  const { token, overtimeAllData, setOvertimeAllData } = useAuthStore();
+
+  const fetchOvertimeData = useCallback(async () => {
+    try {
+      const documentDataResponse = await axios.get(
+        "http://192.168.1.7:3000/api/upload/user/72010be3-acc3-4723-a868-2f0ab95bc3ac",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      console.log("DOCUMENT: ", documentDataResponse.data);
+
+      // const formattedDocumentData = documentDataResponse.data.map((item) => ({
+      //   fileName: item.fileName,
+      //   userId: item.user.id,
+      // }));
+
+      //console.log("DOCUMENT: ", formattedDocumentData);
+
+      // const overtimeDataResponse = await axios.get(
+      //   `http://192.168.1.7:3000/api/overtime/all`,
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${token}`,
+      //     },
+      //   }
+      // );
+
+      // console.log("OVERTIME: ", overtimeDataResponse.data);
+      // const formattedOvertimeData = overtimeDataResponse.data.map(
+      //   (item, index) => ({
+      //     no: (index + 1).toString(),
+      //     //id: item.id,
+      //     date: item.date,
+      //     startTime: item.startTime,
+      //     endTime: item.endTime,
+      //     name: item.user.name,
+      //     reason: item.reason,
+      //     status: item.status,
+      //     fileUpload: item.fileUpload,
+      //   })
+      // );
+      //console.log("OVERTIME ALL: ", formattedOvertimeData);
+      //setOvertimeAllData(formattedOvertimeData);
+    } catch (error) {}
+  }, [token, setOvertimeAllData]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchOvertimeData();
+      return () => {
+        console.log("OvertimeScreen is blurring");
+      };
+    }, [fetchOvertimeData]),
+  );
   const headerData = [
     {
       key: "no",

@@ -1,9 +1,75 @@
 import React from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import {
+  Alert,
+  ScrollView,
+  StyleSheet,
+  ToastAndroid,
+  View,
+} from "react-native";
 import { DataTable } from "react-native-paper";
 import { sc, vs, ms } from "../../constant/Dimension";
+import axios from "axios";
+import useAuthStore from "../../stores/AuthStore";
+import DeleteButton from "../button/DeleteButton";
 
-const CommonContentTable = ({ headerData, bodyData, assign }) => {
+const CommonContentTable = ({ headerData, bodyData, onRefresh }) => {
+  const { token } = useAuthStore();
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const parts = dateString.split("-");
+    if (parts.length === 3) {
+      return `${parts[2]}-${parts[1]}-${parts[0]}`;
+    }
+    return dateString;
+  };
+
+  const handleDeleteRow = (userId, date) => {
+    Alert.alert(
+      "Warning!",
+      "Are you sure want to delete this assigned shift?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Yes",
+          onPress: async () => {
+            try {
+              const data = {
+                userId: userId,
+                date: formatDate(date),
+              };
+
+              const response = await axios.delete(
+                `http://192.168.1.7:3000/api/shift/mapping`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                  data: data,
+                },
+              );
+
+              ToastAndroid.show("Data deleted successful", ToastAndroid.SHORT);
+
+              if (onRefresh) {
+                onRefresh();
+              }
+            } catch (error) {
+              console.log(
+                "Error delete data:",
+                error.response ? error.response.data : error.message,
+              );
+            }
+          },
+        },
+      ],
+      { cancelable: true },
+    );
+  };
+
   return (
     <View style={{ width: "auto" }}>
       <ScrollView
@@ -18,7 +84,7 @@ const CommonContentTable = ({ headerData, bodyData, assign }) => {
                 key={header.key}
                 style={[
                   styles.headerCell,
-                  { minWidth: header.key === "no" ? sc(30) : sc(80) },
+                  { minWidth: header.key === "no" ? sc(30) : sc(110) },
                 ]}
                 textStyle={styles.headerText}
               >
@@ -40,7 +106,7 @@ const CommonContentTable = ({ headerData, bodyData, assign }) => {
                   key={`${item.id}-${header.key}`}
                   style={[
                     styles.bodyCell,
-                    { minWidth: header.key === "no" ? sc(30) : sc(80) },
+                    { minWidth: header.key === "no" ? sc(30) : sc(110) },
                   ]}
                   textStyle={[
                     styles.bodyText,
@@ -56,7 +122,16 @@ const CommonContentTable = ({ headerData, bodyData, assign }) => {
                     },
                   ]}
                 >
-                  {item[header.key]}
+                  {header.key === "action" ? (
+                    <DeleteButton
+                      text={"Delete"}
+                      onPress={() => {
+                        handleDeleteRow(item.userId, item.date);
+                      }}
+                    />
+                  ) : (
+                    item[header.key]
+                  )}
                 </DataTable.Cell>
               ))}
             </DataTable.Row>
@@ -73,7 +148,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     elevation: 3,
     backgroundColor: "white",
-    paddingBottom: vs(8),
+    paddingVertical: vs(8),
     alignItems: "center",
     marginLeft: sc(7),
     flexGrow: 1,
@@ -88,7 +163,6 @@ const styles = StyleSheet.create({
   },
   headerCell: {
     justifyContent: "center",
-    paddingVertical: vs(2),
   },
   headerText: {
     fontFamily: "QuicksandBold",
@@ -97,7 +171,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   tableRow: {
-    height: vs(43),
+    minHeight: vs(60),
   },
   evenRow: {
     backgroundColor: "#f8f9fa",
@@ -107,12 +181,14 @@ const styles = StyleSheet.create({
   },
   bodyCell: {
     justifyContent: "center",
+    alignItems: "center",
   },
   bodyText: {
-    fontSize: ms(13, 0.3),
+    fontSize: ms(12, 0.3),
     fontFamily: "QuicksandMedium",
     textAlign: "center",
     color: "#000",
+    textTransform: "capitalize",
   },
 });
 

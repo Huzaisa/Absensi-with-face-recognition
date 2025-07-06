@@ -32,36 +32,7 @@ import ShiftOn from "../../assets/images/shift-on.svg";
 import axios from "axios";
 
 const CustomDrawer = (props) => {
-  const {
-    isAdmin,
-    logout,
-    setEmployeeData,
-    token,
-    profilePhotoUrl,
-    name,
-    role,
-  } = useAuthStore();
-
-  useEffect(() => {
-    if (isAdmin) {
-      fetchEmployeesData();
-    }
-  });
-
-  const fetchEmployeesData = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.EXPO_PUBLIC_API}/api/users/`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      console.log("DATA EMPLOYEE", response.data);
-    } catch (error) {}
-  };
+  const { isAdmin, logout, profilePhotoUrl, name, role } = useAuthStore();
 
   const adminMenuItems = [
     { name: "Home", label: "Home", iconOn: HomeOn, iconOff: HomeOff },
@@ -124,7 +95,7 @@ const CustomDrawer = (props) => {
           },
         },
       ],
-      { cancelable: false }
+      { cancelable: false },
     );
   };
 

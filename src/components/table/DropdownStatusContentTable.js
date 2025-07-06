@@ -7,8 +7,6 @@ import Dropdown from "../dropdown/Dropdown";
 const DropdownStatusContentTable = ({ headerData, bodyData }) => {
   const [rows, setRows] = useState(bodyData);
 
-  console.log("ROW: ", rows);
-
   const statuses = [
     { id: 1, name: "Approved", color: "#4CAF50" },
     { id: 2, name: "Rejected", color: "#F44336" },
@@ -61,7 +59,6 @@ const DropdownStatusContentTable = ({ headerData, bodyData }) => {
                   textStyle={styles.cellText}
                 >
                   {col.key === "status" ? (
-                    // 1) Kolom status pakai dropdown
                     <Dropdown
                       rowId={row.id}
                       current={row.status}
@@ -69,7 +66,6 @@ const DropdownStatusContentTable = ({ headerData, bodyData }) => {
                       data={statuses}
                     />
                   ) : col.key === "fileUpload" ? (
-                    // 2) Kolom fileUpload: kalau true tampil ikon, else kosong
                     row.fileUpload ? (
                       <TouchableOpacity
                         onPress={() => {}} //TODO onPress
@@ -139,6 +135,7 @@ const styles = StyleSheet.create({
     fontSize: ms(13, 0.3),
     fontFamily: "QuicksandMedium",
     textAlign: "center",
+    color: "#000",
   },
 });
 

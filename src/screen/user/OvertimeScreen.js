@@ -26,7 +26,7 @@ const OvertimeScreen = () => {
   const fetchOvertimeData = useCallback(async () => {
     try {
       const response = await axios.get(
-        `${process.env.EXPO_PUBLIC_API}/api/overtime/me`,
+        `http://192.168.1.7:3000/api/overtime/me`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

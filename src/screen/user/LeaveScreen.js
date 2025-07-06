@@ -17,14 +17,11 @@ const LeaveScreen = () => {
 
   const fetchLeavePermissionData = useCallback(async () => {
     try {
-      const response = await axios.get(
-        `${process.env.EXPO_PUBLIC_API}/api/leave/me`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      const response = await axios.get(`http://192.168.1.7:3000/api/leave/me`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      );
+      });
       setLeaveData(response.data);
     } catch (error) {
       console.log(

@@ -38,7 +38,7 @@ const AttendanceScreen = () => {
   const fetchAttendanceData = useCallback(async () => {
     try {
       const response = await axios.get(
-        `${process.env.EXPO_PUBLIC_API}/api/attendance/history`,
+        `http://192.168.1.7:3000/api/attendance/history`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

@@ -2,30 +2,24 @@ import React, { useRef, useState, useEffect, useCallback } from "react";
 import {
   StyleSheet,
   View,
-  Text,
-  Alert,
   ActivityIndicator,
   ToastAndroid,
 } from "react-native";
 import { Camera, useCameraDevices } from "react-native-vision-camera";
 import axios from "axios";
 import useAuthStore from "../../stores/AuthStore";
-import { useNavigation } from "@react-navigation/native";
 import MediumText from "../text/MediumText";
-import SemiBoldText from "../text/SemiBoldText";
 import { ms, vs } from "../../constant/Dimension";
 
-const CameraView = ({ CloseCamera }) => {
-  const { token, setClockIn } = useAuthStore();
-  const navigation = useNavigation();
+const CameraView = ({ CloseCamera, onCameraError }) => {
+  const { token, setClockIn, setAttendanceStatus } = useAuthStore();
 
   const cameraRef = useRef(null);
   const devices = useCameraDevices();
   const [hasPermission, setHasPermission] = useState(false);
   const [isCameraInitialized, setIsCameraInitialized] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [isAttemptingCapture, setIsAttemptingCapture] = useState(false);
-  const [hasAttemptedCapture, setHasAttemptedCapture] = useState(false);
+  const [isCapturing, setIsCapturing] = useState(false);
+  const [isWaitingForCapture, setIsWaitingForCapture] = useState(true);
 
   const frontCamera = devices
     ? Object.values(devices).find((device) => device?.position === "front")
@@ -39,17 +33,15 @@ const CameraView = ({ CloseCamera }) => {
         setHasPermission(cameraPermissionStatus === "granted");
 
         if (cameraPermissionStatus !== "granted") {
-          Alert.alert(
-            "Camera Permission Required",
-            "The application requires camera access to function. Please grant access in the app settings.",
-            [{ text: "OK", onPress: () => CloseCamera() }]
+          onCameraError(
+            "Camera permission is not granted. Please grant access in settings",
           );
+          setIsWaitingForCapture(false);
         }
       } catch (error) {
         console.log("Error requesting camera permission:", error);
-        Alert.alert("Error", "Failed to request camera permission", [
-          { text: "OK", onPress: () => CloseCamera() },
-        ]);
+        onCameraError(error.message || "Failed to request camera permission");
+        setIsWaitingForCapture(false);
       }
     };
 
@@ -57,7 +49,19 @@ const CameraView = ({ CloseCamera }) => {
   }, []);
 
   const captureAndSendPhoto = useCallback(async () => {
-    setIsAttemptingCapture(true);
+    if (!cameraRef.current) {
+      console.log("Camera ref is null, cannot capture photo.");
+      onCameraError("Camera is not ready or not found");
+      setIsWaitingForCapture(false);
+      return;
+    }
+
+    if (isCapturing) {
+      return;
+    }
+
+    setIsCapturing(true);
+    setIsWaitingForCapture(false);
 
     try {
       const photo = await cameraRef.current.takePhoto({
@@ -66,8 +70,6 @@ const CameraView = ({ CloseCamera }) => {
         enableShutterSound: false,
         skipMetadata: true,
       });
-
-      setIsProcessing(true);
 
       const photoPath = photo.path;
 
@@ -80,7 +82,7 @@ const CameraView = ({ CloseCamera }) => {
       const formData = new FormData();
       formData.append("file", photoFile);
 
-      const API_URL = `${process.env.EXPO_PUBLIC_API}/api/attendance/clock-in?type=faceImage`;
+      const API_URL = `http://192.168.1.7:3000/api/attendance/clock-in?type=faceImage`;
 
       const response = await axios.post(API_URL, formData, {
         headers: {
@@ -91,7 +93,7 @@ const CameraView = ({ CloseCamera }) => {
       });
 
       const clockInTime = new Date(
-        response.data.attendance.clockIn
+        response.data.attendance.clockIn,
       ).toLocaleTimeString("id-ID", {
         hour: "2-digit",
         minute: "2-digit",
@@ -100,55 +102,65 @@ const CameraView = ({ CloseCamera }) => {
       });
 
       setClockIn(clockInTime);
+      setAttendanceStatus(response.data.attendance.status);
       ToastAndroid.show(`Clock-In Successful`, ToastAndroid.SHORT);
 
       setTimeout(() => {
         CloseCamera();
-      }, 2000);
+      }, 1000);
     } catch (error) {
-      if (error) {
-        Alert.alert("Warning!", error.response.data.message, [
-          { text: "OK", onPress: () => CloseCamera() },
-        ]);
-
-        console.log("Failed to process photo or send: ", error);
-      }
+      console.log(
+        "Failed to process photo or send: ",
+        error.response ? error.response.data : error.message,
+      );
+      onCameraError(
+        error.response ? error.response.data.message : error.message,
+      );
     } finally {
-      setIsProcessing(false);
-      setIsAttemptingCapture(false);
-      setHasAttemptedCapture(true);
+      setIsCapturing(false);
     }
-  }, [
-    isCameraInitialized,
-    token,
-    navigation,
-    isProcessing,
-    isAttemptingCapture,
-    hasAttemptedCapture,
-  ]);
+  }, [token, CloseCamera, onCameraError, isCapturing]);
 
   useEffect(() => {
+    let timer;
     if (
       isCameraInitialized &&
       hasPermission &&
-      !isProcessing &&
-      !isAttemptingCapture &&
-      !hasAttemptedCapture
+      !isCapturing &&
+      isWaitingForCapture
     ) {
-      const timer = setTimeout(() => {
+      timer = setTimeout(() => {
         captureAndSendPhoto();
-      }, 1500);
-
-      return () => clearTimeout(timer);
+      }, 2000);
     }
+
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
   }, [
     isCameraInitialized,
     hasPermission,
-    isProcessing,
-    isAttemptingCapture,
-    hasAttemptedCapture,
+    isCapturing,
+    isWaitingForCapture,
     captureAndSendPhoto,
   ]);
+
+  const handleCameraInitialized = useCallback(() => {
+    setIsCameraInitialized(true);
+    setIsWaitingForCapture(true);
+  }, []);
+
+  const handleCameraComponentError = useCallback(
+    (error) => {
+      console.log("Camera component error:", error);
+      onCameraError(error.message || "Failed to activate camera");
+      setIsCapturing(false);
+      setIsWaitingForCapture(false);
+    },
+    [onCameraError],
+  );
 
   if (!hasPermission) {
     return (
@@ -167,7 +179,7 @@ const CameraView = ({ CloseCamera }) => {
     return (
       <View style={styles.container}>
         <MediumText
-          text={"Loading camera devices..."}
+          text={"Loading camera device..."}
           size={16}
           color="#fff"
           textAlign
@@ -180,7 +192,7 @@ const CameraView = ({ CloseCamera }) => {
     return (
       <View style={styles.container}>
         <MediumText
-          text={"Cannot find camera on this device."}
+          text={"Cannot find camera on this device"}
           size={16}
           color="#fff"
           textAlign
@@ -195,23 +207,14 @@ const CameraView = ({ CloseCamera }) => {
         ref={cameraRef}
         style={StyleSheet.absoluteFill}
         device={device}
-        isActive={!isProcessing && !hasAttemptedCapture}
+        isActive={hasPermission && isCameraInitialized}
         photo={true}
-        onInitialized={() => {
-          setIsCameraInitialized(true);
-        }}
-        onError={(error) => {
-          Alert.alert("Camera Error", "Failed to activate camera", [
-            { text: "OK", onPress: () => CloseCamera() },
-          ]);
-          setHasAttemptedCapture(true);
-          setIsProcessing(false);
-          setIsAttemptingCapture(false);
-        }}
+        onInitialized={handleCameraInitialized}
+        onError={handleCameraComponentError}
       />
 
       <View style={styles.overlay}>
-        {isProcessing ? (
+        {isCapturing ? (
           <View>
             <ActivityIndicator size="large" color="#00ff00" />
             <MediumText
@@ -221,15 +224,16 @@ const CameraView = ({ CloseCamera }) => {
               textAlign
             />
           </View>
-        ) : null}
-
-        {hasAttemptedCapture && !isProcessing && (
-          <MediumText
-            text={"Capture process finished."}
-            size={16}
-            color="#fff"
-            textAlign
-          />
+        ) : (
+          isCameraInitialized &&
+          isWaitingForCapture && (
+            <MediumText
+              text={"Camera ready. Please wait for the attendance process..."}
+              size={16}
+              color="#fff"
+              textAlign
+            />
+          )
         )}
       </View>
     </View>

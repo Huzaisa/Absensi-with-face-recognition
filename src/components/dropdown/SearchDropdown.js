@@ -2,35 +2,42 @@ import React, { useState, useMemo, useRef } from "react";
 import { View, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 import { TextInput, List, Text, Menu } from "react-native-paper";
 import { ms, sc, vs } from "../../constant/Dimension";
+import useAuthStore from "../../stores/AuthStore";
 
-const SearchDropdown = ({
-  label,
-  items,
-  selectedValue,
-  onValueChange,
-  maxHeight = 200,
-}) => {
+const SearchDropdown = ({ selectedValue, onValueChange, maxHeight = 200 }) => {
+  const { employeeData } = useAuthStore();
+
+  const processedItems = useMemo(() => {
+    if (!employeeData) return [];
+    return employeeData.map((employee) => ({
+      label: employee.name,
+      value: employee.id,
+      id: employee.id,
+    }));
+  }, [employeeData]);
+
   const [visible, setVisible] = useState(false);
   const [query, setQuery] = useState("");
   const [anchorWidth, setWidth] = useState(0);
   const inputRef = useRef(null);
 
-  // filter
   const filtered = useMemo(() => {
-    if (!query) return items;
-    return items.filter((i) =>
+    if (!query) return processedItems;
+    return processedItems.filter((i) =>
       i.label.toLowerCase().includes(query.toLowerCase()),
     );
-  }, [items, query]);
+  }, [processedItems, query]);
 
-  // selected label
-  const selectedLabel =
-    items.find((i) => i.value === selectedValue)?.label || "";
+  const selectedLabel = useMemo(() => {
+    if (selectedValue && selectedValue.id) {
+      const found = processedItems.find((i) => i.value === selectedValue.id);
+      return found ? found.label : "";
+    }
+    return "";
+  }, [selectedValue, processedItems]);
 
   return (
     <View style={styles.wrapper}>
-      {label && <Text style={styles.label}>{label}</Text>}
-
       <Menu
         visible={visible}
         onDismiss={() => setVisible(false)}
@@ -53,7 +60,6 @@ const SearchDropdown = ({
           </TouchableOpacity>
         }
       >
-        {/* Search box */}
         <View style={styles.searchContainer}>
           <TextInput
             ref={inputRef}
@@ -74,7 +80,7 @@ const SearchDropdown = ({
                 key={item.id}
                 title={item.label}
                 onPress={() => {
-                  onValueChange(item.value);
+                  onValueChange({ name: item.label, id: item.value });
                   setVisible(false);
                 }}
                 titleStyle={styles.itemTitle}
@@ -123,11 +129,13 @@ const styles = StyleSheet.create({
     fontSize: ms(14, 0.3),
     fontFamily: "QuicksandMedium",
     color: "#000",
+    textTransform: "capitalize",
   },
   placeholder: {
     fontSize: ms(14, 0.3),
     fontFamily: "QuicksandMedium",
     color: "#888",
+    textTransform: "capitalize",
   },
   searchContainer: {
     paddingHorizontal: sc(8),
@@ -147,6 +155,7 @@ const styles = StyleSheet.create({
   itemTitle: {
     fontSize: ms(13, 0.3),
     fontFamily: "QuicksandMedium",
+    textTransform: "capitalize",
   },
 });
 

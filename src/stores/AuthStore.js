@@ -21,7 +21,13 @@ const useAuthStore = create(
       startTimeShift: null,
       endTimeShift: null,
       profilePhotoUrl: null,
+      assignedShift: [],
+      overtimeAllData: [],
+      attendanceStatus: null,
 
+      setAttendanceStatus: (status) => set({ attendanceStatus: status }),
+      setOvertimeAllData: (data) => set({ overtimeAllData: data }),
+      setAssignedShift: (data) => set({ assignedShift: data }),
       setToken: (data) => set({ token: data }),
       setIsAdmin: (value) => set({ isAdmin: value }),
       setName: (data) => set({ name: data }),

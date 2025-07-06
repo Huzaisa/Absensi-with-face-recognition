@@ -32,11 +32,45 @@ const HomeScreen = () => {
     setEndTimeShift,
     profilePhotoUrl,
     setProfilePhotoUrl,
+    setEmployeeData,
+    attendanceStatus,
   } = useAuthStore();
   const [showCamera, setShowCamera] = useState(false);
+  const [cameraKey, setCameraKey] = useState(0);
+  console.log(attendanceStatus);
 
   const handleShowCamera = () => {
     setShowCamera(!showCamera);
+  };
+
+  const closeCamera = () => {
+    setShowCamera(false);
+    setCameraKey(0);
+  };
+
+  const retryCameraProcess = () => {
+    setCameraKey((prevKey) => prevKey + 1);
+    setShowCamera(true);
+  };
+
+  const handleCameraError = (error) => {
+    console.log("Error from CameraView:", error);
+    Alert.alert(
+      "Error!",
+      "Please Try Again!",
+      [
+        {
+          text: "Cancel",
+          onPress: closeCamera,
+          style: "cancel",
+        },
+        {
+          text: "Try Again",
+          onPress: retryCameraProcess,
+        },
+      ],
+      { cancelable: false },
+    );
   };
 
   const handleClockIn = () => {
@@ -46,7 +80,7 @@ const HomeScreen = () => {
   const handleClockOut = async () => {
     try {
       const response = await axios.post(
-        `${process.env.EXPO_PUBLIC_API}/api/attendance/clock-out`,
+        `http://192.168.1.7:3000/api/attendance/clock-out`,
         {},
         {
           headers: {
@@ -74,7 +108,7 @@ const HomeScreen = () => {
 
   const fetchProfileImage = async () => {
     if (photo) {
-      const imageUrl = `${process.env.EXPO_PUBLIC_API}/employee_faces/${photo}`;
+      const imageUrl = `http://192.168.1.7:3000/employee_faces/${photo}`;
       setProfilePhotoUrl(imageUrl);
     } else {
       setProfilePhotoUrl(null);
@@ -92,7 +126,7 @@ const HomeScreen = () => {
   const fetchTodayShift = async () => {
     try {
       const response = await axios.get(
-        `${process.env.EXPO_PUBLIC_API}/api/shift/user/${userId}/date/${formatDate()}`,
+        `http://192.168.1.7:3000/api/shift/user/${userId}/date/${formatDate()}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -115,7 +149,43 @@ const HomeScreen = () => {
   useEffect(() => {
     fetchProfileImage();
     fetchTodayShift();
-  }, [photo]);
+
+    if (isAdmin) {
+      fetchEmployeesData();
+    }
+  }, [photo, isAdmin, userId, token]);
+
+  const fetchEmployeesData = async () => {
+    try {
+      const response = await axios.get(`http://192.168.1.7:3000/api/users/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const employeeList = response.data
+        .filter((user) => user.role === "EMPLOYEE")
+        .map((user) => ({
+          id: user.id,
+          name: user.name,
+        }));
+
+      setEmployeeData(employeeList);
+    } catch (error) {
+      console.log(
+        "Error fetching employee data:",
+        error.response ? error.response.data : error.message,
+      );
+    }
+  };
+
+  const attendanceStatusColor = () => {
+    if (attendanceStatus === "ONTIME") {
+      return "#4CAF50";
+    } else {
+      return "#F44336";
+    }
+  };
 
   const defaultProfile = require("../../../assets/images/user.png");
 
@@ -124,7 +194,11 @@ const HomeScreen = () => {
       <StatusBar style="dark" translucent backgroundColor="transparent" />
 
       {showCamera ? (
-        <CameraView CloseCamera={handleShowCamera} />
+        <CameraView
+          key={cameraKey}
+          CloseCamera={closeCamera}
+          onCameraError={handleCameraError}
+        />
       ) : (
         <>
           <View style={styles.menuWrapper}>
@@ -162,11 +236,12 @@ const HomeScreen = () => {
 
               <View style={styles.shiftTimes}>
                 <View style={styles.shiftPair}>
-                  <SemiBoldText text="Start: " size={15} />
+                  <SemiBoldText text="Start:" size={15} />
                   <RegularText text={startTimeShift} size={18} />
                 </View>
+
                 <View style={styles.shiftPair}>
-                  <SemiBoldText text="End: " size={15} />
+                  <SemiBoldText text="End:" size={15} />
                   <RegularText text={endTimeShift} size={18} />
                 </View>
               </View>
@@ -190,22 +265,37 @@ const HomeScreen = () => {
           </View>
 
           {!isAdmin && (
-            <View style={styles.attendanceContainer}>
-              <View style={styles.attendanceHeader}>
-                <SemiBoldText text="CLOCK IN" size={15} />
-                <SemiBoldText text="CLOCK OUT" size={15} />
+            <View style={styles.attendanceSection}>
+              <View style={styles.shiftPair}>
+                <SemiBoldText text={"Status: "} size={15} />
+
+                <MediumText
+                  text={attendanceStatus}
+                  color={attendanceStatusColor()}
+                  size={15}
+                />
               </View>
 
-              <View style={styles.lineSeparator} />
+              <View style={styles.attendanceContainer}>
+                <View style={styles.attendanceHeader}>
+                  <SemiBoldText text="CLOCK IN" size={15} />
+                  <SemiBoldText text="CLOCK OUT" size={15} />
+                </View>
+                <View style={styles.lineSeparator} />
 
-              <View style={styles.attendanceTimes}>
-                <MediumText text={clockIn} size={20} />
-                <MediumText text={clockOut} size={20} />
-              </View>
+                <View style={styles.attendanceTimes}>
+                  <MediumText text={clockIn} size={20} />
+                  <MediumText text={clockOut} size={20} />
+                </View>
 
-              <View style={styles.attendanceButtons}>
-                <AttendanceButton text="Clock - In" onPress={handleClockIn} />
-                <AttendanceButton text="Clock - Out" onPress={handleClockOut} />
+                <View style={styles.attendanceButtons}>
+                  <AttendanceButton text="Clock - In" onPress={handleClockIn} />
+
+                  <AttendanceButton
+                    text="Clock - Out"
+                    onPress={handleClockOut}
+                  />
+                </View>
               </View>
             </View>
           )}
@@ -262,6 +352,7 @@ const styles = StyleSheet.create({
   shiftPair: {
     flexDirection: "row",
     alignItems: "center",
+    gap: sc(5),
   },
   banner: {
     alignItems: "center",
@@ -275,11 +366,14 @@ const styles = StyleSheet.create({
   bannerAdmin: {
     marginTop: vs(100),
   },
+  attendanceSection: {
+    marginTop: vs(10),
+    marginHorizontal: sc(22),
+    gap: vs(14),
+  },
   attendanceContainer: {
-    marginTop: vs(30),
     borderColor: "#999999",
     borderWidth: 1,
-    marginHorizontal: sc(22),
     borderRadius: ms(20),
     paddingTop: vs(10),
   },

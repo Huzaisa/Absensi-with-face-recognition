@@ -6,16 +6,50 @@ import TimeInput from "../input/TimeInput";
 import CummonInput from "../input/CummonInput";
 import SaveButton from "../button/SaveButton";
 import CancelButton from "../button/CancelButton";
+import axios from "axios";
+import useAuthStore from "../../stores/AuthStore";
 
-const ShiftForm = ({ onPress }) => {
+const ShiftForm = ({ onDismiss, onRefresh }) => {
+  const { token } = useAuthStore();
   const [title, setTitle] = useState("");
   const [startTime, setStartTime] = useState(new Date());
   const [endTime, setEndTime] = useState(new Date());
 
-  const handleSubmitForm = () => {
-    // TODO: handle submission
-    ToastAndroid.show("Add shift successful", ToastAndroid.SHORT);
-    setTimeout(onPress, 1000);
+  const formatTime = (time) => {
+    const hours = time.getHours().toString().padStart(2, "0");
+    const minutes = time.getMinutes().toString().padStart(2, "0");
+    return `${hours}:${minutes}`;
+  };
+
+  const handleSubmitForm = async () => {
+    try {
+      const data = {
+        name: title,
+        startTime: formatTime(startTime),
+        endTime: formatTime(endTime),
+      };
+
+      const response = await axios.post(
+        "http://192.168.1.7:3000/api/shift/",
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      ToastAndroid.show("Add shift successful", ToastAndroid.SHORT);
+      setTimeout(onDismiss, 1000);
+
+      if (onRefresh) {
+        onRefresh();
+      }
+    } catch (error) {
+      console.log(
+        "Error add shift:",
+        error.response ? error.response.data : error.message,
+      );
+    }
   };
 
   return (
@@ -37,7 +71,7 @@ const ShiftForm = ({ onPress }) => {
         </View>
 
         <View style={styles.actionsRow}>
-          <CancelButton text="Cancel" onPress={onPress} />
+          <CancelButton text="Cancel" onPress={onDismiss} />
           <SaveButton text="Save" onPress={handleSubmitForm} />
         </View>
       </View>

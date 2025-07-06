@@ -49,7 +49,7 @@ const OvertimePermissionForm = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       if (uploadedFile) {
@@ -70,7 +70,7 @@ const OvertimePermissionForm = () => {
               Authorization: `Bearer ${token}`,
               "Content-Type": "multipart/form-data",
             },
-          }
+          },
         );
       }
 

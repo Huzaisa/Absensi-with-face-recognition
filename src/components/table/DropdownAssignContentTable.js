@@ -1,37 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { DataTable } from "react-native-paper";
+import { DataTable, Modal, Portal } from "react-native-paper";
 import { sc, vs, ms } from "../../constant/Dimension";
-import SearchDropdown from "../dropdown/SearchDropdown";
-import axios from "axios";
-import useAuthStore from "../../stores/AuthStore";
+import SaveButton from "../button/SaveButton";
+import AssignShiftForm from "../form/AssignShiftForm";
 
-const DropdownAssignContentTable = ({ headerData, bodyData }) => {
-  const { token } = useAuthStore();
-  const [rows, setRows] = useState(bodyData);
+const DropdownAssignContentTable = ({ headerData, bodyData, onRefresh }) => {
+  const [showModal, setShowModal] = useState(false);
+  const [selectedShiftId, setSelectedShiftId] = useState(null);
 
-  useEffect(() => {
-    setRows(bodyData);
-  }, [bodyData]);
+  const handleShowModal = (shiftId) => {
+    setSelectedShiftId(shiftId);
+    setShowModal(true);
+  };
 
-  const employees = [
-    { id: 1, name: "Andi Saputra" },
-    { id: 2, name: "Budi Santoso" },
-    { id: 3, name: "Citra Dewi" },
-    { id: 4, name: "Dewi Lestari" },
-    { id: 5, name: "Eka Prasetya" },
-    { id: 6, name: "Fajar Nugroho" },
-    { id: 7, name: "Fajar Nugroho" },
-    { id: 8, name: "Fajar Nugroho" },
-    { id: 9, name: "Fajar Nugroho" },
-    { id: 10, name: "Fajar Nugroho" },
-    { id: 11, name: "Wahyu Hening Tegar Setyo Nugroho" },
-  ];
-
-  const handleAssign = (itemId, employee) => {
-    setRows((prev) =>
-      prev.map((r) => (r.id === itemId ? { ...r, assign: employee } : r))
-    );
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedShiftId(null);
   };
 
   return (
@@ -57,7 +42,7 @@ const DropdownAssignContentTable = ({ headerData, bodyData }) => {
             ))}
           </DataTable.Header>
 
-          {rows.map((row, idx) => (
+          {bodyData.map((row, idx) => (
             <DataTable.Row
               key={row.id}
               style={[
@@ -75,19 +60,10 @@ const DropdownAssignContentTable = ({ headerData, bodyData }) => {
                   textStyle={styles.cellText}
                 >
                   {col.key === "assign" ? (
-                    <View style={{ width: sc(125) }}>
-                      <SearchDropdown
-                        placeholder="Choose"
-                        items={employees.map((e) => ({
-                          id: String(e.id),
-                          label: e.name,
-                          value: e.name,
-                        }))}
-                        selectedValue={row.assign}
-                        onValueChange={(val) => handleAssign(row.id, val)}
-                        maxDropdownHeight={vs(180)}
-                      />
-                    </View>
+                    <SaveButton
+                      text="Assign"
+                      onPress={() => handleShowModal(row.id)}
+                    />
                   ) : (
                     row[col.key]
                   )}
@@ -97,6 +73,20 @@ const DropdownAssignContentTable = ({ headerData, bodyData }) => {
           ))}
         </DataTable>
       </ScrollView>
+
+      <Portal>
+        <Modal
+          visible={showModal}
+          onDismiss={handleCloseModal}
+          contentContainerStyle={styles.modalContent}
+        >
+          <AssignShiftForm
+            shiftId={selectedShiftId}
+            onDismiss={handleCloseModal}
+            onRefresh={onRefresh}
+          />
+        </Modal>
+      </Portal>
     </View>
   );
 };
@@ -144,11 +134,19 @@ const styles = StyleSheet.create({
   cell: {
     justifyContent: "center",
     overflow: "visible",
+    alignItems: "center",
   },
   cellText: {
     fontSize: ms(13, 0.3),
     fontFamily: "QuicksandMedium",
     textAlign: "center",
+    color: "#000",
+  },
+  modalContent: {
+    backgroundColor: "white",
+    padding: ms(20),
+    marginHorizontal: sc(20),
+    borderRadius: ms(8),
   },
 });
 
