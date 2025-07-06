@@ -48,6 +48,18 @@ exports.getUserDocuments = async (req, res, next) => {
   }
 };
 
+exports.getDocumentsByUser = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const docs = await uploadService.getUserDocuments(userId);
+
+    res.json(docs);
+  } catch (err) {
+    next(err);
+  }
+};
+
+
 exports.getAllDocuments = async (_req, res, next) => {
   try {
     const docs = await uploadService.getAllDocuments();

@@ -16,8 +16,10 @@ router.get('/me', ctl.getUserDocuments);
 /* ── ADMIN ONLY ──────────────────────────────── */
 router.get('/all', role('ADMIN'), ctl.getAllDocuments);
 router.delete('/:id', role('ADMIN'), ctl.deleteDocument);
+router.get('/user/:userId', role('ADMIN'), ctl.getDocumentsByUser);
 
-/* ── detail dokumen (user mana pun, optional boleh di‐sekat) ── */
+
+/* ── detail dokumen (user mana pun, optional boleh di‐sekat) id dokumen ── */
 router.get('/:id', ctl.getDocument);
 
 module.exports = router;
