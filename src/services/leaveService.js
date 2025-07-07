@@ -29,8 +29,9 @@ exports.approveLeave = (p) => updateStatus(p.leaveId, 'APPROVED', p.approverId);
 exports.rejectLeave  = (p) => updateStatus(p.leaveId, 'REJECTED',  p.approverId);
 
 /* ▸ List */
-exports.getUserLeaves = (userId, { startDate, endDate, skip = 0, take = 10 } = {}) =>
-  prisma.leave.findMany({
+exports.getUserLeaves = async (userId, { startDate, endDate, skip = 0, take = 10 } = {}) => {
+  // Ambil semua cuti milik user
+  const leaves = await prisma.leave.findMany({
     where: {
       userId,
       ...(startDate && endDate
@@ -44,9 +45,49 @@ exports.getUserLeaves = (userId, { startDate, endDate, skip = 0, take = 10 } = {
     skip, take,
   });
 
+  // Ambil dokumen terbaru milik user dengan tipe 'leave'
+  const doc = await prisma.document.findFirst({
+    where: { userId, type: 'leave' },
+    orderBy: { uploadedAt: 'desc' },
+  });
 
-exports.getAllLeaves = () =>
-  prisma.leave.findMany({ include: { user: true }, orderBy: { createdAt: 'desc' } });
+  // Gabungkan setiap item cuti dengan dokumen (kalau ada)
+  return leaves.map(leave => ({
+    ...leave,
+    document: doc || null
+  }));
+};
+
+
+
+exports.getAllLeaves = async () => {
+  const leaves = await prisma.leave.findMany({
+    include: { user: true },
+    orderBy: { createdAt: 'desc' }
+  });
+
+  // Ambil semua dokumen type 'leave'
+  const documents = await prisma.document.findMany({
+    where: { type: 'leave' },
+    orderBy: { uploadedAt: 'desc' }
+  });
+
+  // Ambil hanya dokumen terbaru per user
+  const latestDocPerUser = new Map();
+  for (const doc of documents) {
+    if (!latestDocPerUser.has(doc.userId)) {
+      latestDocPerUser.set(doc.userId, doc);
+    }
+  }
+
+  // Gabungkan data dokumen ke pengajuan cuti
+  return leaves.map(leave => ({
+    ...leave,
+    document: latestDocPerUser.get(leave.userId) || null
+  }));
+};
+
+
 
 /* hanya request PENDING */
 exports.getAllLeaveRequests = () =>

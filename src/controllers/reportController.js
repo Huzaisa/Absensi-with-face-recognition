@@ -25,9 +25,18 @@ exports.exportReportPDF = async (req, res, next) => {
     const report = await reportService.getAttendanceReport({ month, year });
 
     const buffer = await generatePDF(report, month, year);
-    res.setHeader('Content-Type',        'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename="report-${month}-${year}.pdf"`);
-    res.send(buffer);
+    // Ubah buffer menjadi string Base64
+    const base64Pdf = buffer.toString('base64');
+
+    // Kirim sebagai JSON, atau langsung string Base64 jika Anda mau
+    res.status(200).json({
+        status: 'success',
+        data: `data:application/pdf;base64,${base64Pdf}` // Ini URI yang akan Anda gunakan di frontend
+    });
+    // Atau jika hanya ingin mengirim string base64 saja (tanpa JSON wrapper)
+    // res.setHeader('Content-Type', 'text/plain'); // Atau application/json jika diwrap
+    // res.send(data:application/pdf;base64,${base64Pdf});
+
   } catch (err) { next(err); }
 };
 

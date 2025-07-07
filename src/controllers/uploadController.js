@@ -73,6 +73,11 @@ exports.getDocument = async (req, res, next) => {
     const doc = await uploadService.getDocument(req.params.id);
     if (!doc) return res.status(404).json({ message: 'Dokumen tidak ditemukan' });
 
+    // Cek apakah EMPLOYEE hanya boleh akses dokumen miliknya
+    if (req.user.role === 'EMPLOYEE' && doc.userId !== req.user.id) {
+      return res.status(403).json({ message: 'Tidak memiliki akses ke dokumen ini' });
+    }
+
     res.json({
       id: doc.id,
       fileName: doc.fileName,
@@ -89,6 +94,7 @@ exports.getDocument = async (req, res, next) => {
     next(err);
   }
 };
+
 /* ───────────────  DELETE /api/upload/:id  ─────────────── */
 exports.deleteDocument = async (req, res, next) => {
   try {

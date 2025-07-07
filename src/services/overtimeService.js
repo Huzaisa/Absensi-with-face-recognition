@@ -72,8 +72,9 @@ exports.rejectOvertime = ({ overtimeId, approverId }) =>
     data : { approved: false, approverId },
   });
 
-exports.getUserOvertime = (userId, { startDate, endDate, skip = 0, take = 10 } = {}) =>
-  prisma.overtime.findMany({
+exports.getUserOvertime = async (userId, { startDate, endDate, skip = 0, take = 10 } = {}) => {
+  // Ambil semua pengajuan lembur milik user
+  const overtimes = await prisma.overtime.findMany({
     where: {
       userId,
       ...(startDate && endDate
@@ -89,8 +90,46 @@ exports.getUserOvertime = (userId, { startDate, endDate, skip = 0, take = 10 } =
     skip, take,
   });
 
-exports.getAllOvertimeRequests= () =>
-  prisma.overtime.findMany({
+  // Ambil dokumen terbaru milik user bertipe 'overtime'
+  const doc = await prisma.document.findFirst({
+    where: { userId, type: 'overtime' },
+    orderBy: { uploadedAt: 'desc' },
+  });
+
+  // Gabungkan setiap lembur dengan dokumen (jika ada)
+  return overtimes.map(o => ({
+    ...o,
+    document: doc || null
+  }));
+};
+
+
+
+exports.getAllOvertimeRequests = async () => {
+  const overtimes = await prisma.overtime.findMany({
     include: { user: true },
     orderBy: { createdAt: 'desc' }
   });
+
+  const documents = await prisma.document.findMany({
+    where: { type: 'overtime' },
+    orderBy: { uploadedAt: 'desc' },
+  });
+
+  // Ambil hanya dokumen terbaru untuk tiap user
+  const latestDocPerUser = new Map();
+  for (const doc of documents) {
+    if (!latestDocPerUser.has(doc.userId)) {
+      latestDocPerUser.set(doc.userId, doc);
+    }
+  }
+
+  // Gabungkan dokumen ke masing-masing lembur
+  return overtimes.map(overtime => ({
+    ...overtime,
+    document: latestDocPerUser.get(overtime.userId) || null
+  }));
+};
+
+
+
