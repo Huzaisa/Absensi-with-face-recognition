@@ -105,7 +105,7 @@ const ShiftScreen = () => {
       setAssignedShift(formattedAssignedShifts);
     } catch (error) {
       console.log(
-        "Error refreshing data:",
+        "Error fetching shift data:",
         error.response ? error.response.data : error.message,
       );
     } finally {
@@ -152,6 +152,14 @@ const ShiftScreen = () => {
         <ShiftForm onDismiss={handleCloseModal} onRefresh={onRefreshContent} />
       </Modal>
 
+      <View style={styles.menuWrapper}>
+        <MenuDrawerButton />
+      </View>
+
+      <View style={styles.addPermissionWrapper}>
+        <PermissionButton text="Add Shift" onPress={handleShowModal} />
+      </View>
+
       <ScrollView
         contentContainerStyle={styles.scrollViewContent}
         refreshControl={
@@ -161,14 +169,6 @@ const ShiftScreen = () => {
           />
         }
       >
-        <View style={styles.menuWrapper}>
-          <MenuDrawerButton />
-        </View>
-
-        <View style={styles.addPermissionWrapper}>
-          <PermissionButton text="Add Shift" onPress={handleShowModal} />
-        </View>
-
         <View style={styles.tableWrapper}>
           <DropdownAssignContentTable
             headerData={headerShiftData}
@@ -194,15 +194,16 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F4F7FB",
   },
-  scrollViewContent: {
-    paddingBottom: vs(20),
-  },
   menuWrapper: {
     paddingHorizontal: sc(22),
   },
   addPermissionWrapper: {
     paddingHorizontal: sc(22),
     marginTop: vs(20),
+    marginBottom: vs(5),
+  },
+  scrollViewContent: {
+    paddingBottom: vs(20),
   },
   tableWrapper: {
     marginTop: vs(20),

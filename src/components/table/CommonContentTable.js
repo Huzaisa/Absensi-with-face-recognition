@@ -62,6 +62,7 @@ const CommonContentTable = ({ headerData, bodyData, onRefresh }) => {
                 "Error delete data:",
                 error.response ? error.response.data : error.message,
               );
+              Alert.alert("Warning!", error.response.data.message);
             }
           },
         },

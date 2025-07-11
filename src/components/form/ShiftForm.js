@@ -14,6 +14,8 @@ const ShiftForm = ({ onDismiss, onRefresh }) => {
   const [title, setTitle] = useState("");
   const [startTime, setStartTime] = useState(new Date());
   const [endTime, setEndTime] = useState(new Date());
+  const [startTimeSelected, setStartTimeSelected] = useState(false);
+  const [endTimeSelected, setEndTimeSelected] = useState(false);
 
   const formatTime = (time) => {
     const hours = time.getHours().toString().padStart(2, "0");
@@ -22,6 +24,10 @@ const ShiftForm = ({ onDismiss, onRefresh }) => {
   };
 
   const handleSubmitForm = async () => {
+    if (!title || !startTimeSelected || !endTimeSelected) {
+      return Alert.alert("Warning!", "Please fill out all fields");
+    }
+
     try {
       const data = {
         name: title,
@@ -67,8 +73,14 @@ const ShiftForm = ({ onDismiss, onRefresh }) => {
             text="Start Time"
             time={startTime}
             setTime={setStartTime}
+            setSelected={setStartTimeSelected}
           />
-          <TimeInput text="End Time" time={endTime} setTime={setEndTime} />
+          <TimeInput
+            text="End Time"
+            time={endTime}
+            setTime={setEndTime}
+            setSelected={setEndTimeSelected}
+          />
         </View>
 
         <View style={styles.actionsRow}>

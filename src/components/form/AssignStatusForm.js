@@ -43,8 +43,7 @@ const AssignStatusForm = ({
   const handleSubmitForm = async () => {
     try {
       if (!statusAssign) {
-        Alert.alert("Warning!", "Please select status");
-        return;
+        return Alert.alert("Warning!", "Please select status");
       }
 
       let data;

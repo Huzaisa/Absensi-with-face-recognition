@@ -14,6 +14,7 @@ const AssignShiftForm = ({ onDismiss, shiftId, onRefresh }) => {
   const { token } = useAuthStore();
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [date, setDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(false);
 
   const formatDate = (date) => {
     const year = date.getFullYear();
@@ -24,9 +25,13 @@ const AssignShiftForm = ({ onDismiss, shiftId, onRefresh }) => {
 
   const handleSubmitForm = async () => {
     try {
-      if (!shiftId || !selectedEmployee || !selectedEmployee.id || !date) {
-        Alert.alert("Warning!!, Please fill all fields");
-        return;
+      if (
+        !shiftId ||
+        !selectedEmployee ||
+        !selectedEmployee.id ||
+        !selectedDate
+      ) {
+        return Alert.alert("Warning!", "Please fill out all fields");
       }
 
       const data = {
@@ -74,7 +79,13 @@ const AssignShiftForm = ({ onDismiss, shiftId, onRefresh }) => {
           />
         </View>
 
-        <DateInput text="Select Date" date={date} setDate={setDate} extend />
+        <DateInput
+          text="Select Date"
+          date={date}
+          setDate={setDate}
+          extend
+          setHasSelectedDateProp={setSelectedDate}
+        />
       </View>
 
       <View style={styles.actionsRow}>

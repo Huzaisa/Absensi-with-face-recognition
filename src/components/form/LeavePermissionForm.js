@@ -17,6 +17,8 @@ const LeavePermissionForm = () => {
   const [endDate, setEndDate] = useState(new Date());
   const [reason, setReason] = useState("");
   const [uploadedFile, setUploadedFile] = useState(null);
+  const [startDateSelected, setStartDateSelected] = useState(false);
+  const [endDateSelected, setEndDateSelected] = useState(false);
 
   const formatDate = (date) => {
     const year = date.getFullYear();
@@ -26,6 +28,10 @@ const LeavePermissionForm = () => {
   };
 
   const handleSubmitForm = async () => {
+    if (!startDateSelected || !endDateSelected) {
+      return Alert.alert("Warning!", "Please fill out the form");
+    }
+
     try {
       const data = {
         startDate: formatDate(startDate),
@@ -87,8 +93,14 @@ const LeavePermissionForm = () => {
             text="Start Date"
             date={startDate}
             setDate={setStartDate}
+            setHasSelectedDateProp={setStartDateSelected}
           />
-          <DateInput text="End Date" date={endDate} setDate={setEndDate} />
+          <DateInput
+            text="End Date"
+            date={endDate}
+            setDate={setEndDate}
+            setHasSelectedDateProp={setEndDateSelected}
+          />
         </View>
 
         <ReasonInput setReason={setReason} />

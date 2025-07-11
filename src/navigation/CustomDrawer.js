@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   Alert,
   Image,
@@ -29,7 +29,6 @@ import OvertimeOn from "../../assets/images/overtime-on.svg";
 import LeaveOn from "../../assets/images/leave-on.svg";
 import ReportOn from "../../assets/images/report-on.svg";
 import ShiftOn from "../../assets/images/shift-on.svg";
-import axios from "axios";
 
 const CustomDrawer = (props) => {
   const { isAdmin, logout, profilePhotoUrl, name, role } = useAuthStore();

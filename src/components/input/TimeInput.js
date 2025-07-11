@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import SemiBoldText from "../text/SemiBoldText";
 import MediumText from "../text/MediumText";
@@ -7,9 +7,15 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { vs, ms, sc } from "../../constant/Dimension";
 import Clock from "../../../assets/images/clock.svg";
 
-const TimeInput = ({ text, time, setTime }) => {
+const TimeInput = ({ text, time, setTime, setHasSelectedTimeProp }) => {
   const [showPicker, setShowPicker] = useState(false);
   const [hasSelectedTime, setHasSelectedTime] = useState(false);
+
+  useEffect(() => {
+    if (setHasSelectedTimeProp) {
+      setHasSelectedTimeProp(hasSelectedTime);
+    }
+  }, [hasSelectedTime, setHasSelectedTimeProp]);
 
   const showDatePicker = () => setShowPicker(true);
 

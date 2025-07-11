@@ -28,6 +28,10 @@ const UploadFile = ({ uploadFile, setUploadedFile }) => {
         ToastAndroid.show("Upload file failed", ToastAndroid.SHORT);
       }
     } catch (error) {
+      console.log(
+        "Error pick file: ",
+        error.response ? error.response.data : error.message,
+      );
       Alert.alert("Error!", "Please pick a pdf file");
     }
   };

@@ -33,22 +33,15 @@ const LoginForm = () => {
 
   const handleLogin = async () => {
     try {
-      //TODO Hapus
-      // const data = {
-      //   email: "ardazan1603@gmail.com",
-      //   password: "arda123",
-      // };
-
       const data = {
-        email: "admin@admin.com",
-        password: "admin123",
+        email: email,
+        password: password,
       };
 
       const res = await axios.post(
         `http://192.168.1.7:3000/api/auth/login`,
         data,
       );
-      console.log(res.data);
 
       const role = res.data.user.role;
       if (role === "ADMIN") {
@@ -76,7 +69,11 @@ const LoginForm = () => {
       setTimeout(() => {
         navigation.navigate("Drawer");
       }, 1000);
-    } catch (e) {
+    } catch (error) {
+      console.log(
+        "Error login:",
+        error.response ? error.response.data : error.message,
+      );
       Alert.alert(
         "Warning!",
         "Log in failed, please enter the correct email and password ",

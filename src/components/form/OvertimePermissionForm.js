@@ -19,6 +19,9 @@ const OvertimePermissionForm = () => {
   const [endTime, setEndTime] = useState(new Date());
   const [reason, setReason] = useState("");
   const [uploadedFile, setUploadedFile] = useState(null);
+  const [dateSelected, setDateSelected] = useState(false);
+  const [startTimeSelected, setStartTimeSelected] = useState(false);
+  const [endTimeSelected, setEndTimeSelected] = useState(false);
 
   const formatDate = (date) => {
     const year = date.getFullYear();
@@ -34,6 +37,10 @@ const OvertimePermissionForm = () => {
   };
 
   const handleSubmitForm = async () => {
+    if (!dateSelected || !startTimeSelected || !endTimeSelected) {
+      return Alert.alert("Warning!", "Please fill out the form");
+    }
+
     try {
       const data = {
         date: formatDate(date),
@@ -91,16 +98,28 @@ const OvertimePermissionForm = () => {
   return (
     <View style={styles.container}>
       <View style={styles.formSection}>
-        <DateInput text="Overtime Date" date={date} setDate={setDate} extend />
+        <DateInput
+          text="Overtime Date"
+          date={date}
+          setDate={setDate}
+          extend
+          setHasSelectedDateProp={setDateSelected}
+        />
 
         <View style={styles.timeRow}>
           <TimeInput
             text="Start Time"
             time={startTime}
             setTime={setStartTime}
+            setHasSelectedTimeProp={setStartTimeSelected}
           />
 
-          <TimeInput text="End Time" time={endTime} setTime={setEndTime} />
+          <TimeInput
+            text="End Time"
+            time={endTime}
+            setTime={setEndTime}
+            setHasSelectedTimeProp={setEndTimeSelected}
+          />
         </View>
 
         <ReasonInput setReason={setReason} />
