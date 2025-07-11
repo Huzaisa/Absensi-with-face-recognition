@@ -112,9 +112,9 @@ const CommonContentTable = ({ headerData, bodyData, onRefresh }) => {
                     styles.bodyText,
                     header.key === "status" && {
                       color:
-                        item[header.key]?.toLowerCase() === "approve"
+                        item[header.key]?.toLowerCase() === "approved"
                           ? "#4CAF50"
-                          : item[header.key]?.toLowerCase() === "waiting"
+                          : item[header.key]?.toLowerCase() === "pending"
                             ? "#FFC107"
                             : "#F44336",
                       fontFamily: "QuicksandBold",
@@ -148,7 +148,6 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     elevation: 3,
     backgroundColor: "white",
-    paddingVertical: vs(8),
     alignItems: "center",
     marginLeft: sc(7),
     flexGrow: 1,

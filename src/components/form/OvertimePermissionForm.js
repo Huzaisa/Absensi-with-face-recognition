@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet, ToastAndroid } from "react-native";
+import { View, StyleSheet, ToastAndroid, Alert } from "react-native";
 import { sc, vs } from "../../constant/Dimension";
 import DateInput from "../input/DateInput";
 import TimeInput from "../input/TimeInput";
@@ -43,7 +43,7 @@ const OvertimePermissionForm = () => {
       };
 
       const response = await axios.post(
-        `${process.env.EXPO_PUBLIC_API}/api/overtime/request`,
+        `http://192.168.1.7:3000/api/overtime/request`,
         data,
         {
           headers: {
@@ -63,7 +63,7 @@ const OvertimePermissionForm = () => {
         formData.append("type", "overtime");
 
         const responseUploadFile = await axios.post(
-          `${process.env.EXPO_PUBLIC_API}/api/upload?type=document`,
+          `http://192.168.1.7:3000/api/upload?type=document`,
           formData,
           {
             headers: {
@@ -80,8 +80,11 @@ const OvertimePermissionForm = () => {
         navigation.goBack();
       }, 1000);
     } catch (error) {
-      console.log(error);
-      console.log("Error send overtime request: ", error.response.data.message);
+      console.log(
+        "Error send overtime request:",
+        error.response ? error.response.data : error.message,
+      );
+      Alert.alert("Warning!", error.response.data.message);
     }
   };
 

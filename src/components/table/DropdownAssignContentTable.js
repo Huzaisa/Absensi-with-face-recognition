@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
     marginLeft: sc(7),
   },
   tableContainer: {
-    paddingVertical: vs(8),
+    marginBottom: vs(10),
     backgroundColor: "rgba(255, 255, 255, 0.8)",
     alignItems: "center",
     overflow: "visible",

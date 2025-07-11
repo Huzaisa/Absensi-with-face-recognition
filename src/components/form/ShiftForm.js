@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet, ToastAndroid } from "react-native";
+import { View, StyleSheet, ToastAndroid, Alert } from "react-native";
 import { ms, sc, vs } from "../../constant/Dimension";
 import BoldText from "../text/BoldText";
 import TimeInput from "../input/TimeInput";
@@ -49,6 +49,7 @@ const ShiftForm = ({ onDismiss, onRefresh }) => {
         "Error add shift:",
         error.response ? error.response.data : error.message,
       );
+      Alert.alert("Warning!", error.response.data.message);
     }
   };
 

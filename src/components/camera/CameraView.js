@@ -107,7 +107,7 @@ const CameraView = ({ CloseCamera, onCameraError }) => {
 
       setTimeout(() => {
         CloseCamera();
-      }, 1000);
+      }, 2000);
     } catch (error) {
       console.log(
         "Failed to process photo or send: ",

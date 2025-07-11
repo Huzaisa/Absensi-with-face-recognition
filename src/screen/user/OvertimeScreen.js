@@ -1,5 +1,5 @@
-import React, { useCallback } from "react";
-import { View, StyleSheet } from "react-native";
+import React, { useCallback, useState } from "react";
+import { View, StyleSheet, ScrollView, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
@@ -13,6 +13,7 @@ import useAuthStore from "../../stores/AuthStore";
 const OvertimeScreen = () => {
   const navigation = useNavigation();
   const { token, overtimeData, setOvertimeData } = useAuthStore();
+  const [refreshing, setRefreshing] = useState(false);
 
   const formatDate = (dateString) => {
     const dateObj = new Date(dateString);
@@ -23,7 +24,32 @@ const OvertimeScreen = () => {
     return `${day}-${month}-${year}`;
   };
 
-  const fetchOvertimeData = useCallback(async () => {
+  const formatTime = (isoString) => {
+    if (!isoString) return "";
+    const dateObj = new Date(isoString);
+    if (isNaN(dateObj.getTime())) {
+      console.log("Invalid ISO string provided to formatTime:", isoString);
+      return "";
+    }
+    const hours = dateObj.getHours().toString().padStart(2, "0");
+    const minutes = dateObj.getMinutes().toString().padStart(2, "0");
+    return `${hours}:${minutes}`;
+  };
+
+  const status = (type) => {
+    if (type.approved && type.approverId !== null) {
+      return "APPROVED";
+    }
+    if (type.approved === false && type.approverId !== null) {
+      return "REJECTED";
+    } else {
+      return "PENDING";
+    }
+  };
+
+  const onRefreshContent = useCallback(async () => {
+    setRefreshing(true);
+
     try {
       const response = await axios.get(
         `http://192.168.1.7:3000/api/overtime/me`,
@@ -34,53 +60,34 @@ const OvertimeScreen = () => {
         },
       );
 
-      const formattedData = response.data.map((item, index) => {
-        const startTime = new Date(item.startTime).toLocaleTimeString("id-ID", {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false,
-        });
-        const endTime = new Date(item.endTime).toLocaleTimeString("id-ID", {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false,
-        });
+      const formattedData = response.data.map((item, index) => ({
+        id: item.id,
+        no: (index + 1).toString(),
+        date: formatDate(item.date),
+        startTime: formatTime(item.startTime),
+        endTime: formatTime(item.endTime),
+        status: status(item),
+      }));
 
-        let statusText = "";
-        if (item.approved === false) {
-          statusText = "Waiting";
-        } else if (item.approved === true) {
-          statusText = "Approve";
-        } else {
-          statusText = "Reject";
-        }
-
-        return {
-          id: item.id,
-          no: (index + 1).toString(),
-          date: formatDate(item.date),
-          startTime: startTime,
-          endTime: endTime,
-          status: statusText,
-        };
-      });
       setOvertimeData(formattedData);
     } catch (error) {
       console.log(
         "Error fetching overtime permission data:",
         error.response ? error.response.data : error.message,
       );
+    } finally {
+      setRefreshing(false);
     }
   }, [token, setOvertimeData]);
 
   useFocusEffect(
     useCallback(() => {
-      fetchOvertimeData();
+      onRefreshContent();
 
       return () => {
         console.log("OvertimeScreen is blurring...");
       };
-    }, [fetchOvertimeData]),
+    }, [onRefreshContent]),
   );
 
   const addOvertimePermission = () => {
@@ -114,14 +121,22 @@ const OvertimeScreen = () => {
         />
       </View>
 
-      <View style={styles.tableWrapper}>
-        <CommonContentTable headerData={headerData} bodyData={overtimeData} />
-      </View>
+      <ScrollView
+        contentContainerStyle={styles.scrollViewContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefreshContent}
+          />
+        }
+      >
+        <View style={styles.tableWrapper}>
+          <CommonContentTable headerData={headerData} bodyData={overtimeData} />
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
-
-export default OvertimeScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -133,10 +148,16 @@ const styles = StyleSheet.create({
   },
   buttonWrapper: {
     paddingHorizontal: sc(22),
-    marginTop: vs(20),
+    marginTop: vs(25),
+    marginBottom: vs(10),
+  },
+  scrollViewContent: {
+    paddingBottom: vs(20),
   },
   tableWrapper: {
     marginTop: vs(20),
     flex: 1,
   },
 });
+
+export default OvertimeScreen;

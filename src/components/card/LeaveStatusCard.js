@@ -9,7 +9,7 @@ const LeaveStatusCard = ({ status, startDate, endDate }) => {
   const backgroundColor =
     status === "PENDING"
       ? "#FFC107"
-      : status === "APPROVE"
+      : status === "APPROVED"
         ? "#4CAF50"
         : "#F44336";
 

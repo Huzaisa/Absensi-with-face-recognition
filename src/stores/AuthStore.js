@@ -24,7 +24,9 @@ const useAuthStore = create(
       assignedShift: [],
       overtimeAllData: [],
       attendanceStatus: null,
+      leaveAllData: [],
 
+      setLeaveAllData: (data) => set({ leaveAllData: data }),
       setAttendanceStatus: (status) => set({ attendanceStatus: status }),
       setOvertimeAllData: (data) => set({ overtimeAllData: data }),
       setAssignedShift: (data) => set({ assignedShift: data }),

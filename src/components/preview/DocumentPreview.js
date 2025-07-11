@@ -1,29 +1,39 @@
 import React from "react";
 import { View, ActivityIndicator, StyleSheet } from "react-native";
-import { WebView } from "react-native-webview";
+import Pdf from "react-native-pdf";
 
-const DocumentPreview = ({ uri, type }) => {
-  // Untuk PDF kita bisa gunakan Google Docs Viewer,
-  // Untuk Excel gunakan Office Online Viewer.
-  const embedUrl =
-    type === "pdf"
-      ? `https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(uri)}`
-      : `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(uri)}`;
-
+const DocumentPreview = ({ uri }) => {
   return (
     <View style={styles.container}>
-      <WebView
-        source={{ uri: embedUrl }}
-        style={styles.webview}
-        // mengijinkan pinch-to-zoom
-        scalesPageToFit={true}
-        // di Android kadang perlu ini supaya zoom berfungsi:
-        useWebKit={true}
-        // tampilkan loading spinner
-        startInLoadingState
-        renderLoading={() => (
-          <ActivityIndicator style={styles.loader} size="large" />
-        )}
+      <Pdf
+        source={{ uri: uri, cache: true }}
+        style={styles.pdf}
+        onLoadComplete={(numberOfPages, filePath) => {
+          console.log(`PDF loaded: ${numberOfPages} pages`);
+        }}
+        onPageChanged={(page, numberOfPages) => {
+          console.log(`Current page: ${page}/${numberOfPages}`);
+        }}
+        onError={(error) => {
+          console.error("PDF Error:", error);
+        }}
+        onLoadProgress={(percent) => {
+          console.log(`PDF Loading: ${percent}%`);
+        }}
+        enablePaging={true}
+        enableRTL={false}
+        enableAnnotationRendering={true}
+        enableAntialiasing={true}
+        enableDoubleTapZoom={true}
+        minScale={1.0}
+        maxScale={3.0}
+        scale={1.0}
+        spacing={10}
+        fitPolicy={0}
+        horizontal={false}
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={true}
+        activityIndicator={<ActivityIndicator size="large" color="#0000ff" />}
       />
     </View>
   );
@@ -32,13 +42,12 @@ const DocumentPreview = ({ uri, type }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#ffffff",
   },
-  webview: {
+  pdf: {
     flex: 1,
-  },
-  loader: {
-    flex: 1,
-    justifyContent: "center",
+    width: "100%",
+    height: "100%",
   },
 });
 

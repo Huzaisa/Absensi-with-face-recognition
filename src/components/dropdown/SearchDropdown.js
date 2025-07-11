@@ -54,7 +54,7 @@ const SearchDropdown = ({ selectedValue, onValueChange, maxHeight = 200 }) => {
             }}
           >
             <Text style={selectedLabel ? styles.text : styles.placeholder}>
-              {selectedLabel || "Choose"}
+              {selectedLabel || "Select"}
             </Text>
             <List.Icon icon={visible ? "chevron-up" : "chevron-down"} />
           </TouchableOpacity>

@@ -1,11 +1,68 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import MenuDrawerButton from "../../components/button/MenuDrawerButton";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { StyleSheet, View } from "react-native";
+import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
 import { sc, vs } from "../../constant/Dimension";
 import DropdownStatusContentTable from "../../components/table/DropdownStatusContentTable";
+import { useFocusEffect } from "@react-navigation/native";
+import axios from "axios";
+import useAuthStore from "../../stores/AuthStore";
+import { StatusBar } from "expo-status-bar";
 
 const LeaveScreen = () => {
+  const { token, leaveAllData, setLeaveAllData } = useAuthStore();
+  const [refreshing, setRefreshing] = useState(false);
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const parts = dateString.split("-");
+    if (parts.length === 3) {
+      return `${parts[2]}-${parts[1]}-${parts[0]}`;
+    }
+    return dateString;
+  };
+
+  const onRefreshContent = useCallback(async () => {
+    setRefreshing(true);
+
+    try {
+      const leaveDataResponse = await axios.get(
+        `http://192.168.1.7:3000/api/leave/all`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      const formattedLeaveData = leaveDataResponse.data.map((item, index) => ({
+        id: item.id,
+        no: (index + 1).toString(),
+        startDate: formatDate(item.startDate),
+        endDate: formatDate(item.endDate),
+        name: item.user.name,
+        reason: item.reason,
+        status: item.status,
+        fileUpload: item.document ? item.document.fileName : false,
+      }));
+
+      setLeaveAllData(formattedLeaveData);
+    } catch (error) {
+      console.error("Error fetching leave data:", error);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [token, setLeaveAllData]);
+
+  useFocusEffect(
+    useCallback(() => {
+      onRefreshContent();
+      return () => {
+        console.log("LeaveScreen is blurring");
+      };
+    }, [onRefreshContent]),
+  );
+
   const headerData = [
     {
       key: "no",
@@ -32,56 +89,37 @@ const LeaveScreen = () => {
       label: "Status",
     },
     {
-      key: "fileUpload",
-      label: "File",
-    },
-  ];
-
-  const bodyData = [
-    {
-      id: 1,
-      no: "1",
-      startDate: "19-06-2025",
-      endDate: "20-06-2025",
-      name: "Arda",
-      reason: "Holiday",
-      status: null,
-      fileUpload: true,
-    },
-    {
-      id: 2,
-      no: "2",
-      startDate: "20-06-2025",
-      endDate: "21-06-2025",
-      name: "Damar",
-      reason: null,
-      status: null,
-      fileUpload: null,
-    },
-    {
-      id: 3,
-      no: "3",
-      startDate: "21-06-2025",
-      endDate: "22-06-2025",
-      name: "Hajik",
-      reason: "Sick",
-      status: null,
-      fileUpload: null,
+      key: "action",
+      label: "Action",
     },
   ];
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.menuWrapper}>
-        <MenuDrawerButton />
-      </View>
+      <StatusBar style="dark" translucent backgroundColor="transparent" />
 
-      <View style={styles.tableWrapper}>
-        <DropdownStatusContentTable
-          headerData={headerData}
-          bodyData={bodyData}
-        />
-      </View>
+      <ScrollView
+        style={styles.scrollViewContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefreshContent}
+          />
+        }
+      >
+        <View style={styles.menuWrapper}>
+          <MenuDrawerButton />
+        </View>
+
+        <View style={styles.tableWrapper}>
+          <DropdownStatusContentTable
+            headerData={headerData}
+            bodyData={leaveAllData}
+            type={"leave"}
+            onRefresh={onRefreshContent}
+          />
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -90,6 +128,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F4F7FB",
+  },
+  scrollViewContent: {
+    paddingBottom: vs(20),
   },
   menuWrapper: {
     paddingHorizontal: sc(22),

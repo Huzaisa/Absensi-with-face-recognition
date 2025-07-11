@@ -1,21 +1,30 @@
 import React, { useState } from "react";
-import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
-import { DataTable, List } from "react-native-paper";
+import { ScrollView, StyleSheet, View, Text } from "react-native";
+import { DataTable, Modal, Portal } from "react-native-paper";
 import { sc, vs, ms } from "../../constant/Dimension";
-import Dropdown from "../dropdown/Dropdown";
+import SaveButton from "../button/SaveButton";
+import AssignStatusForm from "../form/AssignStatusForm";
 
-const DropdownStatusContentTable = ({ headerData, bodyData }) => {
-  const [rows, setRows] = useState(bodyData);
+const DropdownStatusContentTable = ({
+  headerData,
+  bodyData,
+  type,
+  onRefresh,
+}) => {
+  const [showModal, setShowModal] = useState(false);
+  const [requestId, setRequestId] = useState(null);
+  const [fileUpload, setFileUpload] = useState(null);
 
-  const statuses = [
-    { id: 1, name: "Approved", color: "#4CAF50" },
-    { id: 2, name: "Rejected", color: "#F44336" },
-  ];
+  const handleShowModal = (requestId, fileUpload) => {
+    setRequestId(requestId);
+    setFileUpload(fileUpload);
+    setShowModal(true);
+  };
 
-  const handleStatus = (rowId, stat) => {
-    setRows((prev) =>
-      prev.map((r) => (r.id === rowId ? { ...r, status: stat } : r)),
-    );
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setRequestId(null);
+    setFileUpload(null);
   };
 
   return (
@@ -32,7 +41,15 @@ const DropdownStatusContentTable = ({ headerData, bodyData }) => {
                 key={col.key}
                 style={[
                   styles.headerCell,
-                  { minWidth: col.key === "no" ? sc(30) : sc(130) },
+                  col.key === "no"
+                    ? styles.columnNo
+                    : col.key === "reason"
+                      ? styles.columnReason
+                      : col.key === "status"
+                        ? styles.columnStatus
+                        : col.key === "action"
+                          ? styles.columnAction
+                          : styles.columnDefault,
                 ]}
                 textStyle={styles.headerText}
               >
@@ -41,7 +58,7 @@ const DropdownStatusContentTable = ({ headerData, bodyData }) => {
             ))}
           </DataTable.Header>
 
-          {rows.map((row, idx) => (
+          {bodyData.map((row, idx) => (
             <DataTable.Row
               key={row.id}
               style={[
@@ -54,27 +71,39 @@ const DropdownStatusContentTable = ({ headerData, bodyData }) => {
                   key={`${row.id}-${col.key}`}
                   style={[
                     styles.cell,
-                    { minWidth: col.key === "no" ? sc(30) : sc(130) },
+                    col.key === "no"
+                      ? styles.columnNo
+                      : col.key === "reason"
+                        ? styles.columnReason
+                        : col.key === "status"
+                          ? styles.columnStatus
+                          : col.key === "action"
+                            ? styles.columnAction
+                            : styles.columnDefault,
                   ]}
-                  textStyle={styles.cellText}
                 >
-                  {col.key === "status" ? (
-                    <Dropdown
-                      rowId={row.id}
-                      current={row.status}
-                      onSelect={handleStatus}
-                      data={statuses}
+                  {col.key === "action" ? (
+                    <SaveButton
+                      text="Action"
+                      onPress={() => handleShowModal(row.id, row.fileUpload)}
                     />
-                  ) : col.key === "fileUpload" ? (
-                    row.fileUpload ? (
-                      <TouchableOpacity
-                        onPress={() => {}} //TODO onPress
-                      >
-                        <List.Icon icon="download" />
-                      </TouchableOpacity>
-                    ) : null
                   ) : (
-                    row[col.key]
+                    <Text
+                      style={[
+                        styles.cellText,
+                        col.key === "status" && {
+                          color:
+                            row[col.key]?.toLowerCase() === "approved"
+                              ? "#4CAF50"
+                              : row[col.key]?.toLowerCase() === "pending"
+                                ? "#FFC107"
+                                : "#F44336",
+                          fontFamily: "QuicksandBold",
+                        },
+                      ]}
+                    >
+                      {row[col.key]}
+                    </Text>
                   )}
                 </DataTable.Cell>
               ))}
@@ -82,6 +111,22 @@ const DropdownStatusContentTable = ({ headerData, bodyData }) => {
           ))}
         </DataTable>
       </ScrollView>
+
+      <Portal>
+        <Modal
+          visible={showModal}
+          onDismiss={handleCloseModal}
+          contentContainerStyle={styles.modalContent}
+        >
+          <AssignStatusForm
+            requestId={requestId}
+            onDismiss={handleCloseModal}
+            fileUpload={fileUpload}
+            type={type}
+            onRefresh={onRefresh}
+          />
+        </Modal>
+      </Portal>
     </View>
   );
 };
@@ -89,18 +134,15 @@ const DropdownStatusContentTable = ({ headerData, bodyData }) => {
 const styles = StyleSheet.create({
   wrapper: {
     width: "100%",
-    overflow: "visible",
-    marginLeft: sc(7),
+    paddingLeft: sc(7),
   },
   tableContainer: {
-    paddingVertical: vs(8),
     backgroundColor: "rgba(255, 255, 255, 0.8)",
-    alignItems: "center",
-    overflow: "visible",
   },
   table: {
     borderRadius: ms(8),
     overflow: "hidden",
+    minWidth: "100%",
   },
   header: {
     backgroundColor: "#3f51b5",
@@ -116,10 +158,11 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: ms(14, 0.3),
     textAlign: "center",
+    flexWrap: "wrap",
   },
   row: {
     minHeight: vs(60),
-    overflow: "visible",
+    alignItems: "stretch",
   },
   evenRow: {
     backgroundColor: "#f8f9fa",
@@ -129,13 +172,40 @@ const styles = StyleSheet.create({
   },
   cell: {
     justifyContent: "center",
-    overflow: "visible",
+    alignItems: "center",
+    paddingHorizontal: sc(5),
+    overflow: "hidden",
   },
   cellText: {
     fontSize: ms(13, 0.3),
     fontFamily: "QuicksandMedium",
     textAlign: "center",
     color: "#000",
+    flexShrink: 1,
+    flexWrap: "wrap",
+    textTransform: "capitalize",
+  },
+  columnNo: {
+    width: sc(40),
+  },
+  columnReason: {
+    width: sc(180),
+  },
+  columnStatus: {
+    width: sc(110),
+    marginRight: sc(20),
+  },
+  columnAction: {
+    width: sc(120),
+  },
+  columnDefault: {
+    width: sc(100),
+  },
+  modalContent: {
+    backgroundColor: "white",
+    padding: ms(20),
+    marginHorizontal: sc(20),
+    borderRadius: ms(8),
   },
 });
 

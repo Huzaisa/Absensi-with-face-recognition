@@ -3,11 +3,17 @@ import { StyleSheet, View, TouchableOpacity, Text } from "react-native";
 import { Menu, List } from "react-native-paper";
 import { sc, vs, ms } from "../../constant/Dimension";
 
-const Dropdown = ({ rowId, current, onSelect, data }) => {
+const Dropdown = ({ rowId, current, onSelect, data, extend }) => {
   const [menuVisible, setMenuVisible] = useState(false);
+  const [anchorWidth, setAnchorWidth] = useState(0);
 
   return (
-    <View style={styles.wrapper}>
+    <View
+      style={[styles.wrapper, extend && { width: "100%" }]}
+      onLayout={(event) => {
+        setAnchorWidth(event.nativeEvent.layout.width);
+      }}
+    >
       <Menu
         visible={menuVisible}
         onDismiss={() => setMenuVisible(false)}
@@ -19,13 +25,18 @@ const Dropdown = ({ rowId, current, onSelect, data }) => {
               current?.color && { backgroundColor: current.color },
             ]}
           >
-            <Text style={[styles.text]}>{current?.name ?? "Choose"}</Text>
+            <Text style={[styles.text, current?.color && { color: "#fff" }]}>
+              {current?.name ?? "Select"}
+            </Text>
             <List.Icon
               icon={menuVisible ? "chevron-up" : "chevron-down"}
               style={styles.icon}
+              color={current?.color ? "#fff" : "#000"}
             />
           </TouchableOpacity>
         }
+        anchorPosition="bottom"
+        contentStyle={[styles.menuContent, { width: anchorWidth }]}
       >
         {data.map((item) => (
           <Menu.Item
@@ -62,15 +73,21 @@ const styles = StyleSheet.create({
     paddingVertical: vs(6),
     width: "100%",
     justifyContent: "center",
+    backgroundColor: "#fff",
   },
   text: {
     flex: 1,
     fontSize: ms(13, 0.3),
     fontFamily: "QuicksandMedium",
     textAlign: "center",
+    color: "#000",
   },
   icon: {
     marginLeft: sc(4),
+  },
+  menuContent: {
+    backgroundColor: "#fff",
+    borderRadius: ms(6),
   },
   menuItem: {
     height: vs(40),
@@ -79,6 +96,7 @@ const styles = StyleSheet.create({
   menuItemTitle: {
     fontFamily: "QuicksandMedium",
     fontSize: ms(13, 0.3),
+    color: "#000",
   },
 });
 

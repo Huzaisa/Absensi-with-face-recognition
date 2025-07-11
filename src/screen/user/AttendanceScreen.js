@@ -1,5 +1,5 @@
-import React, { useCallback } from "react";
-import { View, StyleSheet } from "react-native";
+import React, { useCallback, useState } from "react";
+import { View, StyleSheet, ScrollView, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MenuDrawerButton from "../../components/button/MenuDrawerButton";
 import { sc, vs } from "../../constant/Dimension";
@@ -7,10 +7,13 @@ import CommonContentTable from "../../components/table/CommonContentTable";
 import axios from "axios";
 import useAuthStore from "../../stores/AuthStore";
 import { useFocusEffect } from "@react-navigation/native";
+import { StatusBar } from "expo-status-bar";
 
 const AttendanceScreen = () => {
   const { token, attendanceHistoryData, setAttendanceHistoryData } =
     useAuthStore();
+
+  const [refreshing, setRefreshing] = useState(false);
 
   const formatDate = (dateString) => {
     const parts = dateString.split("-");
@@ -25,17 +28,9 @@ const AttendanceScreen = () => {
     return `${formattedDay}-${formattedMonth}-${year}`;
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchAttendanceData();
+  const onRefreshContent = useCallback(async () => {
+    setRefreshing(true);
 
-      return () => {
-        console.log("AttendanceScreen is blurring...");
-      };
-    }, [fetchAttendanceData]),
-  );
-
-  const fetchAttendanceData = useCallback(async () => {
     try {
       const response = await axios.get(
         `http://192.168.1.7:3000/api/attendance/history`,
@@ -65,8 +60,20 @@ const AttendanceScreen = () => {
         error.response ? error.response.data : error.message,
       );
       setAttendanceHistoryData([]);
+    } finally {
+      setRefreshing(false);
     }
   }, [token]);
+
+  useFocusEffect(
+    useCallback(() => {
+      onRefreshContent();
+
+      return () => {
+        console.log("AttendanceScreen is blurring...");
+      };
+    }, [onRefreshContent]),
+  );
 
   const headerData = [
     { key: "no", label: "No." },
@@ -77,16 +84,28 @@ const AttendanceScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar style="dark" translucent backgroundColor="transparent" />
+
       <View style={styles.menuWrapper}>
         <MenuDrawerButton />
       </View>
 
-      <View style={styles.tableWrapper}>
-        <CommonContentTable
-          headerData={headerData}
-          bodyData={attendanceHistoryData}
-        />
-      </View>
+      <ScrollView
+        contentContainerStyle={styles.scrollViewContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefreshContent}
+          />
+        }
+      >
+        <View style={styles.tableWrapper}>
+          <CommonContentTable
+            headerData={headerData}
+            bodyData={attendanceHistoryData}
+          />
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -100,6 +119,9 @@ const styles = StyleSheet.create({
   },
   menuWrapper: {
     paddingHorizontal: sc(22),
+  },
+  scrollViewContent: {
+    paddingBottom: vs(20),
   },
   tableWrapper: {
     marginTop: vs(20),

@@ -4,10 +4,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { sc } from "../../constant/Dimension";
 import MenuDrawerButton from "../../components/button/MenuDrawerButton";
 import ReportForm from "../../components/form/ReportForm";
+import { StatusBar } from "expo-status-bar";
 
 const ReportScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar style="dark" translucent backgroundColor="transparent" />
+
       <View style={styles.menuWrapper}>
         <MenuDrawerButton />
       </View>
@@ -16,8 +19,6 @@ const ReportScreen = () => {
     </SafeAreaView>
   );
 };
-
-export default ReportScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -28,3 +29,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: sc(22),
   },
 });
+
+export default ReportScreen;

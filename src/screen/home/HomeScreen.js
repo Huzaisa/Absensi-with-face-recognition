@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { View, Image, StyleSheet, ToastAndroid, Alert } from "react-native";
+import {
+  View,
+  Image,
+  StyleSheet,
+  ToastAndroid,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import { ms, sc, vs } from "../../constant/Dimension";
 import SemiBoldText from "../../components/text/SemiBoldText";
 import RegularText from "../../components/text/RegularText";
@@ -37,11 +44,7 @@ const HomeScreen = () => {
   } = useAuthStore();
   const [showCamera, setShowCamera] = useState(false);
   const [cameraKey, setCameraKey] = useState(0);
-  console.log(attendanceStatus);
-
-  const handleShowCamera = () => {
-    setShowCamera(!showCamera);
-  };
+  const [isAttendance, setAttendance] = useState(false);
 
   const closeCamera = () => {
     setShowCamera(false);
@@ -57,7 +60,7 @@ const HomeScreen = () => {
     console.log("Error from CameraView:", error);
     Alert.alert(
       "Error!",
-      "Please Try Again!",
+      error,
       [
         {
           text: "Cancel",
@@ -74,10 +77,12 @@ const HomeScreen = () => {
   };
 
   const handleClockIn = () => {
-    handleShowCamera();
+    setShowCamera(true);
   };
 
   const handleClockOut = async () => {
+    setAttendance(true);
+
     try {
       const response = await axios.post(
         `http://192.168.1.7:3000/api/attendance/clock-out`,
@@ -103,6 +108,8 @@ const HomeScreen = () => {
       ToastAndroid.show(`Clock-Out Successful`, ToastAndroid.SHORT);
     } catch (error) {
       Alert.alert("Warning!", error.response.data.message);
+    } finally {
+      setAttendance(false);
     }
   };
 
@@ -285,7 +292,11 @@ const HomeScreen = () => {
 
                 <View style={styles.attendanceTimes}>
                   <MediumText text={clockIn} size={20} />
-                  <MediumText text={clockOut} size={20} />
+                  {isAttendance ? (
+                    <ActivityIndicator size={"large"} />
+                  ) : (
+                    <MediumText text={clockOut} size={20} />
+                  )}
                 </View>
 
                 <View style={styles.attendanceButtons}>

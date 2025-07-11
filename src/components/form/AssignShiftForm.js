@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet, ToastAndroid } from "react-native";
+import { View, StyleSheet, ToastAndroid, Alert } from "react-native";
 import { sc, vs } from "../../constant/Dimension";
 import BoldText from "../text/BoldText";
 import SemiBoldText from "../text/SemiBoldText";
@@ -25,7 +25,7 @@ const AssignShiftForm = ({ onDismiss, shiftId, onRefresh }) => {
   const handleSubmitForm = async () => {
     try {
       if (!shiftId || !selectedEmployee || !selectedEmployee.id || !date) {
-        ToastAndroid.show("Please fill all fields", ToastAndroid.SHORT);
+        Alert.alert("Warning!!, Please fill all fields");
         return;
       }
 
@@ -55,6 +55,7 @@ const AssignShiftForm = ({ onDismiss, shiftId, onRefresh }) => {
         "Error assign shift:",
         error.response ? error.response.data : error.message,
       );
+      Alert.alert("Warning!", error.response.data.message);
     }
   };
 
@@ -66,14 +67,14 @@ const AssignShiftForm = ({ onDismiss, shiftId, onRefresh }) => {
 
       <View style={styles.inputGroup}>
         <View style={styles.fieldGroup}>
-          <SemiBoldText text="Choose Employee" size={15} />
+          <SemiBoldText text="Select Employee" size={15} />
           <SearchDropdown
             selectedValue={selectedEmployee}
             onValueChange={setSelectedEmployee}
           />
         </View>
 
-        <DateInput text="Choose Date" date={date} setDate={setDate} extend />
+        <DateInput text="Select Date" date={date} setDate={setDate} extend />
       </View>
 
       <View style={styles.actionsRow}>
@@ -93,7 +94,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   inputGroup: {
-    gap: sc(20),
+    gap: vs(20),
   },
   fieldGroup: {
     gap: vs(10),

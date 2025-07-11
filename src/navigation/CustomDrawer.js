@@ -88,10 +88,10 @@ const CustomDrawer = (props) => {
           text: "Yes, Log out",
           onPress: () => {
             ToastAndroid.show("Log out successful", ToastAndroid.SHORT);
+            logout();
             setTimeout(() => {
-              logout();
               props.navigation.navigate("Login");
-            }, 2000);
+            }, 1000);
           },
         },
       ],

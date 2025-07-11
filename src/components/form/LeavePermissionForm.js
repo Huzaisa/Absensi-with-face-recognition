@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet, ToastAndroid } from "react-native";
+import { View, StyleSheet, ToastAndroid, Alert } from "react-native";
 import DateInput from "../input/DateInput";
 import ReasonInput from "../input/ReasonInput";
 import SemiBoldText from "../text/SemiBoldText";
@@ -34,7 +34,7 @@ const LeavePermissionForm = () => {
       };
 
       const response = await axios.post(
-        `${process.env.EXPO_PUBLIC_API}/api/leave/request`,
+        `http://192.168.1.7:3000/api/leave/request`,
         data,
         {
           headers: {
@@ -54,7 +54,7 @@ const LeavePermissionForm = () => {
         formData.append("type", "leave");
 
         const responseUploadFile = await axios.post(
-          `${process.env.EXPO_PUBLIC_API}/api/upload?type=document`,
+          `http://192.168.1.7:3000/api/upload?type=document`,
           formData,
           {
             headers: {
@@ -71,8 +71,11 @@ const LeavePermissionForm = () => {
         navigation.goBack();
       }, 1000);
     } catch (error) {
-      console.log(error);
-      console.log("Error send leave request: ", error.response.data.message);
+      console.log(
+        "Error send leave request:",
+        error.response ? error.response.data : error.message,
+      );
+      Alert.alert("Warning!", error.response.data.message);
     }
   };
 

@@ -16,6 +16,7 @@ import ShiftForm from "../../components/form/ShiftForm";
 import axios from "axios";
 import { useFocusEffect } from "@react-navigation/native";
 import useAuthStore from "../../stores/AuthStore";
+import { StatusBar } from "expo-status-bar";
 
 const ShiftScreen = () => {
   const { token, shiftData, setShiftData, assignedShift, setAssignedShift } =
@@ -140,6 +141,8 @@ const ShiftScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar style="dark" translucent backgroundColor="transparent" />
+
       <Modal
         visible={showModal}
         animationType="slide"

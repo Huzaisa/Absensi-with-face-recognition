@@ -1,5 +1,5 @@
-import React, { useCallback } from "react";
-import { View, StyleSheet, ScrollView } from "react-native";
+import React, { useCallback, useState } from "react";
+import { View, StyleSheet, ScrollView, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
@@ -14,8 +14,10 @@ import LeaveStatusCard from "../../components/card/LeaveStatusCard";
 const LeaveScreen = () => {
   const navigation = useNavigation();
   const { token, leaveData, setLeaveData } = useAuthStore();
+  const [refreshing, setRefreshing] = useState(false);
 
-  const fetchLeavePermissionData = useCallback(async () => {
+  const onRefreshContent = useCallback(async () => {
+    setRefreshing(true);
     try {
       const response = await axios.get(`http://192.168.1.7:3000/api/leave/me`, {
         headers: {
@@ -28,17 +30,19 @@ const LeaveScreen = () => {
         "Error fetching leave permission data:",
         error.response ? error.response.data : error.message,
       );
+    } finally {
+      setRefreshing(false);
     }
   }, [token, setLeaveData]);
 
   useFocusEffect(
     useCallback(() => {
-      fetchLeavePermissionData();
+      onRefreshContent();
 
       return () => {
         console.log("LeaveScreen is blurring...");
       };
-    }, [fetchLeavePermissionData]),
+    }, [onRefreshContent]),
   );
 
   const formatDate = (date) => {
@@ -89,6 +93,12 @@ const LeaveScreen = () => {
       <ScrollView
         contentContainerStyle={styles.cardsScrollViewContent}
         style={styles.cardsScrollView}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefreshContent}
+          />
+        }
       >
         <View style={styles.cardsWrapper}>
           {leaveData && leaveData.length > 0 ? (
@@ -120,13 +130,13 @@ const styles = StyleSheet.create({
   addPermissionWrapper: {
     paddingHorizontal: sc(22),
     marginTop: vs(25),
-  },
-  cardsScrollView: {
-    maxHeight: vs(576),
-    marginTop: vs(5),
+    marginBottom: vs(10),
   },
   cardsScrollViewContent: {
     paddingBottom: vs(20),
+  },
+  cardsScrollView: {
+    maxHeight: vs(576),
   },
   cardsWrapper: {
     marginTop: vs(20),

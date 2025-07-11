@@ -75,7 +75,7 @@ const LoginForm = () => {
       ToastAndroid.show("Log in successful", ToastAndroid.SHORT);
       setTimeout(() => {
         navigation.navigate("Drawer");
-      }, 2000);
+      }, 1000);
     } catch (e) {
       Alert.alert(
         "Warning!",

@@ -25,7 +25,9 @@
       },
       "edgeToEdgeEnabled": true,
       "permissions": [
-        "android.permission.CAMERA"
+        "android.permission.CAMERA",
+        "android.permission.WRITE_EXTERNAL_STORAGE", 
+        "android.permission.READ_EXTERNAL_STORAGE"
       ],
       "package": "com.attendance"
     },
@@ -44,7 +46,8 @@
         "expo-build-properties",
         {
           "android": {
-            "usesCleartextTraffic": true
+            "usesCleartextTraffic": true,
+            "requestLegacyExternalStorage": true
           }
         }
       ]
