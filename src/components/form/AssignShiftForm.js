@@ -41,7 +41,7 @@ const AssignShiftForm = ({ onDismiss, shiftId, onRefresh }) => {
       };
 
       const response = await axios.post(
-        `http://192.168.1.7:3000/api/shift/assign`,
+        `http://192.168.1.8:3000/api/shift/assign`,
         data,
         {
           headers: {

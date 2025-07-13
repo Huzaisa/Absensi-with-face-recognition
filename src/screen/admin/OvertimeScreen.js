@@ -54,7 +54,7 @@ const OvertimeScreen = () => {
 
     try {
       const overtimeDataResponse = await axios.get(
-        `http://192.168.1.7:3000/api/overtime/all`,
+        `http://192.168.1.8:3000/api/overtime/all`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -78,7 +78,7 @@ const OvertimeScreen = () => {
 
       setOvertimeAllData(formattedOvertimeData);
     } catch (error) {
-      console.error("Error fetching overtime data:", error);
+      console.log("Error fetching overtime data:", error);
     } finally {
       setRefreshing(false);
     }

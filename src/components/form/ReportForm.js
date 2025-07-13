@@ -67,7 +67,7 @@ const ReportForm = () => {
     setIsLoadingDocument(true);
     try {
       const res = await axios.get(
-        `http://192.168.1.7:3000/api/report/pdf?month=${selectedMonth.id}&year=${selectedYear.id}`,
+        `http://192.168.1.8:3000/api/report/pdf?month=${selectedMonth.id}&year=${selectedYear.id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -146,7 +146,7 @@ const ReportForm = () => {
         type === "pdf"
           ? await (async () => {
               const { data } = await axios.get(
-                `http://192.168.1.7:3000/api/report/pdftofile?month=${selectedMonth.id}&year=${selectedYear.id}`,
+                `http://192.168.1.8:3000/api/report/pdftofile?month=${selectedMonth.id}&year=${selectedYear.id}`,
                 {
                   headers: {
                     Authorization: `Bearer ${token}`,
@@ -154,9 +154,9 @@ const ReportForm = () => {
                 },
               );
               if (!data.path) throw new Error("Invalid PDF path");
-              return `http://192.168.1.7:3000${data.path}`;
+              return `http://192.168.1.8:3000${data.path}`;
             })()
-          : `http://192.168.1.7:3000/api/report/excel?month=${selectedMonth.id}&year=${selectedYear.id}`;
+          : `http://192.168.1.8:3000/api/report/excel?month=${selectedMonth.id}&year=${selectedYear.id}`;
 
       const PUBLIC_DOWNLOAD = "/storage/emulated/0/Download";
       // konfig RNFetchBlob agar pakai DownloadManager dan simpan di public Download

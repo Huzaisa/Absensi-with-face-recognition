@@ -41,6 +41,8 @@ const HomeScreen = () => {
     setProfilePhotoUrl,
     setEmployeeData,
     attendanceStatus,
+    setClockIn,
+    setAttendanceStatus,
   } = useAuthStore();
   const [showCamera, setShowCamera] = useState(false);
   const [cameraKey, setCameraKey] = useState(0);
@@ -85,7 +87,7 @@ const HomeScreen = () => {
 
     try {
       const response = await axios.post(
-        `http://192.168.1.7:3000/api/attendance/clock-out`,
+        `http://192.168.1.8:3000/api/attendance/clock-out`,
         {},
         {
           headers: {
@@ -115,7 +117,7 @@ const HomeScreen = () => {
 
   const fetchProfileImage = async () => {
     if (photo) {
-      const imageUrl = `http://192.168.1.7:3000/employee_faces/${photo}`;
+      const imageUrl = `http://192.168.1.8:3000/employee_faces/${photo}`;
       setProfilePhotoUrl(imageUrl);
     } else {
       setProfilePhotoUrl(null);
@@ -133,7 +135,7 @@ const HomeScreen = () => {
   const fetchTodayShift = async () => {
     try {
       const response = await axios.get(
-        `http://192.168.1.7:3000/api/shift/user/${userId}/date/${formatDate()}`,
+        `http://192.168.1.8:3000/api/shift/user/${userId}/date/${formatDate()}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -153,9 +155,50 @@ const HomeScreen = () => {
     }
   };
 
+  const fetchAttendance = async () => {
+    try {
+      const response = await axios.get(
+        `http://192.168.1.8:3000/api/attendance/history`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      // Mendapatkan tanggal hari ini dalam format YYYY-MM-DD
+      const todayDate = formatDate();
+
+      // Mencari data kehadiran untuk tanggal hari ini
+      const todayAttendance = response.data.history.find(
+        (record) => record.date === todayDate,
+      );
+
+      if (todayAttendance) {
+        setClockIn(todayAttendance.clockIn || null);
+        setClockOut(todayAttendance.clockOut || null);
+        setAttendanceStatus(todayAttendance.status || null);
+      } else {
+        setClockIn(null);
+        setClockOut(null);
+        setAttendanceStatus(null);
+      }
+    } catch (error) {
+      console.log(
+        "Error fetching attendance data:",
+        error.response ? error.response.data : error.message,
+      );
+
+      setClockIn(null);
+      setClockOut(null);
+      setAttendanceStatus(null);
+    }
+  };
+
   useEffect(() => {
     fetchProfileImage();
     fetchTodayShift();
+    fetchAttendance();
 
     if (isAdmin) {
       fetchEmployeesData();
@@ -164,7 +207,7 @@ const HomeScreen = () => {
 
   const fetchEmployeesData = async () => {
     try {
-      const response = await axios.get(`http://192.168.1.7:3000/api/users/`, {
+      const response = await axios.get(`http://192.168.1.8:3000/api/users/`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -189,8 +232,10 @@ const HomeScreen = () => {
   const attendanceStatusColor = () => {
     if (attendanceStatus === "ONTIME") {
       return "#4CAF50";
-    } else {
+    } else if (attendanceStatus === "LATE") {
       return "#F44336";
+    } else {
+      return null;
     }
   };
 
@@ -277,7 +322,7 @@ const HomeScreen = () => {
                 <SemiBoldText text={"Status: "} size={15} />
 
                 <MediumText
-                  text={attendanceStatus}
+                  text={attendanceStatus || "-"}
                   color={attendanceStatusColor()}
                   size={15}
                 />
@@ -290,12 +335,26 @@ const HomeScreen = () => {
                 </View>
                 <View style={styles.lineSeparator} />
 
-                <View style={styles.attendanceTimes}>
-                  <MediumText text={clockIn} size={20} />
+                <View
+                  style={[
+                    styles.attendanceTimes,
+                    clockIn || clockOut
+                      ? {
+                          paddingLeft: sc(36),
+                          paddingRight: 38,
+                          justifyContent: "space-between",
+                        }
+                      : { justifyContent: "space-around" },
+                  ]}
+                >
+                  <MediumText text={clockIn || "-"} size={clockIn ? 20 : 30} />
                   {isAttendance ? (
                     <ActivityIndicator size={"large"} />
                   ) : (
-                    <MediumText text={clockOut} size={20} />
+                    <MediumText
+                      text={clockOut || "-"}
+                      size={clockOut ? 20 : 30}
+                    />
                   )}
                 </View>
 
@@ -403,10 +462,7 @@ const styles = StyleSheet.create({
   },
   attendanceTimes: {
     flexDirection: "row",
-    justifyContent: "space-between",
     paddingTop: vs(30),
-    paddingLeft: sc(36),
-    paddingRight: sc(38),
   },
   attendanceButtons: {
     flexDirection: "row",

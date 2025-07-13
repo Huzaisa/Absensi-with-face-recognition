@@ -15,7 +15,7 @@ const DocumentPreview = ({ uri }) => {
           console.log(`Current page: ${page}/${numberOfPages}`);
         }}
         onError={(error) => {
-          console.error("PDF Error:", error);
+          console.log("PDF Error:", error);
         }}
         onLoadProgress={(percent) => {
           console.log(`PDF Loading: ${percent}%`);

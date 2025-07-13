@@ -39,7 +39,7 @@ const LoginForm = () => {
       };
 
       const res = await axios.post(
-        `http://192.168.1.7:3000/api/auth/login`,
+        `http://192.168.1.8:3000/api/auth/login`,
         data,
       );
 

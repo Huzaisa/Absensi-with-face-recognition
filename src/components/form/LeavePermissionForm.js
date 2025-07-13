@@ -40,7 +40,7 @@ const LeavePermissionForm = () => {
       };
 
       const response = await axios.post(
-        `http://192.168.1.7:3000/api/leave/request`,
+        `http://192.168.1.8:3000/api/leave/request`,
         data,
         {
           headers: {
@@ -60,7 +60,7 @@ const LeavePermissionForm = () => {
         formData.append("type", "leave");
 
         const responseUploadFile = await axios.post(
-          `http://192.168.1.7:3000/api/upload?type=document`,
+          `http://192.168.1.8:3000/api/upload?type=document`,
           formData,
           {
             headers: {

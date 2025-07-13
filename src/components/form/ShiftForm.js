@@ -36,7 +36,7 @@ const ShiftForm = ({ onDismiss, onRefresh }) => {
       };
 
       const response = await axios.post(
-        "http://192.168.1.7:3000/api/shift/",
+        "http://192.168.1.8:3000/api/shift/",
         data,
         {
           headers: {

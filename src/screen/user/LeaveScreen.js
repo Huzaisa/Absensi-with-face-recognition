@@ -19,7 +19,7 @@ const LeaveScreen = () => {
   const onRefreshContent = useCallback(async () => {
     setRefreshing(true);
     try {
-      const response = await axios.get(`http://192.168.1.7:3000/api/leave/me`, {
+      const response = await axios.get(`http://192.168.1.8:3000/api/leave/me`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

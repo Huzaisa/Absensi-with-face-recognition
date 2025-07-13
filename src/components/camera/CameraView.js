@@ -82,7 +82,7 @@ const CameraView = ({ CloseCamera, onCameraError }) => {
       const formData = new FormData();
       formData.append("file", photoFile);
 
-      const API_URL = `http://192.168.1.7:3000/api/attendance/clock-in?type=faceImage`;
+      const API_URL = `http://192.168.1.8:3000/api/attendance/clock-in?type=faceImage`;
 
       const response = await axios.post(API_URL, formData, {
         headers: {

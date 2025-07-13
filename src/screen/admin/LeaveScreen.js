@@ -27,7 +27,7 @@ const LeaveScreen = () => {
 
     try {
       const leaveDataResponse = await axios.get(
-        `http://192.168.1.7:3000/api/leave/all`,
+        `http://192.168.1.8:3000/api/leave/all`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -48,7 +48,7 @@ const LeaveScreen = () => {
 
       setLeaveAllData(formattedLeaveData);
     } catch (error) {
-      console.error("Error fetching leave data:", error);
+      console.log("Error fetching leave data:", error);
     } finally {
       setRefreshing(false);
     }
