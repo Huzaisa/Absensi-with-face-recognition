@@ -12,32 +12,34 @@ function generateStyledReport(doc, data, month, year) {
 
   const col = {
     nama: 40,
-    hadir: 170,
-    izin: 230,
-    cuti: 290,
-    telat: 350,
-    lembur: 410,
+    hadir: 180,
+    izin: 250,
+    cuti: 350,
+    telat: 410,
+    lembur: 470,
   };
+
+  const totalWidth = col.lembur + 90;
 
   // Header background
   doc
-    .rect(col.nama - 2, tableTop - 2, 500, rowHeight)
+    .rect(col.nama - 2, tableTop - 2, totalWidth - col.nama, rowHeight)
     .fill('#f0f0f0');
 
   doc
     .fillColor('#000000')
     .fontSize(12)
     .font('Helvetica-Bold')
-    .text('Nama', col.nama, tableTop + 4, { width: 120 })
-    .text('Hadir', col.hadir, tableTop + 4, { width: 50, align: 'center' })
-    .text('Izin', col.izin, tableTop + 4, { width: 50, align: 'center' })
+    .text('Nama', col.nama, tableTop + 4, { width: 130 })
+    .text('Hadir', col.hadir, tableTop + 4, { width: 60, align: 'center' })
+    .text('Pengajuan Izin', col.izin, tableTop + 4, { width: 90, align: 'center' }) // ✅ diperluas
     .text('Cuti', col.cuti, tableTop + 4, { width: 50, align: 'center' })
     .text('Telat', col.telat, tableTop + 4, { width: 50, align: 'center' })
     .text('Lembur (jam)', col.lembur, tableTop + 4, { width: 90, align: 'center' });
 
   doc
     .moveTo(col.nama - 2, tableTop + rowHeight)
-    .lineTo(col.lembur + 90, tableTop + rowHeight)
+    .lineTo(totalWidth, tableTop + rowHeight)
     .strokeColor('#999999')
     .stroke();
 
@@ -46,12 +48,12 @@ function generateStyledReport(doc, data, month, year) {
 
   data.forEach((row, index) => {
     const bgColor = index % 2 === 0 ? '#ffffff' : '#f9f9f9';
-    doc.rect(col.nama - 2, y - 3, 500, rowHeight).fill(bgColor).fillColor('#000000');
+    doc.rect(col.nama - 2, y - 3, totalWidth - col.nama, rowHeight).fill(bgColor).fillColor('#000000');
 
     doc
-      .text(row.name, col.nama, y, { width: 120 })
-      .text(row.hadir || 0, col.hadir, y, { width: 50, align: 'center' })
-      .text(row.izin || 0, col.izin, y, { width: 50, align: 'center' })
+      .text(row.name, col.nama, y, { width: 130 })
+      .text(row.hadir || 0, col.hadir, y, { width: 60, align: 'center' })
+      .text(row.izin || 0, col.izin, y, { width: 90, align: 'center' })
       .text(row.cuti || 0, col.cuti, y, { width: 50, align: 'center' })
       .text(row.telat || 0, col.telat, y, { width: 50, align: 'center' })
       .text(row.lembur || 0, col.lembur, y, { width: 90, align: 'center' });
@@ -65,6 +67,7 @@ function generateStyledReport(doc, data, month, year) {
     { align: 'center' }
   );
 }
+
 
 exports.generatePDF = (data, month, year) => new Promise((resolve) => {
   const doc = new PDFDocument({ margin: 40 });

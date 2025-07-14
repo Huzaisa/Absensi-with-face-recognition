@@ -1,0 +1,194 @@
+{
+  "timestamp": "2025-07-08",
+  "users": [
+    {
+      "id": "72010be3-acc3-4723-a868-2f0ab95bc3ac",
+      "name": "arda",
+      "email": "ardazan1603@gmail.com",
+      "role": "EMPLOYEE",
+      "createdAt": "2025-07-01T13:09:12.160Z",
+      "password": "$2b$10$w1aNmtS4XqXrnKwxXTKryOKt2RTW0gBt.28WqR2OmQgUq.Ji7Jjlm",
+      "photo": "1751382983481_FaceRecognition.jpeg",
+      "updatedAt": "2025-07-01T18:15:42.650Z",
+      "defaultShiftId": "3a307eb9-2309-474e-96fe-1106243c8c0c",
+      "shiftId": null
+    },
+    {
+      "id": "8ca1f363-6560-42a5-a727-8661f230b7af",
+      "name": "Super Admin",
+      "email": "admin@admin.com",
+      "role": "ADMIN",
+      "createdAt": "2025-07-02T06:24:33.075Z",
+      "password": "$2b$10$PVbv/rnRHPsUJclrOr.QuOCtWcCEp2aWR6NmJSIeoNFjuznB.jf16",
+      "photo": null,
+      "updatedAt": "2025-07-02T06:24:33.075Z",
+      "defaultShiftId": null,
+      "shiftId": null
+    },
+    {
+      "id": "78d0fbab-9073-4071-b065-1e1a66d97653",
+      "name": "ronal",
+      "email": "kurohagi12@gmail.com",
+      "role": "EMPLOYEE",
+      "createdAt": "2025-07-01T13:48:01.158Z",
+      "password": "$2b$10$pOKE8m68BCXQ158JDe1sMuUBR0rbp99jcb9ady.jC6SyW9htwBfza",
+      "photo": "1751377681039_Photo on 01-07-25 at 20.27.jpg",
+      "updatedAt": "2025-07-02T06:18:46.012Z",
+      "defaultShiftId": "3a307eb9-2309-474e-96fe-1106243c8c0c",
+      "shiftId": null
+    },
+    {
+      "id": "e7796633-4e77-42d5-a8aa-6211ef0f188a",
+      "name": "huzi",
+      "email": "huzhiend@gmail.com",
+      "role": "EMPLOYEE",
+      "createdAt": "2025-06-30T17:03:18.428Z",
+      "password": "$2b$10$KlFOv.MmnGzHFbPBpOv8cusEM9n5tTsnCv/oBGEZA8qMsWFriAV5u",
+      "photo": "1751302997994_1749228331177_b.jpg",
+      "updatedAt": "2025-06-30T18:00:30.908Z",
+      "defaultShiftId": "79825eb5-98ba-4493-9c0e-52cb947272d1",
+      "shiftId": null
+    },
+    {
+      "id": "a0eda50b-06d3-4fd1-8b03-acb608574310",
+      "name": "admin",
+      "email": "heroinechan8@gmail.com",
+      "role": "ADMIN",
+      "createdAt": "2025-07-01T14:38:12.129Z",
+      "password": "$2b$10$j.abCbUNOr00h/XQd7eQseujx6pdW7qgBUIKSH7JaugXrcaQ6nfe6",
+      "photo": "1751380692038_1749228289985_grace_17032024.jpeg",
+      "updatedAt": "2025-07-01T14:38:30.617Z",
+      "defaultShiftId": null,
+      "shiftId": null
+    }
+  ],
+  "attendance": [
+    {
+      "id": "68aec090-fb40-4c60-a861-bbae85c65e71",
+      "userId": "e7796633-4e77-42d5-a8aa-6211ef0f188a",
+      "date": "2025-07-01T00:00:00.000Z",
+      "status": "ONTIME",
+      "clockIn": "2025-06-30T18:00:37.318Z",
+      "clockOut": null,
+      "createdAt": "2025-06-30T18:00:37.318Z",
+      "isLate": false,
+      "updatedAt": "2025-06-30T18:00:37.318Z"
+    },
+    {
+      "id": "2caf9e37-7f03-438c-a31d-d712679226c1",
+      "userId": "72010be3-acc3-4723-a868-2f0ab95bc3ac",
+      "date": "2025-07-01T00:00:00.000Z",
+      "status": "LATE",
+      "clockIn": "2025-07-01T15:50:54.133Z",
+      "clockOut": "2025-07-01T16:59:55.535Z",
+      "createdAt": "2025-07-01T15:50:54.748Z",
+      "isLate": true,
+      "updatedAt": "2025-07-01T16:59:55.541Z"
+    },
+    {
+      "id": "ef2a031f-02c0-433c-ab4f-2e146d74fc0d",
+      "userId": "72010be3-acc3-4723-a868-2f0ab95bc3ac",
+      "date": "2025-07-02T00:00:00.000Z",
+      "status": "LATE",
+      "clockIn": "2025-07-02T16:18:06.912Z",
+      "clockOut": "2025-07-02T16:18:14.847Z",
+      "createdAt": "2025-07-02T16:18:07.361Z",
+      "isLate": true,
+      "updatedAt": "2025-07-02T16:18:14.958Z"
+    },
+    {
+      "id": "53941ca0-51d6-4a73-91f4-431bc1c3e156",
+      "userId": "72010be3-acc3-4723-a868-2f0ab95bc3ac",
+      "date": "2025-07-04T00:00:00.000Z",
+      "status": "ONTIME",
+      "clockIn": "2025-07-03T17:11:48.949Z",
+      "clockOut": "2025-07-03T17:12:02.346Z",
+      "createdAt": "2025-07-03T17:11:49.709Z",
+      "isLate": false,
+      "updatedAt": "2025-07-03T17:12:02.485Z"
+    }
+  ],
+  "leaves": [
+    {
+      "id": "26b7c54a-f8e4-4bd4-9013-7b867cb54455",
+      "userId": "72010be3-acc3-4723-a868-2f0ab95bc3ac",
+      "startDate": "2025-07-03T00:00:00.000Z",
+      "endDate": "2025-07-04T00:00:00.000Z",
+      "reason": "Mudik ",
+      "approverId": null,
+      "createdAt": "2025-07-02T14:36:47.743Z",
+      "status": "PENDING"
+    },
+    {
+      "id": "cb5660df-633e-4317-aa49-36f315cdbc86",
+      "userId": "72010be3-acc3-4723-a868-2f0ab95bc3ac",
+      "startDate": "2025-07-10T00:00:00.000Z",
+      "endDate": "2025-07-11T00:00:00.000Z",
+      "reason": "Test",
+      "approverId": null,
+      "createdAt": "2025-07-02T14:37:27.887Z",
+      "status": "PENDING"
+    }
+  ],
+  "overtime": [
+    {
+      "id": "56b63f51-882f-49e7-b77d-2d7cc469d865",
+      "userId": "e7796633-4e77-42d5-a8aa-6211ef0f188a",
+      "date": "2025-07-03T00:00:00.000Z",
+      "approved": false,
+      "approverId": null,
+      "createdAt": "2025-07-02T05:49:17.644Z",
+      "endTime": "2025-07-03T07:00:00.000Z",
+      "reason": "Lembur menyelesaikan laporan akhir",
+      "startTime": "2025-07-03T04:00:00.000Z"
+    },
+    {
+      "id": "703e3889-585d-47f6-803b-01bd15045f12",
+      "userId": "72010be3-acc3-4723-a868-2f0ab95bc3ac",
+      "date": "2025-07-03T00:00:00.000Z",
+      "approved": false,
+      "approverId": null,
+      "createdAt": "2025-07-02T14:43:42.579Z",
+      "endTime": "2024-12-31T17:00:00.000Z",
+      "reason": "Lembur ",
+      "startTime": "2025-01-01T14:00:00.000Z"
+    },
+    {
+      "id": "3156c716-c2d3-4e8a-9eae-0729ded161d7",
+      "userId": "72010be3-acc3-4723-a868-2f0ab95bc3ac",
+      "date": "2025-07-04T00:00:00.000Z",
+      "approved": false,
+      "approverId": null,
+      "createdAt": "2025-07-02T15:06:23.338Z",
+      "endTime": "2025-01-01T14:00:00.000Z",
+      "reason": "Lembur malam",
+      "startTime": "2025-01-01T11:00:00.000Z"
+    }
+  ],
+  "shift": [
+    {
+      "id": "cbc12b5c-0787-4a19-8b74-720f0008d69b",
+      "name": "Shift 1",
+      "startTime": "2024-12-31T20:00:00.000Z",
+      "endTime": "2025-06-29T23:36:14.000Z"
+    },
+    {
+      "id": "fffcf2fe-09e5-4540-8bc6-49673b55dcad",
+      "name": "Shift 2",
+      "startTime": "2025-01-01T00:00:00.000Z",
+      "endTime": "2025-01-01T16:00:00.000Z"
+    },
+    {
+      "id": "79825eb5-98ba-4493-9c0e-52cb947272d1",
+      "name": "Shift dini hari",
+      "startTime": "2024-12-31T17:20:00.000Z",
+      "endTime": "2024-12-31T22:00:00.000Z"
+    },
+    {
+      "id": "3a307eb9-2309-474e-96fe-1106243c8c0c",
+      "name": "Shift 3",
+      "startTime": "2025-01-01T12:00:00.000Z",
+      "endTime": "2025-01-01T16:00:00.000Z"
+    }
+  ]
+}
