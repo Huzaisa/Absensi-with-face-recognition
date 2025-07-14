@@ -27,7 +27,7 @@ const LeaveScreen = () => {
 
     try {
       const leaveDataResponse = await axios.get(
-        `http://192.168.1.8:3000/api/leave/all`,
+        `http://192.168.100.108:3000/api/leave/all`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

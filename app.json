@@ -16,7 +16,8 @@
       "supportsTablet": true,
       "infoPlist": {
         "NSCameraUsageDescription": "$(PRODUCT_NAME) needs access to your Camera."
-      }
+      },
+      "bundleIdentifier": "com.attendance"
     },
     "android": {
       "adaptiveIcon": {
@@ -26,7 +27,7 @@
       "edgeToEdgeEnabled": true,
       "permissions": [
         "android.permission.CAMERA",
-        "android.permission.WRITE_EXTERNAL_STORAGE", 
+        "android.permission.WRITE_EXTERNAL_STORAGE",
         "android.permission.READ_EXTERNAL_STORAGE"
       ],
       "package": "com.attendance"

@@ -54,7 +54,7 @@ const OvertimeScreen = () => {
 
     try {
       const overtimeDataResponse = await axios.get(
-        `http://192.168.1.8:3000/api/overtime/all`,
+        `http://192.168.100.108:3000/api/overtime/all`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

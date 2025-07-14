@@ -43,7 +43,7 @@ const CommonContentTable = ({ headerData, bodyData, onRefresh }) => {
               };
 
               const response = await axios.delete(
-                `http://192.168.1.8:3000/api/shift/mapping`,
+                `http://192.168.100.108:3000/api/shift/mapping`,
                 {
                   headers: {
                     Authorization: `Bearer ${token}`,

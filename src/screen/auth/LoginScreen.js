@@ -17,7 +17,7 @@ const LoginScreen = () => {
           <BoldText text="Log In" size={40} />
         </View>
 
-        <Icon height={vs(340)} width={sc(330)} />
+        <Icon height={vs(320)} width={sc(330)} />
 
         <LoginForm />
       </KeyboardAvoidingView>

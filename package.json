@@ -5,8 +5,8 @@
   "scripts": {
     "start": "expo start",
     "clear": "expo start --clear",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "eslint --fix ."
   },
@@ -38,7 +38,8 @@
     "react-native-svg": "15.11.2",
     "react-native-vision-camera": "^4.7.0",
     "react-native-webview": "13.13.5",
-    "zustand": "^5.0.5"
+    "zustand": "^5.0.5",
+    "expo-image-picker": "~16.1.4"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

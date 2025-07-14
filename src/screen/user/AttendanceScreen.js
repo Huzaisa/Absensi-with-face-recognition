@@ -33,7 +33,7 @@ const AttendanceScreen = () => {
 
     try {
       const response = await axios.get(
-        `http://192.168.1.8:3000/api/attendance/history`,
+        `http://192.168.100.108:3000/api/attendance/history`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

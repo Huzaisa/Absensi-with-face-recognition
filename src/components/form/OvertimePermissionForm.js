@@ -50,7 +50,7 @@ const OvertimePermissionForm = () => {
       };
 
       const response = await axios.post(
-        `http://192.168.1.8:3000/api/overtime/request`,
+        `http://192.168.100.108:3000/api/overtime/request`,
         data,
         {
           headers: {
@@ -70,7 +70,7 @@ const OvertimePermissionForm = () => {
         formData.append("type", "overtime");
 
         const responseUploadFile = await axios.post(
-          `http://192.168.1.8:3000/api/upload?type=document`,
+          `http://192.168.100.108:3000/api/upload?type=document`,
           formData,
           {
             headers: {

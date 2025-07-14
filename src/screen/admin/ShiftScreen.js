@@ -57,7 +57,7 @@ const ShiftScreen = () => {
 
     try {
       const shiftDataResponse = await axios.get(
-        `http://192.168.1.8:3000/api/shift/`,
+        `http://192.168.100.108:3000/api/shift/`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -76,7 +76,7 @@ const ShiftScreen = () => {
       setShiftData(formattedShiftData);
 
       const assignedShiftDataResponse = await axios.get(
-        `http://192.168.1.8:3000/api/shift/mappings`,
+        `http://192.168.100.108:3000/api/shift/mappings`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

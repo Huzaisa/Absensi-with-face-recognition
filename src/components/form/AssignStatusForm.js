@@ -56,7 +56,7 @@ const AssignStatusForm = ({
           };
 
           response = await axios.post(
-            `http://192.168.1.8:3000/api/overtime/approve`,
+            `http://192.168.100.108:3000/api/overtime/approve`,
             data,
             {
               headers: {
@@ -70,7 +70,7 @@ const AssignStatusForm = ({
           };
 
           response = await axios.post(
-            `http://192.168.1.8:3000/api/overtime/reject`,
+            `http://192.168.100.108:3000/api/overtime/reject`,
             data,
             {
               headers: {
@@ -87,7 +87,7 @@ const AssignStatusForm = ({
           };
 
           response = await axios.post(
-            `http://192.168.1.8:3000/api/leave/approve`,
+            `http://192.168.100.108:3000/api/leave/approve`,
             data,
             {
               headers: {
@@ -101,7 +101,7 @@ const AssignStatusForm = ({
           };
 
           response = await axios.post(
-            `http://192.168.1.8:3000/api/leave/reject`,
+            `http://192.168.100.108:3000/api/leave/reject`,
             data,
             {
               headers: {
@@ -168,7 +168,7 @@ const AssignStatusForm = ({
 
     try {
       // ambil URL download
-      const downloadUrl = `http://192.168.1.8:3000/documents/${fileUpload}`;
+      const downloadUrl = `http://192.168.100.108:3000/documents/${fileUpload}`;
 
       const PUBLIC_DOWNLOAD = "/storage/emulated/0/Download";
       // konfig RNFetchBlob agar pakai DownloadManager dan simpan di public Download

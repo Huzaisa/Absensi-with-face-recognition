@@ -39,7 +39,7 @@ const LoginForm = () => {
       };
 
       const res = await axios.post(
-        `http://192.168.1.8:3000/api/auth/login`,
+        `http://192.168.100.108:3000/api/auth/login`,
         data,
       );
 
@@ -124,6 +124,11 @@ const LoginForm = () => {
       <View style={styles.buttonWrapper}>
         <CommonButton text="Log In" onPress={handleLogin} />
       </View>
+      
+      <TouchableOpacity onPress={() => navigation.navigate("Register")}>
+  <SemiBoldText text="Belum punya akun? Daftar di sini" size={14} />
+</TouchableOpacity>
+
     </View>
   );
 };

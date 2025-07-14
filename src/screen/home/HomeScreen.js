@@ -87,7 +87,7 @@ const HomeScreen = () => {
 
     try {
       const response = await axios.post(
-        `http://192.168.1.8:3000/api/attendance/clock-out`,
+        `http://192.168.100.108:3000/api/attendance/clock-out`,
         {},
         {
           headers: {
@@ -117,7 +117,7 @@ const HomeScreen = () => {
 
   const fetchProfileImage = async () => {
     if (photo) {
-      const imageUrl = `http://192.168.1.8:3000/employee_faces/${photo}`;
+      const imageUrl = `http://192.168.100.108:3000/employee_faces/${photo}`;
       setProfilePhotoUrl(imageUrl);
     } else {
       setProfilePhotoUrl(null);
@@ -135,7 +135,7 @@ const HomeScreen = () => {
   const fetchTodayShift = async () => {
     try {
       const response = await axios.get(
-        `http://192.168.1.8:3000/api/shift/user/${userId}/date/${formatDate()}`,
+        `http://192.168.100.108:3000/api/shift/user/${userId}/date/${formatDate()}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -158,7 +158,7 @@ const HomeScreen = () => {
   const fetchAttendance = async () => {
     try {
       const response = await axios.get(
-        `http://192.168.1.8:3000/api/attendance/history`,
+        `http://192.168.100.108:3000/api/attendance/history`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -207,7 +207,7 @@ const HomeScreen = () => {
 
   const fetchEmployeesData = async () => {
     try {
-      const response = await axios.get(`http://192.168.1.8:3000/api/users/`, {
+      const response = await axios.get(`http://192.168.100.108:3000/api/users/`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

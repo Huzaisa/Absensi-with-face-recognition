@@ -4,6 +4,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import LoginScreen from "../screen/auth/LoginScreen";
+import RegisterScreen from "../screen/auth/RegisterScreen";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import CustomDrawer from "./CustomDrawer";
 import HomeScreen from "../screen/home/HomeScreen";
@@ -53,6 +54,7 @@ const RootNavigator = () => {
       //initialRouteName="Drawer"
     >
       <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="Register" component={RegisterScreen} />
       <Stack.Screen name="Drawer" component={DrawerNavigator} />
       <Stack.Screen name="UserAddPermission" component={AddPermissionScreen} />
     </Stack.Navigator>
